@@ -1,10 +1,13 @@
 import opengl
+import basic2d
+import basic3d
 
 type 
     BufferId* = distinct GLuint
     ShaderId* = distinct GLuint
     ShaderProgramId* = distinct GLuint
     VertexArrayId* = distinct GLuint
+    UniformLocation = distinct GLint
 
     BufferTarget* {.pure.} = enum
         ARRAY_BUFFER = GL_ARRAY_BUFFER, #0x88923
@@ -87,11 +90,23 @@ type
         UNSIGNED_BYTE = GL_UNSIGNED_BYTE,
         UNSIGNED_SHORT = GL_UNSIGNED_SHORT,
         UNSIGNED_INT = GL_UNSIGNED_INT
-            
-proc GenBuffers*(size:int32) : BufferId {.inline.} =
-    var uid : GLuint
-    glGenBuffers(size,addr uid)
-    uid.BufferId
+
+proc rawSeq[T](s: seq[T]): ptr T =
+    {.emit: "result = `s`->data;".}
+
+proc GenBuffer*() : BufferId {.inline.} =
+    glGenBuffers(1,cast[ptr GLuint](addr result))
+
+proc GenBuffers*(count:int32) : seq[BufferId] =
+    result = newSeq[BufferId](count)
+    glGenBuffers(count.GLsizei,cast[ptr GLuint](result.rawSeq))
+
+proc DeleteBuffer*(buffer:BufferId) =
+    var b = buffer
+    glDeleteBuffers(1,b.GLuint.addr)
+
+proc DeleteBuffers*(buffers:openArray[BufferId]) =
+    glDeleteBuffers(buffers.len.GLsizei,cast[ptr GLUint](buffers.unsafeAddr))
 
 proc BindBuffer*(target:BufferTarget, buffer:BufferId) {.inline.} =
     glBindBuffer(target.GLenum,buffer.GLuint)
@@ -134,7 +149,7 @@ proc AttachShader*(program:ShaderProgramId, shader:ShaderId) {.inline.} =
 proc LinkProgram*(program:ShaderProgramId) {.inline.} =
     glLinkProgram(program.GLuint)
 
-proc CompileAndCheckShader*(shaderType:ShaderType, shaderPath: string) : ShaderId =
+proc CompileAndAttachShader*(shaderType:ShaderType, shaderPath: string, programId:ShaderProgramId) : ShaderId =
     echo "Compiling and attaching shader"
     echo $shaderType
     let shaderId = CreateShader(shaderType)
@@ -143,6 +158,8 @@ proc CompileAndCheckShader*(shaderType:ShaderType, shaderPath: string) : ShaderI
     if not GetShaderCompileStatus(shaderId):
         echo "Shader Compile Error:" 
         echo GetShaderInfoLog(shaderId)
+    else:
+        AttachShader(programId,shaderId)
     shaderId
 
 proc GetProgramLinkStatus*(program:ShaderProgramId) : bool {.inline.} =
@@ -158,12 +175,16 @@ proc GetProgramInfoLog*(program:ShaderProgramId) : string =
     $logStr
 
 
-proc CreateAndLinkProgram*(vertexPath:string, fragmentPath:string) : ShaderProgramId =
-    let vert = CompileAndCheckShader(ShaderType.VERTEX_SHADER,vertexPath)
-    let frag = CompileAndCheckShader(ShaderType.FRAGMENT_SHADER,fragmentPath)
+proc CreateAndLinkProgram*(vertexPath:string, fragmentPath:string, geometryPath:string = nil) : ShaderProgramId =
     let programId = CreateProgram()
-    AttachShader(programId,vert)
-    AttachShader(programId,frag)
+    let vert = CompileAndAttachShader(ShaderType.VERTEX_SHADER,vertexPath,programId)
+    let frag = CompileAndAttachShader(ShaderType.FRAGMENT_SHADER,fragmentPath,programId)
+    let geo =
+        if geometryPath != nil:
+            CompileAndAttachShader(ShaderType.GEOMETRY_SHADER,geometryPath,programId)
+        else:
+            0.ShaderId
+
     LinkProgram(programId)
     echo "linked"
     if not GetProgramLinkStatus(programId):
@@ -172,22 +193,61 @@ proc CreateAndLinkProgram*(vertexPath:string, fragmentPath:string) : ShaderProgr
     
     DeleteShader(vert)
     DeleteShader(frag)
+    if geometryPath != nil: DeleteShader(geo)
     programId
 
 proc UseProgram*(program:ShaderProgramId) {.inline.} =
     glUseProgram(program.GLuint)
 
-proc GenVertexArrays*(size:int32) : VertexArrayId {.inline.} =
-    var arrays:GLuint
-    glGenVertexArrays(size.GLsizei,addr arrays)
-    arrays.VertexArrayId
+proc GetUniformLocation*(program: ShaderProgramId, name: string) : UniformLocation =
+    glGetUniformLocation(program.GLuint,name).UniformLocation
+
+proc SetBool*(program:ShaderProgramId, name: string, value: bool) =
+    glUniform1i(GetUniformLocation(program,name).GLint,value.GLint)
+
+
+proc SetInt*(program:ShaderProgramId, name: string, value: int32) =
+    glUniform1i(GetUniformLocation(program,name).GLint,value.GLint)
+    
+proc SetFloat*(program:ShaderProgramId, name: string, value: float32) =
+    glUniform1f(GetUniformLocation(program,name).GLint,value.GLfloat)
+
+proc SetVec2*(program:ShaderProgramId, name: string, value: Vector2d) =
+    glUniform2f(GetUniformLocation(program,name).GLint,value.x.GLfloat,value.y.GLfloat)
+
+proc SetVec2*(program:ShaderProgramId, name: string, x:float32, y:float32) =
+    glUniform2f(GetUniformLocation(program,name).GLint,x.GLfloat,y.GLfloat)
+    
+proc SetVec3*(program:ShaderProgramId, name: string, value: Vector3d) =
+    glUniform3f(GetUniformLocation(program,name).GLint,value.x.GLfloat,value.y.GLfloat,value.z.GLfloat)
+    
+proc SetVec3*(program:ShaderProgramId, name: string, x:float32, y:float32, z:float32) =
+    glUniform3f(GetUniformLocation(program,name).GLint,x.GLfloat,y.GLfloat,z.GLfloat)
+
+proc SetVec4*(program:ShaderProgramId, name: string, x:float32, y:float32, z:float32, w:float32) =
+    glUniform4f(GetUniformLocation(program,name).GLint,x.GLfloat,y.GLfloat,z.GLfloat,w.GLfloat)
+            
+
+proc GenVertexArray*() : VertexArrayId {.inline.} =
+    glGenVertexArrays(1.GLsizei,cast[ptr GLuint](addr result))
+    
+proc GenVertexArrays*(count:int32) : seq[VertexArrayId] {.inline.} =
+    result = newSeq[VertexArrayId](count)
+    glGenVertexArrays(count.GLsizei,cast[ptr GLuint](result.rawSeq))
+
+proc DeleteVertexArray*(vertexArray:VertexArrayId) =
+    var v = vertexArray
+    glDeleteVertexArrays(1,v.GLUint.addr)
+
+proc DeleteVertexArrays*(vertexArrays:openArray[VertexArrayId]) =
+    glDeleteVertexArrays(vertexArrays.len.GLsizei,cast[ptr GLUint](vertexArrays.unsafeAddr))
 
 proc BindVertexArray*(vertexArray:VertexArrayId) {.inline.} = 
     glBindVertexArray(vertexArray.GLuint)
 
 type VertexAttribSize = range[1..4]
-proc VertexAttribPointer*(index:uint32, size:VertexAttribSize, attribType:VertexAttribType, normalized:bool, stride:int32, `pointer`:pointer) {.inline.} =
-    glVertexAttribPointer(index.GLuint, size.GLint, attribType.GLenum, normalized.GLboolean,stride.GLsizei, `pointer`)
+proc VertexAttribPointer*(index:uint32, size:VertexAttribSize, attribType:VertexAttribType, normalized:bool, stride:int32, `pointer`:int32) {.inline.} =
+    glVertexAttribPointer(index.GLuint, size.GLint, attribType.GLenum, normalized.GLboolean,stride.GLsizei, cast[pointer](`pointer`))
     
 proc EnableVertexAttribArray*(indeX:uint32) {.inline.} =
     glEnableVertexAttribArray(index.GLuint)

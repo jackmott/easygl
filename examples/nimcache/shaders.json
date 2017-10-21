@@ -1,0 +1,25 @@
+{"compile":[
+],
+"link":[
+"C:\\projects\\easygl\\examples\\nimcache\\easygl_shaders.o",
+"C:\\projects\\easygl\\examples\\nimcache\\stdlib_system.o",
+"C:\\projects\\easygl\\examples\\nimcache\\sdl2_sdl2.o",
+"C:\\projects\\easygl\\examples\\nimcache\\stdlib_macros.o",
+"C:\\projects\\easygl\\examples\\nimcache\\stdlib_unsigned.o",
+"C:\\projects\\easygl\\examples\\nimcache\\stdlib_strutils.o",
+"C:\\projects\\easygl\\examples\\nimcache\\stdlib_parseutils.o",
+"C:\\projects\\easygl\\examples\\nimcache\\stdlib_math.o",
+"C:\\projects\\easygl\\examples\\nimcache\\stdlib_algorithm.o",
+"C:\\projects\\easygl\\examples\\nimcache\\opengl_opengl.o",
+"C:\\projects\\easygl\\examples\\nimcache\\stdlib_sequtils.o",
+"C:\\projects\\easygl\\examples\\nimcache\\stdlib_winlean.o",
+"C:\\projects\\easygl\\examples\\nimcache\\stdlib_dynlib.o",
+"C:\\projects\\easygl\\examples\\nimcache\\stdlib_os.o",
+"C:\\projects\\easygl\\examples\\nimcache\\stdlib_times.o",
+"C:\\projects\\easygl\\examples\\nimcache\\stdlib_ospaths.o",
+"C:\\projects\\easygl\\examples\\nimcache\\easygl_easygl.o",
+"C:\\projects\\easygl\\examples\\nimcache\\stdlib_basic2d.o",
+"C:\\projects\\easygl\\examples\\nimcache\\stdlib_basic3d.o"
+],
+"linkcmd": "gcc.exe   -o C:\\projects\\easygl\\examples\\shaders.exe  C:\\projects\\easygl\\examples\\nimcache\\easygl_shaders.o C:\\projects\\easygl\\examples\\nimcache\\stdlib_system.o C:\\projects\\easygl\\examples\\nimcache\\sdl2_sdl2.o C:\\projects\\easygl\\examples\\nimcache\\stdlib_macros.o C:\\projects\\easygl\\examples\\nimcache\\stdlib_unsigned.o C:\\projects\\easygl\\examples\\nimcache\\stdlib_strutils.o C:\\projects\\easygl\\examples\\nimcache\\stdlib_parseutils.o C:\\projects\\easygl\\examples\\nimcache\\stdlib_math.o C:\\projects\\easygl\\examples\\nimcache\\stdlib_algorithm.o C:\\projects\\easygl\\examples\\nimcache\\opengl_opengl.o C:\\projects\\easygl\\examples\\nimcache\\stdlib_sequtils.o C:\\projects\\easygl\\examples\\nimcache\\stdlib_winlean.o C:\\projects\\easygl\\examples\\nimcache\\stdlib_dynlib.o C:\\projects\\easygl\\examples\\nimcache\\stdlib_os.o C:\\projects\\easygl\\examples\\nimcache\\stdlib_times.o C:\\projects\\easygl\\examples\\nimcache\\stdlib_ospaths.o C:\\projects\\easygl\\examples\\nimcache\\easygl_easygl.o C:\\projects\\easygl\\examples\\nimcache\\stdlib_basic2d.o C:\\projects\\easygl\\examples\\nimcache\\stdlib_basic3d.o    "
+}

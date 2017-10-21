@@ -5,7 +5,6 @@ author        = "Jack Mott"
 description   = "type safe opengl wrapper"
 license       = "MIT"
 
-bin           = @["hello_triangle"]
 srcDir        = "src"
 
 # Dependencies
@@ -13,3 +12,10 @@ srcDir        = "src"
 requires "nim >= 0.17.0"
 requires "sdl2"
 requires "opengl"
+requires "stb_image"
+
+task hello_triangle, "Runs hello triangle":
+  exec "nim c -r examples/hello_triangle"
+
+task shaders, "Runs shaders":
+  exec "nim c -r examples/shaders"

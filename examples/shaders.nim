@@ -10,7 +10,7 @@ discard sdl2.init(INIT_EVERYTHING)
 var screenWidth: cint = 800
 var screenHeight: cint = 600
 
-let window = createWindow("Learn OpenGL 01", 100, 100, screenWidth, screenHeight, SDL_WINDOW_OPENGL or SDL_WINDOW_RESIZABLE)
+let window = createWindow("Shaders", 100, 100, screenWidth, screenHeight, SDL_WINDOW_OPENGL or SDL_WINDOW_RESIZABLE)
 discard window.glCreateContext()
 
 # Initialize OpenGL
@@ -18,24 +18,18 @@ loadExtensions()
 
 ### Build and compile shader program
 
-let programId = CreateAndLinkProgram("shaders/logl01.vert","shaders/logl01.frag")
+let programId = CreateAndLinkProgram("shaders/shaders.vert","shaders/shaders.frag")
 
 # Set up vertex data
 let vertices : seq[float32]  = 
   @[   
-  0.5'f32,  0.5'f32, 0.0'f32,  # top right
-  0.5'f32, -0.5'f32, 0.0'f32,  # bottom right
- -0.5'f32, -0.5'f32, 0.0'f32,  # bottom left
- -0.5'f32,  0.5'f32, 0.0'f32 ] # top left
+     0.5'f32, -0.5'f32, 0.0'f32,  1.0'f32, 0.0'f32, 0.0'f32,  # bottom right
+    -0.5'f32, -0.5'f32, 0.0'f32,  0.0'f32, 1.0'f32, 0.0'f32,  # bottom left
+     0.0'f32,  0.5'f32, 0.0'f32,  0.0'f32, 0.0'f32, 1.0'f32 ] # top left
 
-let indices : seq[uint32] =  
-  @[
-  0'u32, 1'u32, 3'u32,   # first triangle
-  1'u32, 2'u32, 3'u32 ]  # second triangle
 
-let VAO = GenVertexArrays(1)
-let VBO = GenBuffers(1)
-let EBO = GenBuffers(1)
+let VAO = GenVertexArray()
+let VBO = GenBuffer()
 
 # Bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
 BindVertexArray(VAO)
@@ -43,15 +37,11 @@ BindVertexArray(VAO)
 BindBuffer(BufferTarget.ARRAY_BUFFER,VBO)
 BufferData(BufferTarget.ARRAY_BUFFER,vertices,BufferDataUsage.STATIC_DRAW)
 
-BindBuffer(BufferTarget.ELEMENT_ARRAY_BUFFER,EBO)
-BufferData(BufferTarget.ELEMENT_ARRAY_BUFFER,indices,BufferDataUsage.STATIC_DRAW)
-
-VertexAttribPointer(0,3,VertexAttribType.FLOAT,false,3*float32.sizeof(),nil)
+VertexAttribPointer(0,3,VertexAttribType.FLOAT,false,6*float32.sizeof(),0)
 EnableVertexAttribArray(0)
 
-# Unbind the VBO and VAO but we need to keep the EBO
-BindBuffer(BufferTarget.ARRAY_BUFFER,0.BufferId)
-BindVertexArray(0.VertexArrayId)
+VertexAttribPointer(1,3,VertexAttribType.FLOAT,false,6*float32.sizeof(),3*float32.sizeof())
+EnableVertexAttribArray(1)
 
 
 var
@@ -77,7 +67,9 @@ while run:
   Clear(ClearBufferMask.COLOR_BUFFER_BIT)
   UseProgram(programId)
   BindVertexArray(VAO) # Not necessary since we only have one VAO
-  DrawElements(DrawMode.TRIANGLES,6,IndexType.UNSIGNED_INT,0)
+  DrawArrays(DrawMode.TRIANGLES,0,3)
   window.glSwapWindow()
 
+DeleteVertexArray(VAO)
+DeleteBuffer(VBO)
 destroy window
