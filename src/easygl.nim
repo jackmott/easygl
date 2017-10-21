@@ -4,11 +4,12 @@ import basic3d
 
 type 
     BufferId* = distinct GLuint
+    VertexArrayId* = distinct GLuint
+    TextureId = distinct GLuint
     ShaderId* = distinct GLuint
     ShaderProgramId* = distinct GLuint
-    VertexArrayId* = distinct GLuint
     UniformLocation = distinct GLint
-
+    
     BufferTarget* {.pure.} = enum
         ARRAY_BUFFER = GL_ARRAY_BUFFER, #0x88923
         ELEMENT_ARRAY_BUFFER = GL_ELEMENT_ARRAY_BUFFER, #0x8893 
@@ -61,7 +62,7 @@ type
         UNSIGNED_INT = GL_UNSIGNED_INT, #0x1405
         FLOAT = cGL_FLOAT, #0x1406
         DOUBLE = cGL_DOUBLE, 
-        HALF_FLOT = GL_HALF_FLOAT, #0x140B                
+        HALF_FLOAT = GL_HALF_FLOAT, #0x140B                
         FIXED = cGL_FIXED, 
         UNSIGNED_INT_2_10_10_10_REV = GL_UNSIGNED_INT_2_10_10_10_REV, # 0x8368
         UNSIGNED_INT_10F_11F_11F_REV = GL_UNSIGNED_INT_10F_11F_11F_REV #0x8C3B
@@ -91,6 +92,164 @@ type
         UNSIGNED_SHORT = GL_UNSIGNED_SHORT,
         UNSIGNED_INT = GL_UNSIGNED_INT
 
+    MipmapTarget* {.pure.} = enum 
+        TEXTURE_1D = GL_TEXTURE_1D, 
+        TEXTURE_2D = GL_TEXTURE_2D, 
+        TEXTURE_3D = GL_TEXTURE_3D, 
+        TEXTURE_CUBE_MAP = GL_TEXTURE_CUBE_MAP, #0x8513 
+        TEXTURE_1D_ARRAY = GL_TEXTURE_1D_ARRAY, 
+        TEXTURE_2D_ARRAY = GL_TEXTURE_2D_ARRAY, #0x8C1A  
+        TEXTURE_CUBE_MAP_ARRAY = GL_TEXTURE_CUBE_MAP_ARRAY,  
+
+    TextureTarget* {.pure.} = enum
+        TEXTURE_1D = GL_TEXTURE_1D, 
+        TEXTURE_2D = GL_TEXTURE_2D, 
+        TEXTURE_3D = GL_TEXTURE_3D, 
+        TEXTURE_RECTANGLE = GL_TEXTURE_RECTANGLE, #0x84F5
+        TEXTURE_CUBE_MAP = GL_TEXTURE_CUBE_MAP, #0x8513 
+        TEXTURE_1D_ARRAY = GL_TEXTURE_1D_ARRAY, 
+        TEXTURE_2D_ARRAY = GL_TEXTURE_2D_ARRAY, #0x8C1A  
+        TEXTURE_BUFFER = GL_TEXTURE_BUFFER, #0x8C2A
+        TEXTURE_CUBE_MAP_ARRAY = GL_TEXTURE_CUBE_MAP_ARRAY,  
+        TEXTURE_2D_MULTISAMPLE = GL_TEXTURE_2D_MULTISAMPLE,
+        TEXTURE_2D_MULTISAMPLE_ARRAY = GL_TEXTURE_2D_MULTISAMPLE_ARRAY
+    
+    TexImageTarget* {.pure.} = enum
+        TEXTURE_2D = GL_TEXTURE_2D, 
+        PROXY_TEXTURE_2D = GL_PROXY_TEXTURE_2D, #0x8064 
+        TEXTURE_RECTANGLE = GL_TEXTURE_RECTANGLE, 
+        PROXY_TEXTURE_RECTANGLE = GL_PROXY_TEXTURE_RECTANGLE, 
+        TEXTURE_CUBE_MAP_POSITIVE_X = GL_TEXTURE_CUBE_MAP_POSITIVE_X, #0x8515 
+        TEXTURE_CUBE_MAP_NEGATIVE_X = GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 
+        TEXTURE_CUBE_MAP_POSITIVE_Y = GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 
+        TEXTURE_CUBE_MAP_NEGATIVE_Y = GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 
+        TEXTURE_CUBE_MAP_POSITIVE_Z = GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 
+        TEXTURE_CUBE_MAP_NEGATIVE_Z = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,
+        PROXY_TEXTURE_CUBE_MAP = GL_PROXY_TEXTURE_CUBE_MAP   
+        TEXTURE_1D_ARRAY = GL_TEXTURE_1D_ARRAY,
+        PROXY_TEXTURE1D_ARRAY = GL_PROXY_TEXTURE_1D_ARRAY, #0x8C19 
+        
+    TextureParameter* {.pure.} = enum
+        TEXTURE_MAG_FILTER = GL_TEXTURE_MAG_FILTER,
+        TEXTURE_MIN_FILTER = GL_TEXTURE_MIN_FILTER, #0x2801
+        TEXTURE_WRAP_S = GL_TEXTURE_WRAP_S, #0x2802
+        TEXTURE_WRAP_T = GL_TEXTURE_WRAP_T,
+        TEXTURE_WRAP_R =  GL_TEXTURE_WRAP_R,
+        TEXTURE_MIN_LOD = GL_TEXTURE_MIN_LOD, #0x813A
+        TEXTURE_MAX_LOD = GL_TEXTURE_MAX_LOD,
+        TEXTURE_BASE_LEVEL = GL_TEXTURE_BASE_LEVEL, #0x813C
+        TEXTURE_MAX_LEVEL = GL_TEXTURE_MAX_LEVEL, #0x813D
+        TEXTURE_LOD_BIAS = GL_TEXTURE_LOD_BIAS, #0x8501
+        TEXTURE_COMPARE_MODE = GL_TEXTURE_COMPARE_MODE, #0x884C
+        TEXTURE_COMPARE_FUNC = GL_TEXTURE_COMPARE_FUNC, # 0x884D
+        TEXTURE_SWIZZLE_R = GL_TEXTURE_SWIZZLE_R, #0x8E42
+        TEXTURE_SWIZZLE_G = GL_TEXTURE_SWIZZLE_G,
+        TEXTURE_SWIZZLE_B = GL_TEXTURE_SWIZZLE_B,
+        TEXTURE_SWIZZLE_A = GL_TEXTURE_SWIZZLE_A,
+        DEPTH_STENCIL_TEXTURE_MODE = GL_DEPTH_STENCIL_TEXTURE_MODE #0x90EA
+
+    TextureParameterV* {.pure.} = enum
+        TEXTURE_BORDER_COLOR = GL_TEXTURE_BORDER_COLOR, #0x1004
+        TEXTURE_MAG_FILTER = GL_TEXTURE_MAG_FILTER,
+        TEXTURE_MIN_FILTER = GL_TEXTURE_MIN_FILTER, #0x2801
+        TEXTURE_WRAP_S = GL_TEXTURE_WRAP_S, #0x2802
+        TEXTURE_WRAP_T = GL_TEXTURE_WRAP_T,
+        TEXTURE_WRAP_R =  GL_TEXTURE_WRAP_R,
+        TEXTURE_MIN_LOD = GL_TEXTURE_MIN_LOD, #0x813A
+        TEXTURE_MAX_LOD = GL_TEXTURE_MAX_LOD,
+        TEXTURE_BASE_LEVEL = GL_TEXTURE_BASE_LEVEL, #0x813C
+        TEXTURE_MAX_LEVEL = GL_TEXTURE_MAX_LEVEL, #0x813D
+        TEXTURE_LOD_BIAS = GL_TEXTURE_LOD_BIAS, #0x8501
+        TEXTURE_COMPARE_MODE = GL_TEXTURE_COMPARE_MODE, #0x884C
+        TEXTURE_COMPARE_FUNC = GL_TEXTURE_COMPARE_FUNC, # 0x884D
+        TEXTURE_SWIZZLE_R = GL_TEXTURE_SWIZZLE_R, #0x8E42
+        TEXTURE_SWIZZLE_G = GL_TEXTURE_SWIZZLE_G,
+        TEXTURE_SWIZZLE_B = GL_TEXTURE_SWIZZLE_B,
+        TEXTURE_SWIZZLE_A = GL_TEXTURE_SWIZZLE_A,
+        TEXTURE_SWIZZLE_RGBA = GL_TEXTURE_SWIZZLE_RGBA, #0x8E46
+        DEPTH_STENCIL_TEXTURE_MODE = GL_DEPTH_STENCIL_TEXTURE_MODE #0x90EA
+
+    TextureUnit* {.pure.} = enum
+        TEXTURE0 = GL_TEXTURE_0,
+        TEXTURE1 = GL_TEXTURE_1,
+        TEXTURE2 = GL_TEXTURE_2,
+        TEXTURE3 = GL_TEXTURE_3,
+        TEXTURE4 = GL_TEXTURE_4,
+        TEXTURE5 = GL_TEXTURE_5,
+        TEXTURE6 = GL_TEXTURE_6,
+        TEXTURE7 = GL_TEXTURE_7,
+        TEXTURE8 = GL_TEXTURE_8,
+        TEXTURE9 = GL_TEXTURE_9,
+        TEXTURE10 = GL_TEXTURE_10,
+        TEXTURE11 = GL_TEXTURE_11,
+        TEXTURE12 = GL_TEXTURE_12,
+        TEXTURE13 = GL_TEXTURE_13,
+        TEXTURE14 = GL_TEXTURE_14,
+        TEXTURE15 = GL_TEXTURE_15,
+        TEXTURE16 = GL_TEXTURE_16,
+        TEXTURE17 = GL_TEXTURE_17,
+        TEXTURE18  = GL_TEXTURE_18,
+        TEXTURE19 = GL_TEXTURE_19,
+        TEXTURE20 = GL_TEXTURE_20,
+        TEXTURE21  = GL_TEXTURE_21,
+        TEXTURE22 = GL_TEXTURE_22,
+        TEXTURE23 = GL_TEXTURE_23,
+        TEXTURE24 = GL_TEXTURE_24,
+        TEXTURE25 = GL_TEXTURE_25,
+        TEXTURE26 = GL_TEXTURE_26,
+        TEXTURE27 = GL_TEXTURE_27,
+        TEXTURE28 = GL_TEXTURE_28,
+        TEXTURE29 = GL_TEXTURE_29,
+        TEXTURE30 = GL_TEXTURE_30,
+        TEXTURE31 = GL_TEXTURE_31
+
+    TextureInternalFormat* {.pure.} = enum
+        DEPTH_COMPONENT = GL_DEPTH_COMPONENT, #0x1902
+        RED = GL_RED, #0x1903
+        RGB = GL_RGB,        
+        RGBA = GL_RGBA, #0x1908
+        RG = GL_RG,
+        DEPTH_STENCIL = GL_DEPTH_STENCIL, #0x84F9
+        #todo sized formats
+    
+    PixelDataFormat* {.pure.} = enum
+        STENCIL_INDEX = GL_STENCIL_INDEX, #0x1901
+        DEPTH_COMPONENT = GL_DEPTH_COMPONENT, 
+        RED = GL_RED, 
+        RGB = GL_RGB,
+        RGBA = GL_RGBA, 
+        BGR = GL_BGR, #0x80E0 
+        BGRA = GL_BGRA, #0x80E1
+        RG = GL_RG, #0x8227 
+        RG_INTEGER = GL_RG_INTEGER, #0x8228
+        DEPTH_STENCIAL = GL_DEPTH_STENCIL,
+        RED_INTEGER = GL_RED_INTEGER, #0x8D94 
+        RGB_INTERGER = GL_RGB_INTEGER, #0x8D98
+        RGBA_INTEGER = GL_RGBA_INTEGER, #0x8D99 
+        BGR_INTEGER = GL_BGR_INTEGER,  
+        BGRA_INTEGER = GL_BGRA_INTEGER
+        
+    PixelDataType* {.pure.} = enum
+        BYTE = cGL_BYTE, #0x1400
+        UNSIGNED_BYTE = GL_UNSIGNED_BYTE, #0x1401
+        SHORT =  cGL_SHORT, #0x1402
+        UINSIGNED_SHORT = GL_UNSIGNED_SHORT, #0x1403
+        INT = cGL_INT,#0x1404 
+        UNSIGNED_INT = GL_UNSIGNED_INT, #0x1405
+        FLOAT = cGL_FLOAT, #0x1406
+        UNSIGNED_BYTE_3_3_2 = GL_UNSIGNED_BYTE_3_3_2, #0x8032
+        UNSIGNED_SHORT_4_4_4_4 = GL_UNSIGNED_SHORT_4_4_4_4, #0x8033 
+        UNSIGNED_SHORT_5_5_5_1 = GL_UNSIGNED_SHORT_5_5_5_1, #0x8034
+        UNSIGNED_INT_8_8_8_8 = GL_UNSIGNED_INT_8_8_8_8,
+        UNSIGNED_INT_10_10_10_2 = GL_UNSIGNED_INT_10_10_10_2,
+        UNSIGNED_BYTE_2_3_3_REV = GL_UNSIGNED_BYTE_2_3_3_REV,
+        UNSIGNED_SHORT_5_6_5 = GL_UNSIGNED_SHORT_5_6_5,
+        UNSIGNED_SHORT_5_6_6_REV = GL_UNSIGNED_SHORT_5_6_5_REV,
+        UNSIGNED_SHORT_4_4_4_4_REV = GL_UNSIGNED_SHORT_4_4_4_4_REV, #0x8365 
+        UNSIGNED_SHORT_1_5_5_5_REV = GL_UNSIGNED_SHORT_1_5_5_5_REV,
+        UNSIGNED_INT_8_8_8_8_REV = GL_UNSIGNED_INT_8_8_8_8_REV,
+        UNSIGNED_INT_2_10_10_10_REV = GL_UNSIGNED_INT_2_10_10_10_REV # 0x8368
+        
 proc rawSeq[T](s: seq[T]): ptr T =
     {.emit: "result = `s`->data;".}
 
@@ -101,18 +260,62 @@ proc GenBuffers*(count:int32) : seq[BufferId] =
     result = newSeq[BufferId](count)
     glGenBuffers(count.GLsizei,cast[ptr GLuint](result.rawSeq))
 
+proc BindBuffer*(target:BufferTarget, buffer:BufferId) {.inline.} =
+    glBindBuffer(target.GLenum,buffer.GLuint)
+    
+proc BufferData*[T](target:BufferTarget, data:openarray[T], usage:BufferDataUsage) {.inline.} =    
+    glBufferData(target.GLenum,data.len*T.sizeof().GLsizeiptr,data.unsafeAddr,usage.GLenum)
+    
 proc DeleteBuffer*(buffer:BufferId) =
     var b = buffer
     glDeleteBuffers(1,b.GLuint.addr)
 
 proc DeleteBuffers*(buffers:openArray[BufferId]) =
     glDeleteBuffers(buffers.len.GLsizei,cast[ptr GLUint](buffers.unsafeAddr))
-
-proc BindBuffer*(target:BufferTarget, buffer:BufferId) {.inline.} =
-    glBindBuffer(target.GLenum,buffer.GLuint)
     
-proc BufferData*[T](target:BufferTarget, data:openarray[T], usage:BufferDataUsage) {.inline.} =    
-    glBufferData(target.GLenum,data.len*T.sizeof().GLsizeiptr,data.unsafeAddr,usage.GLenum)
+proc GenVertexArray*() : VertexArrayId {.inline.} =
+    glGenVertexArrays(1.GLsizei,cast[ptr GLuint](addr result))
+    
+proc GenVertexArrays*(count:int32) : seq[VertexArrayId] {.inline.} =
+    result = newSeq[VertexArrayId](count)
+    glGenVertexArrays(count.GLsizei,cast[ptr GLuint](result.rawSeq))
+
+proc BindVertexArray*(vertexArray:VertexArrayId) {.inline.} = 
+    glBindVertexArray(vertexArray.GLuint)
+
+proc DeleteVertexArray*(vertexArray:VertexArrayId) =
+    var v = vertexArray
+    glDeleteVertexArrays(1,v.GLUint.addr)
+
+proc DeleteVertexArrays*(vertexArrays:openArray[VertexArrayId]) =
+    glDeleteVertexArrays(vertexArrays.len.GLsizei,cast[ptr GLUint](vertexArrays.unsafeAddr))
+    
+proc GenTexture*() : TextureId =
+    glGenTextures(1.GLsizei,cast[ptr GLuint](addr result))
+
+proc GenTextures*(count:int32) : seq[TextureId] =
+    result = newSeq[TextureId](count)
+    glGenTextures(count.GLsizei,cast[ptr GLuint](result.rawSeq))
+
+proc BindTexture*(target:TextureTarget, texture:TextureId) =
+    glBindTexture(target.GLenum, texture.GLuint)
+
+
+proc ActiveTexture*(texture:TextureUnit) =
+    glActiveTexture(texture.GLenum)
+
+proc TexParameteri*(target:TextureTarget, pname:TextureParameter, param:GLint) =
+    glTexParameteri(target.GLenum,pname.GLenum,param)
+
+proc TexImage2D*[T](target:TexImageTarget, level:int32, internalFormat:TextureInternalFormat, width:int32, height:int32, format:PixelDataFormat, `type`:PixelDataType, data: openArray[T] ) =
+    glTexImage2D(target.GLenum,level.GLint,internalFormat.GLint,width.GLsizei,height.GLsizei,0,format.GLenum,`type`.GLenum,data.unsafeAddr)
+
+proc GenerateMipmap*(target:MipmapTarget) =
+    glGenerateMipmap(target.GLenum)
+
+# Doesn't seem to exist on win10
+#proc GenerateTextureMipmap*(texture:TextureId) =
+#    glGenerateTextureMipmap(texture.GLuint)
 
 proc CreateShader*(shaderType:ShaderType) : ShaderId {.inline.} =
     glCreateShader(shaderType.GLenum).ShaderId
@@ -227,23 +430,6 @@ proc SetVec3*(program:ShaderProgramId, name: string, x:float32, y:float32, z:flo
 proc SetVec4*(program:ShaderProgramId, name: string, x:float32, y:float32, z:float32, w:float32) =
     glUniform4f(GetUniformLocation(program,name).GLint,x.GLfloat,y.GLfloat,z.GLfloat,w.GLfloat)
             
-
-proc GenVertexArray*() : VertexArrayId {.inline.} =
-    glGenVertexArrays(1.GLsizei,cast[ptr GLuint](addr result))
-    
-proc GenVertexArrays*(count:int32) : seq[VertexArrayId] {.inline.} =
-    result = newSeq[VertexArrayId](count)
-    glGenVertexArrays(count.GLsizei,cast[ptr GLuint](result.rawSeq))
-
-proc DeleteVertexArray*(vertexArray:VertexArrayId) =
-    var v = vertexArray
-    glDeleteVertexArrays(1,v.GLUint.addr)
-
-proc DeleteVertexArrays*(vertexArrays:openArray[VertexArrayId]) =
-    glDeleteVertexArrays(vertexArrays.len.GLsizei,cast[ptr GLUint](vertexArrays.unsafeAddr))
-
-proc BindVertexArray*(vertexArray:VertexArrayId) {.inline.} = 
-    glBindVertexArray(vertexArray.GLuint)
 
 type VertexAttribSize = range[1..4]
 proc VertexAttribPointer*(index:uint32, size:VertexAttribSize, attribType:VertexAttribType, normalized:bool, stride:int32, `pointer`:int32) {.inline.} =

@@ -182,9 +182,10 @@ tyObject_CellSet_jG87P0AI9aZtss9ccTYBIISQ marked;
 tyObject_CellSeq_Axo1XVm9aaQueTOldv8le5w additionalRoots;
 };
 typedef N_STDCALL_PTR(void, tyProc_KDFyp69ab42Kg9apgoNrPseA) (NU32 target, NU32 buffer);
+typedef N_STDCALL_PTR(void, tyProc_U9cBJZ9bwzSFkyJLzG9ap7kpg) (NU32 array);
+typedef N_STDCALL_PTR(void, tyProc_9bk1qJ9cncD9beneb6NEZx43Q) (NU32 target, NU32 pname, NI32 param);
 typedef N_STDCALL_PTR(NU32, tyProc_DJcTVtnYJBzlHCFWZTUnDw) (NU32 type_0);
 typedef N_STDCALL_PTR(void, tyProc_KG9cEsb2OGPdGj4kBRfZksQ) (NU32 shader, NI32 count, NCSTRING* string, NI32* length);
-typedef N_STDCALL_PTR(void, tyProc_U9cBJZ9bwzSFkyJLzG9ap7kpg) (NU32 shader);
 typedef N_STDCALL_PTR(void, tyProc_GCa1w6TQeiEYh7OpoMQF0g) (NU32 shader, NU32 pname, NI32* params);
 typedef N_STDCALL_PTR(void, tyProc_rLXfCF7mvq9bVRhpPOzbFVw) (NU32 shader, NI32 bufSize, NI32* length, NCSTRING infoLog);
 typedef N_STDCALL_PTR(NI32, tyProc_AArJ89a9cFZmhy6BW9bcnxvWg) (NU32 program, NCSTRING name);
@@ -198,6 +199,7 @@ typedef N_STDCALL_PTR(void, tyProc_7ty9cMfvkB3EpIOHXg9ag19bA) (NU32 mode, NI32 f
 typedef N_STDCALL_PTR(void, tyProc_Ae6znc7QpsuM6B0p7faIWg) (NU32 mode, NI32 count, NU32 type_0, void* indices);
 typedef N_STDCALL_PTR(void, tyProc_mW1e0CkmnuN9bG9ceSxc2c8A) (NF32 red, NF32 green, NF32 blue, NF32 alpha);
 typedef N_STDCALL_PTR(void, tyProc_Mgl9afFm9aCfl1rYWiELVAPA) (NU32 target, NI size, void* data, NU32 usage);
+typedef N_STDCALL_PTR(void, tyProc_L1KvKfPxNsZDdiBdwGMLtQ) (NU32 target, NI32 level, NI32 internalformat, NI32 width, NI32 height, NI32 border, NU32 format, NU32 type_0, void* pixels);
 typedef N_STDCALL_PTR(void, tyProc_MrytW8E8REowtj5qsyQ9blA) (NI32 x, NI32 y, NI32 width, NI32 height);
 struct tyObject_NimNodeObj_vF2hEdnP1tA65csMBW8XYQ {
 char dummy;
@@ -286,8 +288,16 @@ tyProc_oHlm1MDYiK7l9cp7HBWTkiA Dl_370806_;
 tyProc_aFoDQp02eCKmdsvI86zC8w Dl_187604_;
 extern tyObject_GcHeap_1TRH1TZMaVZTnLNcIHuNFQ gch_IcYaEuuWivYAS86vFMTS3Q;
 TNimType NTI_JrFyJbYm9b5I4hJ9cWDqvfYA_;
-tyProc_oHlm1MDYiK7l9cp7HBWTkiA Dl_713206_;
 tyProc_KDFyp69ab42Kg9apgoNrPseA Dl_198005_;
+tyProc_oHlm1MDYiK7l9cp7HBWTkiA Dl_713206_;
+tyProc_oHlm1MDYiK7l9cp7HBWTkiA Dl_355606_;
+tyProc_U9cBJZ9bwzSFkyJLzG9ap7kpg Dl_715404_;
+tyProc_oHlm1MDYiK7l9cp7HBWTkiA Dl_737206_;
+tyProc_oHlm1MDYiK7l9cp7HBWTkiA Dl_292606_;
+tyProc_KDFyp69ab42Kg9apgoNrPseA Dl_206405_;
+tyProc_U9cBJZ9bwzSFkyJLzG9ap7kpg Dl_532604_;
+tyProc_9bk1qJ9cncD9beneb6NEZx43Q Dl_336406_;
+tyProc_U9cBJZ9bwzSFkyJLzG9ap7kpg Dl_696804_;
 tyProc_DJcTVtnYJBzlHCFWZTUnDw Dl_203805_;
 tyProc_KG9cEsb2OGPdGj4kBRfZksQ Dl_433008_;
 tyProc_U9cBJZ9bwzSFkyJLzG9ap7kpg Dl_266804_;
@@ -306,9 +316,6 @@ tyProc_mng7DQ53MhIZ0GrGEF9cfMA Dl_448605_;
 tyProc_8fPCQWkG0ZPQkR14N9bVHBw Dl_327206_;
 tyProc_rcMWLCb0UujZ2lLK5dXqDg Dl_415007_;
 tyProc_3Wmxy5I6Fxw31ZGweeqVNw Dl_689408_;
-tyProc_oHlm1MDYiK7l9cp7HBWTkiA Dl_355606_;
-tyProc_oHlm1MDYiK7l9cp7HBWTkiA Dl_737206_;
-tyProc_U9cBJZ9bwzSFkyJLzG9ap7kpg Dl_715404_;
 tyProc_u44lNG6Aw5QvpNjznx15rQ Dl_458009_;
 tyProc_U9cBJZ9bwzSFkyJLzG9ap7kpg Dl_672404_;
 tyProc_7ty9cMfvkB3EpIOHXg9ag19bA Dl_502006_;
@@ -316,6 +323,7 @@ tyProc_Ae6znc7QpsuM6B0p7faIWg Dl_344007_;
 tyProc_U9cBJZ9bwzSFkyJLzG9ap7kpg Dl_581204_;
 tyProc_mW1e0CkmnuN9bG9ceSxc2c8A Dl_359007_;
 tyProc_Mgl9afFm9aCfl1rYWiELVAPA Dl_415607_;
+tyProc_L1KvKfPxNsZDdiBdwGMLtQ Dl_464212_;
 tyProc_MrytW8E8REowtj5qsyQ9blA Dl_696007_;
 STRING_LITERAL(TM_5OHv4B5juaNW3eJpx9bSMRg_2, "OpenGL32.dll", 12);
 STRING_LITERAL(TM_5OHv4B5juaNW3eJpx9bSMRg_3, "could not load: OpenGL32.dll", 28);
@@ -1116,6 +1124,26 @@ N_STDCALL(void, glGenBuffers_B9ax9aWnWORHtXpch5OZqE6g)(NI32 n, NU32* buffers) {
 	popFrame();
 }
 
+N_STDCALL(void, glBindBuffer_3rtrqe5eYHMVBLzlqTY63w)(NU32 target, NU32 buffer) {
+	nimfr_("glBindBuffer", "opengl.nim");
+	nimln_(489, "opengl.nim");
+	Dl_198005_(target, buffer);
+	nimln_(429, "opengl.nim");
+	{
+		NIM_BOOL T3_;
+		T3_ = (NIM_BOOL)0;
+		T3_ = gAutoGLerrorCheck_8T8mi9a9bySKVpbya9cdueyBw;
+		if (!(T3_)) goto LA4_;
+		T3_ = !(gInsideBeginEnd_A6d9af29c8SzFvWZSgv9aykVg);
+		LA4_: ;
+		if (!T3_) goto LA5_;
+		nimln_(430, "opengl.nim");
+		checkGLerror_LQA3uTZG9bpBxiPuvNrv5wQ();
+	}
+	LA5_: ;
+	popFrame();
+}
+
 N_STDCALL(void, glDeleteBuffers_B9ax9aWnWORHtXpch5OZqE6g_2)(NI32 n, NU32* buffers) {
 	nimfr_("glDeleteBuffers", "opengl.nim");
 	nimln_(3065, "opengl.nim");
@@ -1136,10 +1164,150 @@ N_STDCALL(void, glDeleteBuffers_B9ax9aWnWORHtXpch5OZqE6g_2)(NI32 n, NU32* buffer
 	popFrame();
 }
 
-N_STDCALL(void, glBindBuffer_3rtrqe5eYHMVBLzlqTY63w)(NU32 target, NU32 buffer) {
-	nimfr_("glBindBuffer", "opengl.nim");
-	nimln_(489, "opengl.nim");
-	Dl_198005_(target, buffer);
+N_STDCALL(void, glGenVertexArrays_zvqeRPLD9c2eggqLYZ1r3Zg)(NI32 n, NU32* arrays) {
+	nimfr_("glGenVertexArrays", "opengl.nim");
+	nimln_(1277, "opengl.nim");
+	Dl_355606_(n, arrays);
+	nimln_(429, "opengl.nim");
+	{
+		NIM_BOOL T3_;
+		T3_ = (NIM_BOOL)0;
+		T3_ = gAutoGLerrorCheck_8T8mi9a9bySKVpbya9cdueyBw;
+		if (!(T3_)) goto LA4_;
+		T3_ = !(gInsideBeginEnd_A6d9af29c8SzFvWZSgv9aykVg);
+		LA4_: ;
+		if (!T3_) goto LA5_;
+		nimln_(430, "opengl.nim");
+		checkGLerror_LQA3uTZG9bpBxiPuvNrv5wQ();
+	}
+	LA5_: ;
+	popFrame();
+}
+
+N_STDCALL(void, glBindVertexArray_DTfQaj6wT6HQ9c375GwSXmg)(NU32 array) {
+	nimfr_("glBindVertexArray", "opengl.nim");
+	nimln_(3076, "opengl.nim");
+	Dl_715404_(array);
+	nimln_(429, "opengl.nim");
+	{
+		NIM_BOOL T3_;
+		T3_ = (NIM_BOOL)0;
+		T3_ = gAutoGLerrorCheck_8T8mi9a9bySKVpbya9cdueyBw;
+		if (!(T3_)) goto LA4_;
+		T3_ = !(gInsideBeginEnd_A6d9af29c8SzFvWZSgv9aykVg);
+		LA4_: ;
+		if (!T3_) goto LA5_;
+		nimln_(430, "opengl.nim");
+		checkGLerror_LQA3uTZG9bpBxiPuvNrv5wQ();
+	}
+	LA5_: ;
+	popFrame();
+}
+
+N_STDCALL(void, glDeleteVertexArrays_zvqeRPLD9c2eggqLYZ1r3Zg_2)(NI32 n, NU32* arrays) {
+	nimfr_("glDeleteVertexArrays", "opengl.nim");
+	nimln_(3185, "opengl.nim");
+	Dl_737206_(n, arrays);
+	nimln_(429, "opengl.nim");
+	{
+		NIM_BOOL T3_;
+		T3_ = (NIM_BOOL)0;
+		T3_ = gAutoGLerrorCheck_8T8mi9a9bySKVpbya9cdueyBw;
+		if (!(T3_)) goto LA4_;
+		T3_ = !(gInsideBeginEnd_A6d9af29c8SzFvWZSgv9aykVg);
+		LA4_: ;
+		if (!T3_) goto LA5_;
+		nimln_(430, "opengl.nim");
+		checkGLerror_LQA3uTZG9bpBxiPuvNrv5wQ();
+	}
+	LA5_: ;
+	popFrame();
+}
+
+N_STDCALL(void, glGenTextures_WoDI9cP6rS3Osykz9bfiBK6w)(NI32 n, NU32* textures) {
+	nimfr_("glGenTextures", "opengl.nim");
+	nimln_(962, "opengl.nim");
+	Dl_292606_(n, textures);
+	nimln_(429, "opengl.nim");
+	{
+		NIM_BOOL T3_;
+		T3_ = (NIM_BOOL)0;
+		T3_ = gAutoGLerrorCheck_8T8mi9a9bySKVpbya9cdueyBw;
+		if (!(T3_)) goto LA4_;
+		T3_ = !(gInsideBeginEnd_A6d9af29c8SzFvWZSgv9aykVg);
+		LA4_: ;
+		if (!T3_) goto LA5_;
+		nimln_(430, "opengl.nim");
+		checkGLerror_LQA3uTZG9bpBxiPuvNrv5wQ();
+	}
+	LA5_: ;
+	popFrame();
+}
+
+N_STDCALL(void, glBindTexture_shJfrHWoymy1BbmsKpC7Xg)(NU32 target, NU32 texture) {
+	nimfr_("glBindTexture", "opengl.nim");
+	nimln_(531, "opengl.nim");
+	Dl_206405_(target, texture);
+	nimln_(429, "opengl.nim");
+	{
+		NIM_BOOL T3_;
+		T3_ = (NIM_BOOL)0;
+		T3_ = gAutoGLerrorCheck_8T8mi9a9bySKVpbya9cdueyBw;
+		if (!(T3_)) goto LA4_;
+		T3_ = !(gInsideBeginEnd_A6d9af29c8SzFvWZSgv9aykVg);
+		LA4_: ;
+		if (!T3_) goto LA5_;
+		nimln_(430, "opengl.nim");
+		checkGLerror_LQA3uTZG9bpBxiPuvNrv5wQ();
+	}
+	LA5_: ;
+	popFrame();
+}
+
+N_STDCALL(void, glActiveTexture_RDvtxKECOM9aYlw6XzAUstg)(NU32 texture) {
+	nimfr_("glActiveTexture", "opengl.nim");
+	nimln_(2162, "opengl.nim");
+	Dl_532604_(texture);
+	nimln_(429, "opengl.nim");
+	{
+		NIM_BOOL T3_;
+		T3_ = (NIM_BOOL)0;
+		T3_ = gAutoGLerrorCheck_8T8mi9a9bySKVpbya9cdueyBw;
+		if (!(T3_)) goto LA4_;
+		T3_ = !(gInsideBeginEnd_A6d9af29c8SzFvWZSgv9aykVg);
+		LA4_: ;
+		if (!T3_) goto LA5_;
+		nimln_(430, "opengl.nim");
+		checkGLerror_LQA3uTZG9bpBxiPuvNrv5wQ();
+	}
+	LA5_: ;
+	popFrame();
+}
+
+N_STDCALL(void, glTexParameteri_MG1n9caM41cv9bizyIOehN3g)(NU32 target, NU32 pname, NI32 param) {
+	nimfr_("glTexParameteri", "opengl.nim");
+	nimln_(1181, "opengl.nim");
+	Dl_336406_(target, pname, param);
+	nimln_(429, "opengl.nim");
+	{
+		NIM_BOOL T3_;
+		T3_ = (NIM_BOOL)0;
+		T3_ = gAutoGLerrorCheck_8T8mi9a9bySKVpbya9cdueyBw;
+		if (!(T3_)) goto LA4_;
+		T3_ = !(gInsideBeginEnd_A6d9af29c8SzFvWZSgv9aykVg);
+		LA4_: ;
+		if (!T3_) goto LA5_;
+		nimln_(430, "opengl.nim");
+		checkGLerror_LQA3uTZG9bpBxiPuvNrv5wQ();
+	}
+	LA5_: ;
+	popFrame();
+}
+
+N_STDCALL(void, glGenerateMipmap_vsbSjQU85hQuxcKnJrHing)(NU32 target) {
+	nimfr_("glGenerateMipmap", "opengl.nim");
+	nimln_(2983, "opengl.nim");
+	Dl_696804_(target);
 	nimln_(429, "opengl.nim");
 	{
 		NIM_BOOL T3_;
@@ -1525,66 +1693,6 @@ N_STDCALL(void, glUniform4f_fv4HQIYPB0bo9cmTbRxNYsQ)(NI32 location, NF32 v0, NF3
 	popFrame();
 }
 
-N_STDCALL(void, glGenVertexArrays_zvqeRPLD9c2eggqLYZ1r3Zg)(NI32 n, NU32* arrays) {
-	nimfr_("glGenVertexArrays", "opengl.nim");
-	nimln_(1277, "opengl.nim");
-	Dl_355606_(n, arrays);
-	nimln_(429, "opengl.nim");
-	{
-		NIM_BOOL T3_;
-		T3_ = (NIM_BOOL)0;
-		T3_ = gAutoGLerrorCheck_8T8mi9a9bySKVpbya9cdueyBw;
-		if (!(T3_)) goto LA4_;
-		T3_ = !(gInsideBeginEnd_A6d9af29c8SzFvWZSgv9aykVg);
-		LA4_: ;
-		if (!T3_) goto LA5_;
-		nimln_(430, "opengl.nim");
-		checkGLerror_LQA3uTZG9bpBxiPuvNrv5wQ();
-	}
-	LA5_: ;
-	popFrame();
-}
-
-N_STDCALL(void, glDeleteVertexArrays_zvqeRPLD9c2eggqLYZ1r3Zg_2)(NI32 n, NU32* arrays) {
-	nimfr_("glDeleteVertexArrays", "opengl.nim");
-	nimln_(3185, "opengl.nim");
-	Dl_737206_(n, arrays);
-	nimln_(429, "opengl.nim");
-	{
-		NIM_BOOL T3_;
-		T3_ = (NIM_BOOL)0;
-		T3_ = gAutoGLerrorCheck_8T8mi9a9bySKVpbya9cdueyBw;
-		if (!(T3_)) goto LA4_;
-		T3_ = !(gInsideBeginEnd_A6d9af29c8SzFvWZSgv9aykVg);
-		LA4_: ;
-		if (!T3_) goto LA5_;
-		nimln_(430, "opengl.nim");
-		checkGLerror_LQA3uTZG9bpBxiPuvNrv5wQ();
-	}
-	LA5_: ;
-	popFrame();
-}
-
-N_STDCALL(void, glBindVertexArray_DTfQaj6wT6HQ9c375GwSXmg)(NU32 array) {
-	nimfr_("glBindVertexArray", "opengl.nim");
-	nimln_(3076, "opengl.nim");
-	Dl_715404_(array);
-	nimln_(429, "opengl.nim");
-	{
-		NIM_BOOL T3_;
-		T3_ = (NIM_BOOL)0;
-		T3_ = gAutoGLerrorCheck_8T8mi9a9bySKVpbya9cdueyBw;
-		if (!(T3_)) goto LA4_;
-		T3_ = !(gInsideBeginEnd_A6d9af29c8SzFvWZSgv9aykVg);
-		LA4_: ;
-		if (!T3_) goto LA5_;
-		nimln_(430, "opengl.nim");
-		checkGLerror_LQA3uTZG9bpBxiPuvNrv5wQ();
-	}
-	LA5_: ;
-	popFrame();
-}
-
 N_STDCALL(void, glVertexAttribPointer_ARjPQ9cnPkJQtADdR9bd9a8Ww)(NU32 index, NI32 size, NU32 type_0, NIM_BOOL normalized, NI32 stride, void* pointer) {
 	nimfr_("glVertexAttribPointer", "opengl.nim");
 	nimln_(1789, "opengl.nim");
@@ -1725,6 +1833,26 @@ N_STDCALL(void, glBufferData_00Qu57bAXtAMX49bzkHe6aQ)(NU32 target, NI size, void
 	popFrame();
 }
 
+N_STDCALL(void, glTexImage2D_G7UzQ8ZECowVV7IoQf5rhg)(NU32 target, NI32 level, NI32 internalformat, NI32 width, NI32 height, NI32 border, NU32 format, NU32 type_0, void* pixels) {
+	nimfr_("glTexImage2D", "opengl.nim");
+	nimln_(1820, "opengl.nim");
+	Dl_464212_(target, level, internalformat, width, height, border, format, type_0, pixels);
+	nimln_(429, "opengl.nim");
+	{
+		NIM_BOOL T3_;
+		T3_ = (NIM_BOOL)0;
+		T3_ = gAutoGLerrorCheck_8T8mi9a9bySKVpbya9cdueyBw;
+		if (!(T3_)) goto LA4_;
+		T3_ = !(gInsideBeginEnd_A6d9af29c8SzFvWZSgv9aykVg);
+		LA4_: ;
+		if (!T3_) goto LA5_;
+		nimln_(430, "opengl.nim");
+		checkGLerror_LQA3uTZG9bpBxiPuvNrv5wQ();
+	}
+	LA5_: ;
+	popFrame();
+}
+
 N_STDCALL(void, glViewport_yDKviL1Jxz9cvMulIoNt7vQ)(NI32 x, NI32 y, NI32 width, NI32 height) {
 	nimfr_("glViewport", "opengl.nim");
 	nimln_(2979, "opengl.nim");
@@ -1823,8 +1951,16 @@ NTI_JrFyJbYm9b5I4hJ9cWDqvfYA_.flags = 3;
 
 N_NIMCALL(void, nimLoadProcs0)(void) {	Dl_370806_ = (tyProc_oHlm1MDYiK7l9cp7HBWTkiA) (glGetProc_uJzHCTTu7QyPEm2HLp69bKQ(oglHandle_7KtmgyqsH9cFapNPQ59bcpvQ, "glGenBuffers"));
 	Dl_187604_ = (tyProc_aFoDQp02eCKmdsvI86zC8w) (glGetProc_uJzHCTTu7QyPEm2HLp69bKQ(oglHandle_7KtmgyqsH9cFapNPQ59bcpvQ, "glGetError"));
-	Dl_713206_ = (tyProc_oHlm1MDYiK7l9cp7HBWTkiA) (glGetProc_uJzHCTTu7QyPEm2HLp69bKQ(oglHandle_7KtmgyqsH9cFapNPQ59bcpvQ, "glDeleteBuffers"));
 	Dl_198005_ = (tyProc_KDFyp69ab42Kg9apgoNrPseA) (glGetProc_uJzHCTTu7QyPEm2HLp69bKQ(oglHandle_7KtmgyqsH9cFapNPQ59bcpvQ, "glBindBuffer"));
+	Dl_713206_ = (tyProc_oHlm1MDYiK7l9cp7HBWTkiA) (glGetProc_uJzHCTTu7QyPEm2HLp69bKQ(oglHandle_7KtmgyqsH9cFapNPQ59bcpvQ, "glDeleteBuffers"));
+	Dl_355606_ = (tyProc_oHlm1MDYiK7l9cp7HBWTkiA) (glGetProc_uJzHCTTu7QyPEm2HLp69bKQ(oglHandle_7KtmgyqsH9cFapNPQ59bcpvQ, "glGenVertexArrays"));
+	Dl_715404_ = (tyProc_U9cBJZ9bwzSFkyJLzG9ap7kpg) (glGetProc_uJzHCTTu7QyPEm2HLp69bKQ(oglHandle_7KtmgyqsH9cFapNPQ59bcpvQ, "glBindVertexArray"));
+	Dl_737206_ = (tyProc_oHlm1MDYiK7l9cp7HBWTkiA) (glGetProc_uJzHCTTu7QyPEm2HLp69bKQ(oglHandle_7KtmgyqsH9cFapNPQ59bcpvQ, "glDeleteVertexArrays"));
+	Dl_292606_ = (tyProc_oHlm1MDYiK7l9cp7HBWTkiA) (glGetProc_uJzHCTTu7QyPEm2HLp69bKQ(oglHandle_7KtmgyqsH9cFapNPQ59bcpvQ, "glGenTextures"));
+	Dl_206405_ = (tyProc_KDFyp69ab42Kg9apgoNrPseA) (glGetProc_uJzHCTTu7QyPEm2HLp69bKQ(oglHandle_7KtmgyqsH9cFapNPQ59bcpvQ, "glBindTexture"));
+	Dl_532604_ = (tyProc_U9cBJZ9bwzSFkyJLzG9ap7kpg) (glGetProc_uJzHCTTu7QyPEm2HLp69bKQ(oglHandle_7KtmgyqsH9cFapNPQ59bcpvQ, "glActiveTexture"));
+	Dl_336406_ = (tyProc_9bk1qJ9cncD9beneb6NEZx43Q) (glGetProc_uJzHCTTu7QyPEm2HLp69bKQ(oglHandle_7KtmgyqsH9cFapNPQ59bcpvQ, "glTexParameteri"));
+	Dl_696804_ = (tyProc_U9cBJZ9bwzSFkyJLzG9ap7kpg) (glGetProc_uJzHCTTu7QyPEm2HLp69bKQ(oglHandle_7KtmgyqsH9cFapNPQ59bcpvQ, "glGenerateMipmap"));
 	Dl_203805_ = (tyProc_DJcTVtnYJBzlHCFWZTUnDw) (glGetProc_uJzHCTTu7QyPEm2HLp69bKQ(oglHandle_7KtmgyqsH9cFapNPQ59bcpvQ, "glCreateShader"));
 	Dl_433008_ = (tyProc_KG9cEsb2OGPdGj4kBRfZksQ) (glGetProc_uJzHCTTu7QyPEm2HLp69bKQ(oglHandle_7KtmgyqsH9cFapNPQ59bcpvQ, "glShaderSource"));
 	Dl_266804_ = (tyProc_U9cBJZ9bwzSFkyJLzG9ap7kpg) (glGetProc_uJzHCTTu7QyPEm2HLp69bKQ(oglHandle_7KtmgyqsH9cFapNPQ59bcpvQ, "glCompileShader"));
@@ -1843,9 +1979,6 @@ N_NIMCALL(void, nimLoadProcs0)(void) {	Dl_370806_ = (tyProc_oHlm1MDYiK7l9cp7HBWT
 	Dl_327206_ = (tyProc_8fPCQWkG0ZPQkR14N9bVHBw) (glGetProc_uJzHCTTu7QyPEm2HLp69bKQ(oglHandle_7KtmgyqsH9cFapNPQ59bcpvQ, "glUniform2f"));
 	Dl_415007_ = (tyProc_rcMWLCb0UujZ2lLK5dXqDg) (glGetProc_uJzHCTTu7QyPEm2HLp69bKQ(oglHandle_7KtmgyqsH9cFapNPQ59bcpvQ, "glUniform3f"));
 	Dl_689408_ = (tyProc_3Wmxy5I6Fxw31ZGweeqVNw) (glGetProc_uJzHCTTu7QyPEm2HLp69bKQ(oglHandle_7KtmgyqsH9cFapNPQ59bcpvQ, "glUniform4f"));
-	Dl_355606_ = (tyProc_oHlm1MDYiK7l9cp7HBWTkiA) (glGetProc_uJzHCTTu7QyPEm2HLp69bKQ(oglHandle_7KtmgyqsH9cFapNPQ59bcpvQ, "glGenVertexArrays"));
-	Dl_737206_ = (tyProc_oHlm1MDYiK7l9cp7HBWTkiA) (glGetProc_uJzHCTTu7QyPEm2HLp69bKQ(oglHandle_7KtmgyqsH9cFapNPQ59bcpvQ, "glDeleteVertexArrays"));
-	Dl_715404_ = (tyProc_U9cBJZ9bwzSFkyJLzG9ap7kpg) (glGetProc_uJzHCTTu7QyPEm2HLp69bKQ(oglHandle_7KtmgyqsH9cFapNPQ59bcpvQ, "glBindVertexArray"));
 	Dl_458009_ = (tyProc_u44lNG6Aw5QvpNjznx15rQ) (glGetProc_uJzHCTTu7QyPEm2HLp69bKQ(oglHandle_7KtmgyqsH9cFapNPQ59bcpvQ, "glVertexAttribPointer"));
 	Dl_672404_ = (tyProc_U9cBJZ9bwzSFkyJLzG9ap7kpg) (glGetProc_uJzHCTTu7QyPEm2HLp69bKQ(oglHandle_7KtmgyqsH9cFapNPQ59bcpvQ, "glEnableVertexAttribArray"));
 	Dl_502006_ = (tyProc_7ty9cMfvkB3EpIOHXg9ag19bA) (glGetProc_uJzHCTTu7QyPEm2HLp69bKQ(oglHandle_7KtmgyqsH9cFapNPQ59bcpvQ, "glDrawArrays"));
@@ -1853,6 +1986,7 @@ N_NIMCALL(void, nimLoadProcs0)(void) {	Dl_370806_ = (tyProc_oHlm1MDYiK7l9cp7HBWT
 	Dl_581204_ = (tyProc_U9cBJZ9bwzSFkyJLzG9ap7kpg) (glGetProc_uJzHCTTu7QyPEm2HLp69bKQ(oglHandle_7KtmgyqsH9cFapNPQ59bcpvQ, "glClear"));
 	Dl_359007_ = (tyProc_mW1e0CkmnuN9bG9ceSxc2c8A) (glGetProc_uJzHCTTu7QyPEm2HLp69bKQ(oglHandle_7KtmgyqsH9cFapNPQ59bcpvQ, "glClearColor"));
 	Dl_415607_ = (tyProc_Mgl9afFm9aCfl1rYWiELVAPA) (glGetProc_uJzHCTTu7QyPEm2HLp69bKQ(oglHandle_7KtmgyqsH9cFapNPQ59bcpvQ, "glBufferData"));
+	Dl_464212_ = (tyProc_L1KvKfPxNsZDdiBdwGMLtQ) (glGetProc_uJzHCTTu7QyPEm2HLp69bKQ(oglHandle_7KtmgyqsH9cFapNPQ59bcpvQ, "glTexImage2D"));
 	Dl_696007_ = (tyProc_MrytW8E8REowtj5qsyQ9blA) (glGetProc_uJzHCTTu7QyPEm2HLp69bKQ(oglHandle_7KtmgyqsH9cFapNPQ59bcpvQ, "glViewport"));
 }
 

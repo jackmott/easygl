@@ -19,3 +19,6 @@ task hello_triangle, "Runs hello triangle":
 
 task shaders, "Runs shaders":
   exec "nim c -r examples/shaders"
+
+task textures, "Runs textures":
+  exec "nim c -r examples/textures"
