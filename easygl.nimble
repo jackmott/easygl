@@ -23,3 +23,6 @@ task shaders, "Runs shaders":
 
 task textures, "Runs textures":
   exec "nim c -r examples/textures"
+
+task transformations, "Runs transformations":
+  exec "nim c -r examples/transformations"

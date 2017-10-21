@@ -179,9 +179,14 @@ proc SetVec3*(program:ShaderProgramId, name: string, value:var Vec3f) =
 proc SetVec3*(program:ShaderProgramId, name: string, x:float32, y:float32, z:float32) =
     glUniform3f(GetUniformLocation(program,name).GLint,x.GLfloat,y.GLfloat,z.GLfloat)
 
+proc SetVec4*(program:ShaderProgramId, name:string, value: var Vec4f) =
+    glUniform4fv(GetUniformLocation(program,name).GLint,4,value.caddr)
+
 proc SetVec4*(program:ShaderProgramId, name: string, x:float32, y:float32, z:float32, w:float32) =
     glUniform4f(GetUniformLocation(program,name).GLint,x.GLfloat,y.GLfloat,z.GLfloat,w.GLfloat)
             
+proc SetMat4*(program:ShaderProgramId, name: string, transpose:bool, value: var Mat4f ) =
+    glUniformMatrix4fv(GetUniformLocation(program,name).GLint,1,transpose.GLboolean,value.caddr)
 
 type VertexAttribSize = range[1..4]
 proc VertexAttribPointer*(index:uint32, size:VertexAttribSize, attribType:VertexAttribType, normalized:bool, stride:int32, `pointer`:int32) {.inline.} =
