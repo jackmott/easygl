@@ -26,3 +26,6 @@ task textures, "Runs textures":
 
 task transformations, "Runs transformations":
   exec "nim c -r examples/transformations"
+
+task coordinate_systems, "Runs coordinate systems":
+  exec "nim c -r examples/coordinate_systems"
