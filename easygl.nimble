@@ -5,7 +5,7 @@ author        = "Jack Mott"
 description   = "type safe opengl wrapper"
 license       = "MIT"
 
-bin           = @["learn_opengl_01"]
+bin           = @["hello_triangle"]
 srcDir        = "src"
 
 # Dependencies

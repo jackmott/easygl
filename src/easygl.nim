@@ -82,6 +82,11 @@ type
         DEPTH_BUFFER_BIT = GL_DEPTH_BUFFER_BIT,
         STENCIL_BUFFER_BIT = GL_STENCIL_BUFFER_BIT,
         COLOR_BUFFER_BIT = GL_COLOR_BUFFER_BIT
+
+    IndexType* {.pure.} = enum
+        UNSIGNED_BYTE = GL_UNSIGNED_BYTE,
+        UNSIGNED_SHORT = GL_UNSIGNED_SHORT,
+        UNSIGNED_INT = GL_UNSIGNED_INT
             
 proc GenBuffers*(size:int32) : BufferId {.inline.} =
     var uid : GLuint
@@ -91,7 +96,7 @@ proc GenBuffers*(size:int32) : BufferId {.inline.} =
 proc BindBuffer*(target:BufferTarget, buffer:BufferId) {.inline.} =
     glBindBuffer(target.GLenum,buffer.GLuint)
     
-proc BufferData*[T](target:BufferTarget, data:openArray[T], usage:BufferDataUsage) {.inline.} =    
+proc BufferData*[T](target:BufferTarget, data:openarray[T], usage:BufferDataUsage) {.inline.} =    
     glBufferData(target.GLenum,data.len*T.sizeof().GLsizeiptr,data.unsafeAddr,usage.GLenum)
 
 proc CreateShader*(shaderType:ShaderType) : ShaderId {.inline.} =
@@ -129,13 +134,16 @@ proc AttachShader*(program:ShaderProgramId, shader:ShaderId) {.inline.} =
 proc LinkProgram*(program:ShaderProgramId) {.inline.} =
     glLinkProgram(program.GLuint)
 
-
-proc CreateAndLinkProgram*(shaders:varargs[ShaderId]) : ShaderProgramId =
-    let programId = glCreateProgram()
-    for shader in shaders:
-        glAttachShader(programId,shader.GLuint)
-    glLinkProgram(programId)
-    programId.ShaderProgramId
+proc CompileAndCheckShader*(shaderType:ShaderType, shaderPath: string) : ShaderId =
+    echo "Compiling and attaching shader"
+    echo $shaderType
+    let shaderId = CreateShader(shaderType)
+    ShaderSource(shaderId,readFile(shaderPath))
+    CompileShader(shaderId)
+    if not GetShaderCompileStatus(shaderId):
+        echo "Shader Compile Error:" 
+        echo GetShaderInfoLog(shaderId)
+    shaderId
 
 proc GetProgramLinkStatus*(program:ShaderProgramId) : bool {.inline.} =
     var r : GLint
@@ -148,6 +156,23 @@ proc GetProgramInfoLog*(program:ShaderProgramId) : string =
     var logStr = cast[ptr GLchar](alloc(logLen))
     glGetProgramInfoLog(program.GLuint,logLen,addr logLen,logStr)
     $logStr
+
+
+proc CreateAndLinkProgram*(vertexPath:string, fragmentPath:string) : ShaderProgramId =
+    let vert = CompileAndCheckShader(ShaderType.VERTEX_SHADER,vertexPath)
+    let frag = CompileAndCheckShader(ShaderType.FRAGMENT_SHADER,fragmentPath)
+    let programId = CreateProgram()
+    AttachShader(programId,vert)
+    AttachShader(programId,frag)
+    LinkProgram(programId)
+    echo "linked"
+    if not GetProgramLinkStatus(programId):
+        echo "Link Error:"
+        echo GetProgramInfoLog(programId)
+    
+    DeleteShader(vert)
+    DeleteShader(frag)
+    programId
 
 proc UseProgram*(program:ShaderProgramId) {.inline.} =
     glUseProgram(program.GLuint)
@@ -170,8 +195,18 @@ proc EnableVertexAttribArray*(indeX:uint32) {.inline.} =
 proc DrawArrays*(mode:DrawMode, first:int32, count:int32)  {.inline.} = 
     glDrawArrays(mode.GLenum, first.GLint, count.GLsizei)
 
+proc DrawElements*[T](mode:DrawMode, count:int, indexType:IndexType, indices:openarray[T]) =
+    glDrawElements(mode.GLenum, count.GLsizei, indexType.GLenum, indices.unsafeAddr)
+
+proc DrawElements*(mode:DrawMode, count:int, indexType:IndexType, offset:int) =
+    glDrawElements(mode.GLenum, count.GLsizei, indexType.GLenum, cast[pointer](offset))
+    
 proc Clear*(buffersToClear:varargs[ClearBufferMask]) {.inline.} = 
     var mask = buffersToClear[0].uint32
     for i in countup(1,<buffersToClear.len):
         mask = mask or buffersToClear[i].uint32
     glClear(mask.GLbitfield)
+
+proc ClearColor*(r:float32, g:float32, b:float32, a:float32) = 
+        glClearColor(r.GLfloat, g.GLfloat, b.GLfloat, a.GLfloat)
+    
