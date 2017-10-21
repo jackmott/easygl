@@ -1,3 +1,4 @@
 src/nimcache/
+examples/nimcache/
 *.swp
 *.exe
