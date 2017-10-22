@@ -56,7 +56,7 @@ proc ProcessMouseMovement*(camera:Camera, xoffset: float32, yoffset:float32, con
     let adjustedYOffset = yoffset * camera.MouseSensitivity
 
     camera.Yaw = camera.Yaw + adjustedXOffset
-    camera.Pitch = camera.Pitch + adjustedYOffset
+    camera.Pitch = camera.Pitch - adjustedYOffset
 
     if constrainPitch:
         if camera.Pitch > 89.0'f32:

@@ -168,6 +168,12 @@ while run:
         of KeyDown:
             var keyEvent = cast[KeyboardEventPtr](addr(evt))
             pressedKeys.add(keyEvent.keysym.scancode)
+        of MouseWheel:
+            var wheelEvent = cast[MouseWheelEventPtr](addr(evt))
+            camera.ProcessMouseScroll(wheelEvent.y.float32)
+        of MouseMotion:
+            var motionEvent = cast[MouseMotionEventPtr](addr(evt))
+            camera.ProcessMouseMovement(motionEvent.xrel.float32,motionEvent.yrel.float32)
         else:
             let x = 0
             
