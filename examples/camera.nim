@@ -5,6 +5,7 @@ import opengl
 import easygl
 import stb_image/read as stbi
 import glm
+import utils/camera_util
 
 discard sdl2.init(INIT_EVERYTHING)
 
@@ -19,7 +20,7 @@ loadExtensions()
 
 ### Build and compile shader program
 
-let ourShader = CreateAndLinkProgram("shaders/coordinate_systems.vert","shaders/coordinate_systems.frag")
+let ourShader = CreateAndLinkProgram("shaders/camera.vert","shaders/camera.frag")
 
 Enable(Capability.DEPTH_TEST)
 
@@ -144,19 +145,41 @@ var
   run = true
 
 glViewport(0, 0, screenWidth, screenHeight)   # Set the viewport to cover the new window
-  
+let camera = newCamera(vec3(0.0'f32,0.0'f32,3.0'f32))
+
+var currentTime,prevTime:uint32
+prevTime=getTicks()
 while run:
+  var pressedKeys = newSeq[ScanCode]()  
+  currentTime = getTicks()
+  let elapsedTime = (currentTime - prevTime).float32
+  prevTime = currentTime
   while pollEvent(evt):
-    if evt.kind == QuitEvent:
-      run = false
-      break
-    if evt.kind == WindowEvent:
-      var windowEvent = cast[WindowEventPtr](addr(evt))
-      if windowEvent.event == WindowEvent_Resized:
-        let newWidth = windowEvent.data1
-        let newHeight = windowEvent.data2
-        glViewport(0, 0, newWidth, newHeight)   # Set the viewport to cover the new window
-        
+    case evt.kind
+        of QuitEvent:
+            run = false
+        of WindowEvent:
+            var windowEvent = cast[WindowEventPtr](addr(evt))
+            if windowEvent.event == WindowEvent_Resized:
+                let newWidth = windowEvent.data1
+                let newHeight = windowEvent.data2
+                glViewport(0, 0, newWidth, newHeight)   # Set the viewport to cover the new window
+        of KeyDown:
+            var keyEvent = cast[KeyboardEventPtr](addr(evt))
+            pressedKeys.add(keyEvent.keysym.scancode)
+        else:
+            echo $evt.kind
+            
+
+  if SDL_SCANCODE_W in pressedKeys:
+    camera.ProcessKeyboard(FORWARD,elapsedTime)
+  if SDL_SCANCODE_S in pressedKeys:
+    camera.ProcessKeyboard(BACKWARD,elapsedTime)
+  if SDL_SCANCODE_A in pressedKeys:
+    camera.ProcessKeyboard(LEFT,elapsedTime)
+  if SDL_SCANCODE_D in pressedKeys:
+    camera.ProcessKeyboard(RIGHT,elapsedTime)
+
   # Render
   ClearColor(0.2,0.3,0.3,1.0)
   Clear(ClearBufferMask.COLOR_BUFFER_BIT, ClearBufferMask.DEPTH_BUFFER_BIT)
@@ -167,10 +190,8 @@ while run:
   BindTexture(TextureTarget.TEXTURE_2D, texture2)
   
   ourShader.UseProgram()
-  var view = mat4(1.0'f32)
-  var projection = mat4(1.0'f32)
-  projection = perspective(radians(45.0'f32),screenWidth.float32/screenHeight.float32,0.1'f32,100.0'f32)
-  view = translate(view,vec3(0.0'f32,0.0'f32,-3.0'f32))
+  var projection = perspective(radians(camera.Zoom),screenWidth.float32/screenHeight.float32,0.1'f32,100.0'f32)
+  var view = camera.GetViewMatrix()
   ourShader.SetMat4("projection",false,projection)
   ourShader.SetMat4("view",false,view)
   BindVertexArray(VAO) # Not necessary since we only have one VAO

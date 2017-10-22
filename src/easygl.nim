@@ -5,6 +5,12 @@ include types/easygl_types
 proc rawSeq[T](s: seq[T]): ptr T =
     {.emit: "result = `s`->data;".}
 
+proc Enable*(cap:Capability) =
+    glEnable(cap.GLenum)
+
+proc Disable*(cap:Capability) = 
+    glDisable(cap.GLenum)
+
 proc GenBuffer*() : BufferId {.inline.} =
     glGenBuffers(1,cast[ptr GLuint](addr result))
 

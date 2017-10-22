@@ -29,3 +29,7 @@ task transformations, "Runs transformations":
 
 task coordinate_systems, "Runs coordinate systems":
   exec "nim c -r examples/coordinate_systems"
+
+
+task camera, "Runs camera":
+  exec "nim c -r examples/camera"
