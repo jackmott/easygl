@@ -41,9 +41,6 @@ proc GetViewMatrix*(camera:Camera) : Mat4f =
 
 proc ProcessKeyboard*(camera:Camera,direction:CameraMovement, deltaTime:float32) =
     let velocity = camera.MovementSpeed*deltaTime
-    echo "keyboard process"
-    echo $deltaTime
-    echo $direction
     case direction:
         of FORWARD:
             camera.Position = camera.Position + camera.Front * velocity

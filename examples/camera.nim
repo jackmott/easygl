@@ -6,6 +6,7 @@ import easygl
 import stb_image/read as stbi
 import glm
 import utils/camera_util
+import times
 
 discard sdl2.init(INIT_EVERYTHING)
 
@@ -147,12 +148,12 @@ var
 glViewport(0, 0, screenWidth, screenHeight)   # Set the viewport to cover the new window
 let camera = newCamera(vec3(0.0'f32,0.0'f32,3.0'f32))
 
-var currentTime,prevTime:uint32
-prevTime=getTicks()
+var currentTime,prevTime:float
+prevTime=cpuTime()
 while run:
   var pressedKeys = newSeq[ScanCode]()  
-  currentTime = getTicks()
-  let elapsedTime = (currentTime - prevTime).float32
+  currentTime = cpuTime()
+  let elapsedTime = (currentTime - prevTime).float32*10.0'f32
   prevTime = currentTime
   while pollEvent(evt):
     case evt.kind
@@ -168,7 +169,7 @@ while run:
             var keyEvent = cast[KeyboardEventPtr](addr(evt))
             pressedKeys.add(keyEvent.keysym.scancode)
         else:
-            echo $evt.kind
+            let x = 0
             
 
   if SDL_SCANCODE_W in pressedKeys:
