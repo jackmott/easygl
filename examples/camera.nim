@@ -176,20 +176,20 @@ while run:
             camera.ProcessMouseMovement(motionEvent.xrel.float32,motionEvent.yrel.float32)
         else:
             let x = 0
-            
+             
 
   if SDL_SCANCODE_W in pressedKeys:
     camera.ProcessKeyboard(FORWARD,elapsedTime)
   if SDL_SCANCODE_S in pressedKeys:
     camera.ProcessKeyboard(BACKWARD,elapsedTime)
   if SDL_SCANCODE_A in pressedKeys:
-    camera.ProcessKeyboard(LEFT,elapsedTime)
+    camera.ProcessKeyboard(LEFT,elapsedTime) 
   if SDL_SCANCODE_D in pressedKeys:
     camera.ProcessKeyboard(RIGHT,elapsedTime)
 
   # Render
   ClearColor(0.2,0.3,0.3,1.0)
-  Clear(ClearBufferMask.COLOR_BUFFER_BIT, ClearBufferMask.DEPTH_BUFFER_BIT)
+  easygl.Clear(ClearBufferMask.COLOR_BUFFER_BIT, ClearBufferMask.DEPTH_BUFFER_BIT)
 
   ActiveTexture(TextureUnit.TEXTURE0)
   BindTexture(TextureTarget.TEXTURE_2D,texture1)
