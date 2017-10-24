@@ -1,6 +1,6 @@
-*
-!*/
-!*.*
+examples/*
+!examples*/
+!examples/*.*
 src/nimcache/
 examples/nimcache/
 *.swp
