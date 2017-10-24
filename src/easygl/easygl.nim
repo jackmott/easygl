@@ -2,13 +2,11 @@ import opengl
 import glm
 include types/easygl_types
 
-proc rawSeq[T](s: seq[T]): ptr T =
-    {.emit: "result = `s`->data;".}
 
 proc Enable*(cap:Capability) =
     glEnable(cap.GLenum)
 
-proc Disable*(cap:Capability) = 
+proc Disable*(cap:Capability) =
     glDisable(cap.GLenum)
 
 proc GenBuffer*() : BufferId {.inline.} =
@@ -16,12 +14,12 @@ proc GenBuffer*() : BufferId {.inline.} =
 
 proc GenBuffers*(count:int32) : seq[BufferId] =
     result = newSeq[BufferId](count)
-    glGenBuffers(count.GLsizei,cast[ptr GLuint](result.rawSeq))
+    glGenBuffers(count.GLsizei,cast[ptr GLuint](result[0].unsafeAddr))
 
 proc BindBuffer*(target:BufferTarget, buffer:BufferId) {.inline.} =
     glBindBuffer(target.GLenum,buffer.GLuint)
     
-proc BufferData*[T](target:BufferTarget, data:openarray[T], usage:BufferDataUsage) {.inline.} =    
+proc BufferData*[T](target:BufferTarget, data:openarray[T], usage:BufferDataUsage) {.inline.} =
     glBufferData(target.GLenum,data.len*T.sizeof().GLsizeiptr,data.unsafeAddr,usage.GLenum)
     
 proc DeleteBuffer*(buffer:BufferId) =
@@ -36,9 +34,9 @@ proc GenVertexArray*() : VertexArrayId {.inline.} =
     
 proc GenVertexArrays*(count:int32) : seq[VertexArrayId] {.inline.} =
     result = newSeq[VertexArrayId](count)
-    glGenVertexArrays(count.GLsizei,cast[ptr GLuint](result.rawSeq))
+    glGenVertexArrays(count.GLsizei,cast[ptr GLuint](result[0].unsafeAddr))
 
-proc BindVertexArray*(vertexArray:VertexArrayId) {.inline.} = 
+proc BindVertexArray*(vertexArray:VertexArrayId) {.inline.} =
     glBindVertexArray(vertexArray.GLuint)
 
 proc DeleteVertexArray*(vertexArray:VertexArrayId) =
@@ -53,7 +51,7 @@ proc GenTexture*() : TextureId =
 
 proc GenTextures*(count:int32) : seq[TextureId] =
     result = newSeq[TextureId](count)
-    glGenTextures(count.GLsizei,cast[ptr GLuint](result.rawSeq))
+    glGenTextures(count.GLsizei,cast[ptr GLuint](result[0].unsafeAddr))
 
 proc BindTexture*(target:TextureTarget, texture:TextureId) =
     glBindTexture(target.GLenum, texture.GLuint)
@@ -201,7 +199,7 @@ proc VertexAttribPointer*(index:uint32, size:VertexAttribSize, attribType:Vertex
 proc EnableVertexAttribArray*(indeX:uint32) {.inline.} =
     glEnableVertexAttribArray(index.GLuint)
 
-proc DrawArrays*(mode:DrawMode, first:int32, count:int32)  {.inline.} = 
+proc DrawArrays*(mode:DrawMode, first:int32, count:int32)  {.inline.} =
     glDrawArrays(mode.GLenum, first.GLint, count.GLsizei)
 
 proc DrawElements*[T](mode:DrawMode, count:int, indexType:IndexType, indices:openarray[T]) =
@@ -210,12 +208,12 @@ proc DrawElements*[T](mode:DrawMode, count:int, indexType:IndexType, indices:ope
 proc DrawElements*(mode:DrawMode, count:int, indexType:IndexType, offset:int) =
     glDrawElements(mode.GLenum, count.GLsizei, indexType.GLenum, cast[pointer](offset))
     
-proc Clear*(buffersToClear:varargs[ClearBufferMask]) {.inline.} = 
+proc Clear*(buffersToClear:varargs[ClearBufferMask]) {.inline.} =
     var mask = buffersToClear[0].uint32
     for i in countup(1,<buffersToClear.len):
         mask = mask or buffersToClear[i].uint32
     glClear(mask.GLbitfield)
 
-proc ClearColor*(r:float32, g:float32, b:float32, a:float32) = 
+proc ClearColor*(r:float32, g:float32, b:float32, a:float32) =
         glClearColor(r.GLfloat, g.GLfloat, b.GLfloat, a.GLfloat)
     
