@@ -3,6 +3,7 @@
 import sdl2
 import opengl
 import easygl
+import easygl.utils
 import stb_image/read as stbi
 import os
 
@@ -60,41 +61,9 @@ EnableVertexAttribArray(1)
 VertexAttribPointer(2,2,VertexAttribType.FLOAT,false,8*float32.sizeof(),6*float32.sizeof())
 EnableVertexAttribArray(2)
 
-let texture1 = GenTexture()
-BindTexture(TextureTarget.TEXTURE_2D,texture1)
-TexParameteri(TextureTarget.TEXTURE_2D,TextureParameter.TEXTURE_WRAP_S,GL_REPEAT)
-TexParameteri(TextureTarget.TEXTURE_2D,TextureParameter.TEXTURE_WRAP_T,GL_REPEAT)
+let texture1 = LoadTextureWithMips(appDir&"/textures/container.jpg")
 
-TexParameteri(TextureTarget.TEXTURE_2D,TextureParameter.TEXTURE_MIN_FILTER,GL_LINEAR)
-TexParameteri(TextureTarget.TEXTURE_2D,TextureParameter.TEXTURE_MAG_FILTER,GL_LINEAR)
-
-var
-    width,height,channels:int
-    data: seq[uint8]
-stbi.setFlipVerticallyOnLoad(true)
-data = stbi.load("textures/container.jpg",width,height,channels,stbi.Default)
-
-if data != nil and data.len != 0:
-    TexImage2D(TexImageTarget.TEXTURE_2D,0'i32,TextureInternalFormat.RGB,width.int32,height.int32,PixelDataFormat.RGB,PixelDataType.UNSIGNED_BYTE,data)
-    GenerateMipmap(MipmapTarget.TEXTURE_2D)
-else:
-    echo "Failure to Load Image"
-
-let texture2 = GenTexture()
-BindTexture(TextureTarget.TEXTURE_2D,texture2)
-TexParameteri(TextureTarget.TEXTURE_2D,TextureParameter.TEXTURE_WRAP_S,GL_REPEAT)
-TexParameteri(TextureTarget.TEXTURE_2D,TextureParameter.TEXTURE_WRAP_T,GL_REPEAT)
-
-TexParameteri(TextureTarget.TEXTURE_2D,TextureParameter.TEXTURE_MIN_FILTER,GL_LINEAR)
-TexParameteri(TextureTarget.TEXTURE_2D,TextureParameter.TEXTURE_MAG_FILTER,GL_LINEAR)
-
-data = stbi.load("textures/awesomeface.png",width,height,channels,stbi.Default)
-
-if data != nil and data.len != 0:
-    TexImage2D(TexImageTarget.TEXTURE_2D,0'i32,TextureInternalFormat.RGB,width.int32,height.int32,PixelDataFormat.RGBA,PixelDataType.UNSIGNED_BYTE,data)
-    GenerateMipmap(MipmapTarget.TEXTURE_2D)
-else:
-    echo "Failure to Load Image"
+let texture2 = LoadTextureWithMips(appDir&"/textures/awesomeface.png")
 
 ourShader.UseProgram()
 ourShader.SetInt("texture2",1)

@@ -3,6 +3,7 @@
 import sdl2
 import opengl
 import easygl
+import easygl.utils
 import os
 
 discard sdl2.init(INIT_EVERYTHING)
@@ -34,7 +35,7 @@ let indices : seq[uint32] =
   1'u32, 2'u32, 3'u32 ]  # second triangle
 
 let VAO = GenVertexArray()
-let VBO = GenBuffer()
+let VBO = GenBuffer() 
 let EBO = GenBuffer()
 
 # Bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).

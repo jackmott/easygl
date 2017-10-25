@@ -3,6 +3,7 @@
 import sdl2
 import opengl
 import easygl
+import easygl.utils
 import os
 
 discard sdl2.init(INIT_EVERYTHING)

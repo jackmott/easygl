@@ -9,6 +9,7 @@ import glm
 import ../utils/camera_util
 import times
 import os
+import easygl.utils
 
 discard sdl2.init(INIT_EVERYTHING)
 
@@ -143,6 +144,8 @@ while run:
     camera.ProcessKeyboard(LEFT,elapsedTime)
   if SDL_SCANCODE_D in pressedKeys:
     camera.ProcessKeyboard(RIGHT,elapsedTime)
+  if SDL_SCANCODE_ESCAPE in pressedKeys:
+      break
 
   # Render
   ClearColor(0.1,0.1,0.1,1.0)

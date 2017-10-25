@@ -4,6 +4,7 @@
 import sdl2
 import opengl
 import easygl
+import easygl.utils
 import stb_image/read as stbi
 import glm
 import ../utils/camera_util
@@ -23,8 +24,8 @@ loadExtensions()
 
 ### Build and compile shader program
 let appDir = getAppDir()
-let lightingShader = CreateAndLinkProgram(appDir&"/shaders/basic_lighting.vert",appDir&"/shaders/basic_lighting.frag")
-let lampShader = CreateAndLinkProgram(appDir&"/shaders/basic_lighting_lamp.vert",appDir&"/shaders/basic_lighting_lamp.frag")
+let lightingShader = CreateAndLinkProgram(appDir&"/shaders/materials.vert",appDir&"/shaders/materials.frag")
+let lampShader = CreateAndLinkProgram(appDir&"/shaders/materials_lamp.vert",appDir&"/shaders/materials_lamp.frag")
 
 
 Enable(Capability.DEPTH_TEST)
@@ -96,7 +97,7 @@ BindBuffer(BufferTarget.ARRAY_BUFFER,VBO)
 VertexAttribPointer(0,3,VertexAttribType.FLOAT,false,6*float32.sizeof(),0)
 EnableVertexAttribArray(0)
 
-var lightPos = vec3(1.2'f32,1.0'f32,2.0'f32)
+var lightPos = vec3(0.5'f32,0.5'f32,1.0'f32)
 var
   evt = sdl2.defaultEvent
   run = true
@@ -143,6 +144,8 @@ while run:
     camera.ProcessKeyboard(LEFT,elapsedTime)
   if SDL_SCANCODE_D in pressedKeys:
     camera.ProcessKeyboard(RIGHT,elapsedTime)
+  if SDL_SCANCODE_ESCAPE in pressedKeys:
+    break
 
   # Render
   ClearColor(0.1,0.1,0.1,1.0)
@@ -150,10 +153,19 @@ while run:
 
  
   lightingShader.UseProgram()
-  lightingShader.SetVec3("objectColor",1.0'f32,0.5'f32,0.31'f32)
-  lightingShader.SetVec3("lightColor",1.0'f32,1.0'f32,1.0'f32)
-  lightingShader.SetVec3("lightPos",lightPos)
+  lightingShader.SetVec3("light.position", lightPos)
   lightingShader.SetVec3("viewPos",camera.Position)
+  var lightColor = vec3(sin(currentTime).float32*4.0'f32, sin(currentTime).float32*1.7'f32, sin(currentTime).float32*2.3'f32)  
+  var diffuseColor = lightColor * vec3(0.5'f32)
+  var ambientColor = diffuseColor * vec3(0.2'f32)
+  lightingShader.SetVec3("light.ambient",ambientColor)
+  lightingShader.SetVec3("light.diffuse",diffuseColor)
+  lightingShader.SetVec3("light.specular",1.0'f32,1.0'f32,1.0'f32)
+  lightingShader.SetVec3("material.ambient", 1.0'f32,0.5'f32,0.31'f32)
+  lightingShader.SetVec3("material.diffuse", 1.0'f32,0.5'f32,0.31'f32)
+  lightingShader.SetVec3("material.specular", 0.5'f32,0.5'f32,0.5'f32)
+  lightingShader.SetFloat("material.shininess", 320.0'f32)
+  
 
   var projection = perspective(radians(camera.Zoom),screenWidth.float32/screenHeight.float32,0.1'f32,100.0'f32)
   var view = camera.GetViewMatrix()
