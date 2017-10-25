@@ -4,9 +4,7 @@ import opengl
 import glm
 
 # Compiles and attaches in 1 step with error reporting
-proc CompileAndAttachShader*(shaderType:ShaderType, shaderPath: string, programId:ShaderProgramId) : ShaderId =
-    echo "Compiling and attaching shader"
-    echo $shaderType
+proc CompileAndAttachShader*(shaderType:ShaderType, shaderPath: string, programId:ShaderProgramId) : ShaderId =    
     let shaderId = CreateShader(shaderType)
     ShaderSource(shaderId,readFile(shaderPath))
     CompileShader(shaderId)
@@ -28,8 +26,8 @@ proc CreateAndLinkProgram*(vertexPath:string, fragmentPath:string, geometryPath:
         else:
             0.ShaderId
 
-    LinkProgram(programId)
-    echo "linked"
+    LinkProgram(programId)    
+
     if not GetProgramLinkStatus(programId):
         echo "Link Error:"
         echo GetProgramInfoLog(programId)
@@ -45,8 +43,7 @@ proc LoadTextureWithMips*(path:string) : TextureId =
         var
             width,height,channels:int
             data: seq[uint8]
-        stbi.setFlipVerticallyOnLoad(true)
-        echo path
+        stbi.setFlipVerticallyOnLoad(true)        
         data = stbi.load(path,width,height,channels,stbi.Default)
         
         if data != nil and data.len != 0:
@@ -57,11 +54,12 @@ proc LoadTextureWithMips*(path:string) : TextureId =
                     PixelDataFormat.RGB
                 elif channels == 4:
                     PixelDataFormat.RGBA
-                else:                    
-                    PixelDataFormat.RGB
-            echo $format
+                else:            
+                    ( echo "texture unknown, assuming rgb";        
+                    PixelDataFormat.RGB)
+            
             BindTexture(TextureTarget.TEXTURE_2D,textureId)
-            TexImage2D(TexImageTarget.TEXTURE_2D,0'i32,TextureInternalFormat.RGB,width.int32,height.int32,format,PixelDataType.UNSIGNED_BYTE,data)
+            TexImage2D(TexImageTarget.TEXTURE_2D,0'i32,format.TextureInternalFormat,width.int32,height.int32,format,PixelDataType.UNSIGNED_BYTE,data)
             GenerateMipmap(MipmapTarget.TEXTURE_2D)                        
             TexParameteri(TextureTarget.TEXTURE_2D,TextureParameter.TEXTURE_WRAP_S,GL_REPEAT)
             TexParameteri(TextureTarget.TEXTURE_2D,TextureParameter.TEXTURE_WRAP_T,GL_REPEAT)            

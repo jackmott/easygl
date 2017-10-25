@@ -164,7 +164,7 @@ while run:
   lightingShader.SetVec3("material.ambient", 1.0'f32,0.5'f32,0.31'f32)
   lightingShader.SetVec3("material.diffuse", 1.0'f32,0.5'f32,0.31'f32)
   lightingShader.SetVec3("material.specular", 0.5'f32,0.5'f32,0.5'f32)
-  lightingShader.SetFloat("material.shininess", 320.0'f32)
+  lightingShader.SetFloat("material.shininess", 32.0'f32)
   
 
   var projection = perspective(radians(camera.Zoom),screenWidth.float32/screenHeight.float32,0.1'f32,100.0'f32)

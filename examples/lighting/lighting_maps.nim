@@ -24,8 +24,8 @@ loadExtensions()
 
 ### Build and compile shader program
 let appDir = getAppDir()
-let lightingShader = CreateAndLinkProgram(appDir&"/shaders/materials.vert",appDir&"/shaders/materials.frag")
-let lampShader = CreateAndLinkProgram(appDir&"/shaders/materials_lamp.vert",appDir&"/shaders/materials_lamp.frag")
+let lightingShader = CreateAndLinkProgram(appDir&"/shaders/lighting_maps.vert",appDir&"/shaders/lighting_maps.frag")
+let lampShader = CreateAndLinkProgram(appDir&"/shaders/lighting_maps_lamp.vert",appDir&"/shaders/lighting_maps_lamp.frag")
 
 
 Enable(Capability.DEPTH_TEST)
@@ -89,7 +89,7 @@ VertexAttribPointer(0,3,VertexAttribType.FLOAT,false,8*float32.sizeof(),0)
 EnableVertexAttribArray(0)
 VertexAttribPointer(1,3,VertexAttribType.FLOAT,false,8*float32.sizeof(),3*float32.sizeof())
 EnableVertexAttribArray(1)
-VertexAttribPointer(2,2,VertexAttribType.FLOAT,false,8*float32.sizeof(),3*float32.sizeof())
+VertexAttribPointer(2,2,VertexAttribType.FLOAT,false,8*float32.sizeof(),6*float32.sizeof())
 EnableVertexAttribArray(2);
 
 let lightVAO = GenVertexArray()
@@ -97,6 +97,13 @@ BindVertexArray(lightVAO)
 BindBuffer(BufferTarget.ARRAY_BUFFER,VBO)
 VertexAttribPointer(0,3,VertexAttribType.FLOAT,false,8*float32.sizeof(),0)
 EnableVertexAttribArray(0)
+
+let diffuseMap = LoadTextureWithMips(appDir&"/textures/container2.png")
+let specularMap = LoadTextureWithMips(appDir&"/textures/container2_specular.png")
+
+lightingShader.UseProgram()
+lightingShader.SetInt("diffuse",0)
+lightingShader.SetInt("specular",1)
 
 var lightPos = vec3(0.5'f32,0.5'f32,1.0'f32)
 var
@@ -153,19 +160,13 @@ while run:
   easygl.Clear(ClearBufferMask.COLOR_BUFFER_BIT, ClearBufferMask.DEPTH_BUFFER_BIT)
 
  
-  lightingShader.UseProgram()
+  lightingShader.UseProgram()  
   lightingShader.SetVec3("light.position", lightPos)
   lightingShader.SetVec3("viewPos",camera.Position)
-  var lightColor = vec3(sin(currentTime).float32*4.0'f32, sin(currentTime).float32*1.7'f32, sin(currentTime).float32*2.3'f32)  
-  var diffuseColor = lightColor * vec3(0.5'f32)
-  var ambientColor = diffuseColor * vec3(0.2'f32)
-  lightingShader.SetVec3("light.ambient",ambientColor)
-  lightingShader.SetVec3("light.diffuse",diffuseColor)
+  lightingShader.SetVec3("light.ambient",0.2'f32,0.2'f32,0.2'f32)
+  lightingShader.SetVec3("light.diffuse",0.5'f32,0.5'f32,0.5'f32)
   lightingShader.SetVec3("light.specular",1.0'f32,1.0'f32,1.0'f32)
-  lightingShader.SetVec3("material.ambient", 1.0'f32,0.5'f32,0.31'f32)
-  lightingShader.SetVec3("material.diffuse", 1.0'f32,0.5'f32,0.31'f32)
-  lightingShader.SetVec3("material.specular", 0.5'f32,0.5'f32,0.5'f32)
-  lightingShader.SetFloat("material.shininess", 320.0'f32)
+  lightingShader.SetFloat("shininess", 64.0'f32)
   
 
   var projection = perspective(radians(camera.Zoom),screenWidth.float32/screenHeight.float32,0.1'f32,100.0'f32)
@@ -176,6 +177,12 @@ while run:
   
   var model = mat4(1.0'f32)
   lightingShader.SetMat4("model",false,model)
+
+  ActiveTexture(TextureUnit.TEXTURE0)
+  BindTexture(TextureTarget.TEXTURE_2D,diffuseMap)
+
+  ActiveTexture(TextureUnit.TEXTURE1)
+  BindTexture(TextureTarget.TEXTURE_2D,specularMap)  
 
   BindVertexArray(cubeVAO)
   DrawArrays(DrawMode.TRIANGLES,0,36)
