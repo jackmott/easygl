@@ -172,19 +172,19 @@ proc SetFloat*(program:ShaderProgramId, name: string, value: float32) =
     glUniform1f(GetUniformLocation(program,name).GLint,value.GLfloat)
 
 proc SetVec2*(program:ShaderProgramId, name: string, value:var Vec2f) =
-    glUniform2fv(GetUniformLocation(program,name).GLint,2,value.caddr)
+    glUniform2fv(GetUniformLocation(program,name).GLint,1,value.caddr)
 
 proc SetVec2*(program:ShaderProgramId, name: string, x:float32, y:float32) =
     glUniform2f(GetUniformLocation(program,name).GLint,x.GLfloat,y.GLfloat)
     
 proc SetVec3*(program:ShaderProgramId, name: string, value:var Vec3f) =
-    glUniform3fv(GetUniformLocation(program,name).GLint,3,value.caddr)
+    glUniform3fv(GetUniformLocation(program,name).GLint,1,value.caddr)
     
 proc SetVec3*(program:ShaderProgramId, name: string, x:float32, y:float32, z:float32) =
     glUniform3f(GetUniformLocation(program,name).GLint,x.GLfloat,y.GLfloat,z.GLfloat)
 
 proc SetVec4*(program:ShaderProgramId, name:string, value: var Vec4f) =
-    glUniform4fv(GetUniformLocation(program,name).GLint,4,value.caddr)
+    glUniform4fv(GetUniformLocation(program,name).GLint,1,value.caddr)
 
 proc SetVec4*(program:ShaderProgramId, name: string, x:float32, y:float32, z:float32, w:float32) =
     glUniform4f(GetUniformLocation(program,name).GLint,x.GLfloat,y.GLfloat,z.GLfloat,w.GLfloat)
