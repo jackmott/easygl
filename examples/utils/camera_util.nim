@@ -8,7 +8,7 @@ type CameraMovement* = enum
 
 let YAW = -90.0'f32
 let PITCH = 0.0'f32
-let SPEED = 2.5'f32
+let SPEED = 20.5'f32
 let SENSITIVITY = 0.1'f32
 let ZOOM = 45.0'f32
 
