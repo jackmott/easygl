@@ -24,7 +24,7 @@ loadExtensions()
 ### Build and compile shader program
 let appDir = getAppDir()
 let lightingShader = CreateAndLinkProgram(appDir&"/shaders/colors.vert",appDir&"/shaders/colors.frag")
-let lampShader = CreateAndLinkProgram(appDir&"/shaders/colors.vert",appDir&"/shaders/colors_lamp.frag")
+let lampShader = CreateAndLinkProgram(appDir&"/shaders/color.vert",appDir&"/shaders/lamp.frag")
 
 
 Enable(Capability.DEPTH_TEST)
