@@ -10,13 +10,15 @@ import glm
 import ../utils/camera_util
 import times
 import os
+import random
+
 
 discard sdl2.init(INIT_EVERYTHING)
 
 var screenWidth: cint = 800
 var screenHeight: cint = 600
 
-let window = createWindow("Lighting Maps", 100, 100, screenWidth, screenHeight, SDL_WINDOW_OPENGL or SDL_WINDOW_RESIZABLE)
+let window = createWindow("Multiple Lights", 100, 100, screenWidth, screenHeight, SDL_WINDOW_OPENGL or SDL_WINDOW_RESIZABLE)
 discard window.glCreateContext()
 
 # Initialize OpenGL
@@ -24,14 +26,13 @@ loadExtensions()
 
 ### Build and compile shader program
 let appDir = getAppDir()
-let lightingShader = CreateAndLinkProgram(appDir&"/shaders/lighting_maps.vert",appDir&"/shaders/lighting_maps.frag")
+let lightingShader = CreateAndLinkProgram(appDir&"/shaders/multiple_lights.vert",appDir&"/shaders/multiple_lights.frag")
 let lampShader = CreateAndLinkProgram(appDir&"/shaders/lamp.vert",appDir&"/shaders/lamp.frag")
-
 
 Enable(Capability.DEPTH_TEST)
 
 # Set up vertex data
-let vertices : seq[float32]  =
+let vertices =
   @[
     # positions                    # normals           # texture coords
     -0.5'f32, -0.5'f32, -0.5'f32,  0.0'f32,  0.0'f32, -1.0'f32,  0.0'f32,  0.0'f32,
@@ -76,6 +77,29 @@ let vertices : seq[float32]  =
     -0.5'f32,  0.5'f32,  0.5'f32,  0.0'f32,  1.0'f32,  0.0'f32,  0.0'f32,  0.0'f32,
     -0.5'f32,  0.5'f32, -0.5'f32,  0.0'f32,  1.0'f32,  0.0'f32,  0.0'f32,  1.0'f32]
 
+
+let cubePositions =
+  @[
+    vec3( 0.0'f32,  0.0'f32,  0.0'f32),
+    vec3( 2.0'f32,  5.0'f32, -15.0'f32),
+    vec3(-1.5'f32, -2.2'f32, -2.5'f32),
+    vec3(-3.8'f32, -2.0'f32, -12.3'f32),
+    vec3( 2.4'f32, -0.4'f32, -3.5'f32),
+    vec3(-1.7'f32,  3.0'f32, -7.5'f32),
+    vec3( 1.3'f32, -2.0'f32, -2.5'f32),
+    vec3( 1.5'f32,  2.0'f32, -2.5'f32),
+    vec3( 1.5'f32,  0.2'f32, -1.5'f32),
+    vec3(-1.3'f32,  1.0'f32, -1.5'f32)
+  ]
+
+var pointLightPositions  =
+  @[
+    vec3( 0.7'f32,  0.2'f32,  2.0'f32),
+    vec3( 2.3'f32, -3.3'f32, -4.0'f32),
+    vec3(-4.0'f32,  2.0'f32, -12.0'f32),
+    vec3( 0.0'f32,  0.0'f32, -3.0'f32)
+  ]
+
 let cubeVAO = GenVertexArray()
 let VBO = GenBuffer()
 
@@ -105,7 +129,6 @@ lightingShader.UseProgram()
 lightingShader.SetInt("diffuse",0)
 lightingShader.SetInt("specular",1)
 
-var lightPos = vec3(0.5'f32,0.5'f32,1.0'f32)
 var
   evt = sdl2.defaultEvent
   run = true
@@ -161,12 +184,47 @@ while run:
 
  
   lightingShader.UseProgram()  
-  lightingShader.SetVec3("light.position", lightPos)
   lightingShader.SetVec3("viewPos",camera.Position)
-  lightingShader.SetVec3("light.ambient",0.2'f32,0.2'f32,0.2'f32)
-  lightingShader.SetVec3("light.diffuse",0.5'f32,0.5'f32,0.5'f32)
-  lightingShader.SetVec3("light.specular",1.0'f32,1.0'f32,1.0'f32)
-  lightingShader.SetFloat("shininess", 64.0'f32)
+  lightingShader.SetFloat("material.shininess", 32.0'f32)
+
+  lightingShader.SetVec3("dirLight.direction",-0.2'f32,-1'f32,-0.3'f32)
+  lightingShader.SetVec3("dirLight.ambient",0.05'f32,0.05'f32,0.05'f32)
+  lightingShader.SetVec3("dirLight.diffuse",0.4'f32,0.4'f32,0.4'f32)
+  lightingShader.SetVec3("ditLight.specular",0.5'f32,0.5'f32,0.5'f32)  
+
+  # Doing this a bit different than learnopengl.com
+  # Because this is like 10x less typing
+  for i,pointLight in pointLightPositions.mpairs:
+    let prefix = "pointLights[" & $i & "]."
+
+    var 
+      ambient = vec3(0.05'f32)              
+      diffuse = vec3(0.8'f32,0.8'f32,0.8'f32)
+      specular = vec3(1.0'f32) 
+      constant = 1.0'f32
+      linear = 0.09'f32 
+      quadratic = 0.032'f32
+
+    lightingShader.SetVec3(prefix&"position",pointLight)
+    lightingShader.SetVec3(prefix&"ambient",ambient);
+    lightingShader.SetVec3(prefix&"diffuse",diffuse);
+    lightingShader.SetVec3(prefix&"specular",specular);
+    lightingShader.SetFloat(prefix&"constant",constant);
+    lightingShader.SetFloat(prefix&"linear",linear);
+    lightingShader.SetFloat(prefix&"quadratic",quadratic);
+
+
+  lightingShader.SetVec3("spotLight.position", camera.Position)
+  lightingShader.SetVec3("spotLight.direction",camera.Front)  
+  lightingShader.SetVec3("spotLight.ambient",0.0'f32,0.0'f32,0.0'f32)
+  lightingShader.SetVec3("spotLight.diffuse",1'f32,1'f32,1'f32)
+  lightingShader.SetVec3("spotLight.specular",1.0'f32,1.0'f32,1.0'f32)
+  lightingShader.SetFloat("spotLight.constant",1.0'f32)
+  lightingShader.SetFloat("spotLight.linear",0.09'f32)
+  lightingShader.SetFloat("spotLight.quadratic",0.032'f32)
+  lightingShader.SetFloat("spotLight.cutOff",cos(radians(12.5'f32)))
+  lightingShader.SetFloat("spotLight.outerCutOff",cos(radians(15.5'f32)))   
+  
   
 
   var projection = perspective(radians(camera.Zoom),screenWidth.float32/screenHeight.float32,0.1'f32,100.0'f32)
@@ -185,18 +243,27 @@ while run:
   BindTexture(TextureTarget.TEXTURE_2D,specularMap)  
 
   BindVertexArray(cubeVAO)
-  DrawArrays(DrawMode.TRIANGLES,0,36)
+
+  for i,cubePos in cubePositions:
+    var model = mat4(1.0'f32)
+    model = translate(model,cubePos)
+    let angle = 20.0'f32 * i.float32
+    model = rotate(model,radians(angle),vec3(1.0'f32,0.3'f32,0.5'f32))
+    lightingShader.SetMat4("model",false,model)
+    DrawArrays(DrawMode.TRIANGLES,0,36)
   
   lampShader.UseProgram()
   lampShader.SetMat4("projection",false,projection)
-  lampShader.SetMat4("view",false,view)
+  lampShader.SetMat4("view",false,view)  
 
-  model = translate(model,lightPos)
-  model = scale(model,vec3(0.2'f32))
-  lampShader.SetMat4("model",false,model)
-  BindVertexArray(lightVao)
-  DrawArrays(DrawMode.TRIANGLES,0,36)
-
+  BindVertexArray(lightVAO)
+  for i,lightPos in pointLightPositions.mpairs:
+    var model = mat4(1.0'f32)
+    model = translate(model,lightPos)
+    model = scale(model,vec3(0.2'f32))
+    lampShader.SetMat4("model",false,model)
+    DrawArrays(DrawMode.TRIANGLES,0,36)
+  
   window.glSwapWindow()
 
 DeleteVertexArray(cubeVAO)

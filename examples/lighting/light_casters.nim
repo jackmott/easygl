@@ -24,7 +24,7 @@ loadExtensions()
 
 ### Build and compile shader program
 let appDir = getAppDir()
-let lightingShader = CreateAndLinkProgram(appDir&"/shaders/lighting_maps.vert",appDir&"/shaders/lighting_maps.frag")
+let lightingShader = CreateAndLinkProgram(appDir&"/shaders/light_casters.vert",appDir&"/shaders/light_casters.frag")
 
 Enable(Capability.DEPTH_TEST)
 
@@ -118,13 +118,12 @@ lightingShader.UseProgram()
 lightingShader.SetInt("diffuse",0)
 lightingShader.SetInt("specular",1)
 
-var lightPos = vec3(0.5'f32,0.5'f32,1.0'f32)
 var
   evt = sdl2.defaultEvent
   run = true
 
 glViewport(0, 0, screenWidth, screenHeight)   # Set the viewport to cover the new window
-let camera = newCamera(vec3(0.0'f32,0.0'f32,9.0'f32))
+let camera = newCamera(vec3(0.0'f32,0.0'f32,3.0'f32))
 
 var currentTime,prevTime:float
 prevTime=cpuTime()
@@ -175,17 +174,19 @@ while run:
  
   lightingShader.UseProgram()  
   lightingShader.SetVec3("light.position", camera.Position)
-  lightingShader.SetVec3("light.direction",camera.Front)
-  lightingShader.SetVec3("viewPos",camera.Position)
+  lightingShader.SetVec3("light.direction",camera.Front)  
   lightingShader.SetFloat("light.cutOff",cos(radians(12.5'f32)))
   lightingShader.SetFloat("light.outerCutOff",cos(radians(17.5'f32)))
+  lightingShader.SetVec3("viewPos",camera.Position)
+
+  # light properties
   lightingShader.SetVec3("light.ambient",0.1'f32,0.1'f32,0.1'f32)
   lightingShader.SetVec3("light.diffuse",0.8'f32,0.8'f32,0.8'f32)
   lightingShader.SetVec3("light.specular",1.0'f32,1.0'f32,1.0'f32)
   lightingShader.SetFloat("light.constant",1.0'f32)
   lightingShader.SetFloat("light.linear",0.09'f32)
   lightingShader.SetFloat("light.quadratic",0.032'f32)
-  lightingShader.SetFloat("shininess", 32.0'f32)
+  lightingShader.SetFloat("material.shininess", 64.0'f32)
   
 
   var projection = perspective(radians(camera.Zoom),screenWidth.float32/screenHeight.float32,0.1'f32,100.0'f32)

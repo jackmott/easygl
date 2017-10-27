@@ -1,6 +1,8 @@
 import opengl
 include easygl.easygl_types
 
+# When passing objects to opengl you may need this to get a relative pointer
+template offsetof*(typ, field): untyped = (var dummy: typ; cast[int](addr(dummy.field)) - cast[int](addr(dummy)))
 
 proc Enable*(cap:Capability) =
     glEnable(cap.GLenum)
