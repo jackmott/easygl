@@ -4,6 +4,12 @@ include easygl.easygl_types
 # When passing objects to opengl you may need this to get a relative pointer
 template offsetof*(typ, field): untyped = (var dummy: typ; cast[int](addr(dummy.field)) - cast[int](addr(dummy)))
 
+# OpenGL uses the convention of 0 for 'null' which is used to clear things
+# These are convenience constants you can use
+const VERTEX_ARRAY_NULL* = 0.VertexArrayId
+const BUFFER_NULL* = 0.BufferId
+const TEXTURE_NULL* = 0.TextureId
+
 proc Enable*(cap:Capability) =
     glEnable(cap.GLenum)
 

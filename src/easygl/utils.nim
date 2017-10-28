@@ -1,7 +1,8 @@
-import ../easygl
-import stb_image/read as stbi
-import opengl
-import glm
+import 
+    ../easygl,
+    stb_image/read as stbi,
+    opengl,
+    glm
 
 # Compiles and attaches in 1 step with error reporting
 proc CompileAndAttachShader*(shaderType:ShaderType, shaderPath: string, programId:ShaderProgramId) : ShaderId =    
@@ -68,7 +69,7 @@ proc LoadTextureWithMips*(path:string) : TextureId =
             textureId
         else:
             echo "Failure to Load Image"            
-            0.TextureId
+            TEXTURE_NULL
             
                             
 

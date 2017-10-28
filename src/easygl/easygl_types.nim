@@ -3,7 +3,7 @@ import glm
 
 type 
     BufferId* = distinct GLuint
-    VertexArrayId* = distinct GLuint
+    VertexArrayId* = distinct GLuint    
     TextureId* = distinct GLuint
     ShaderId* = distinct GLuint
     ShaderProgramId* = distinct GLuint

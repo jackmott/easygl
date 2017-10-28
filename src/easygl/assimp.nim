@@ -51,10 +51,10 @@ type
     primitiveTypes*: cint
     vertexCount*: cint
     faceCount*: cint
-    vertices*: ptr TVector3d
-    normals*: ptr TVector3d
-    tangents*: ptr TVector3d
-    bitTangents*: ptr TVector3d
+    vertices*: ptr UncheckedArray[TVector3d]
+    normals*: ptr UncheckedArray[TVector3d]
+    tangents*: ptr UncheckedArray[TVector3d]
+    bitTangents*: ptr UncheckedArray[TVector3d]
     colors*: array[0..AI_MAX_NUMBER_OF_COLOR_SETS-1, ptr TColor4d]
     texCoords*: array[0..AI_MAX_NUMBER_OF_TEXTURECOORDS-1, ptr TVector3d]
     numUVcomponents*: array[0..AI_MAX_NUMBER_OF_TEXTURECOORDS-1, cint]
@@ -286,6 +286,8 @@ proc getTexture*(material: PMaterial; kind: TTextureType; index: cint;
   blend: ptr cfloat = nil; op: ptr TTextureOp = nil;
   mapMode: ptr TTextureMapMode = nil; flags: ptr cint = nil): AIreturn {.
   importc: "aiGetMaterialTexture", dynlib:LibName.}
+
+proc GetTextureCount*(texType:TTextureType) : cuint {.importc,dynlib:LibNAme.}
 
 
 proc transpose*(some: ptr TMatrix4x4) {.importc: "aiTransposeMatrix4", dynlib:LibName.}
