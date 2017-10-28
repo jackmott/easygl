@@ -8,12 +8,12 @@ import
     strutils
 
 type Model* = object
-    texturesLoaded : var seq[Texture]
+    texturesLoaded : seq[Texture]
     meshes: seq[Mesh]
     directory:string
     gammaCorrection:bool
 
-proc LoadMaterialTextures(model: Model, mat:PMaterial, texType:TTextureType, typeName:TextureType) : seq[Texture] =
+proc LoadMaterialTextures(model: var Model, mat:PMaterial, texType:TTextureType, typeName:TextureType) : seq[Texture] =
     var textures = newSeq[Texture]()
     for i in 0 .. <GetTextureCount(texType):
         var str : AIString
@@ -87,7 +87,17 @@ proc ProcessMesh(model:var Model, mesh:PMesh, scene:PScene) : Mesh =
     # diffuse: texture_diffuseN
     # specular: texture_specularN
     # normal: texture_normalN
+    let diffuseMaps = LoadMaterialTextures(model,material,TTextureType.TexDiffuse,TextureType.TextureDiffuse)
+    let specularMaps = LoadMaterialTextures(model,material,TTextureType.TexSpecular,TextureType.TextureSpecular)
+    let normalMaps = LoadMaterialTextures(model,material,TTextureType.TexNormals,TextureType.TextureNormal)
+    let heightMaps = LoadMaterialTextures(model,material,TTextureType.TexHeight,TextureType.TextureHeight)
+    textures = textures & diffuseMaps
+    textures = textures & specularMaps
+    textures = textures & normalMaps
+    textures = textures & heightMaps
+    newMesh(vertices,indices,textures)
     
+
     
 
 proc ProcessNode(model:var Model,node:PNode, scene:PScene) = 
@@ -97,8 +107,10 @@ proc ProcessNode(model:var Model,node:PNode, scene:PScene) =
         ProcessNode(model,node.children[i],scene)
 
 
-proc LoadModel(model:var Model,path:string) = 
+proc LoadModel(path:string) : Model = 
+    var model:Model
     let scene = aiImportFile(path,aiProcess_Triangulate or aiProcess_FlipUVs or aiProcess_CalcTangentSpace)
     #todo error check
     model.directory = path.substr(0,path.rfind("/"))
     ProcessNode(model,scene.rootNode,scene)
+    model
