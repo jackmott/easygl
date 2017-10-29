@@ -19,6 +19,15 @@ proc Disable*(cap:Capability) =
 proc PolygonMode*(face:PolygonFace, mode:PolygonModeEnum) {.inline.} =
     glPolygonMode(face.GLenum, mode.GLenum)
 
+proc DepthMask*(flag: bool) {.inline.} =
+    glDepthMask(flag.GLboolean)
+
+proc DepthFunc*(fun: DepthFuncEnum) {.inline.} = 
+    glDepthFunc(fun.GLenum)
+
+proc StencilMask*(mask:uint32) {.inline.} = 
+    glStencilMask(mask.GLuint)
+
 proc GenBuffer*() : BufferId {.inline.} =
     glGenBuffers(1,cast[ptr GLuint](addr result))
 

@@ -45,7 +45,17 @@ type
         SAMPLE_MASK = GL_SAMPLE_MASK, #0x8E51
         PRIMITIVE_RESTART = GL_PRIMITIVE_RESTART, #0x8F9D
         DEBUG_OUTPUT = GL_DEBUG_OUTPUT, #0x92E0
-        
+    
+    DepthFuncEnum* {.pure.} = enum        
+        NEVER = GL_NEVER,
+        LESS = GL_LESS,
+        EQUAL = GL_EQUAL,
+        LEQUAL = GL_LEQUAL,
+        GREATER = GL_GREATER,
+        NOTEQUAL = GL_NOTEQUAL,
+        GEQUAL = GL_GEQUAL,
+        ALWAYS = GL_ALWAYS
+
     BufferTarget* {.pure.} = enum
         ARRAY_BUFFER = GL_ARRAY_BUFFER, #0x88923
         ELEMENT_ARRAY_BUFFER = GL_ELEMENT_ARRAY_BUFFER, #0x8893 

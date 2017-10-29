@@ -43,8 +43,7 @@ proc LoadMaterialTextures(model: var Model, mat:PMaterial, texType:TTextureType,
     textures
 
 
-proc ProcessMesh(model:var Model, mesh:PMesh, scene:PScene) : Mesh =
-    echo "Processing Mesh..."
+proc ProcessMesh(model:var Model, mesh:PMesh, scene:PScene) : Mesh =    
     var vertices = newSeq[Vertex]()
     var indices = newSeq[uint32]()
     var textures = newSeq[Texture]()
@@ -99,16 +98,14 @@ proc ProcessMesh(model:var Model, mesh:PMesh, scene:PScene) : Mesh =
     # diffuse: texture_diffuseN
     # specular: texture_specularN
     # normal: texture_normalN
-    let diffuseMaps = LoadMaterialTextures(model,material,TTextureType.TexDiffuse,TextureType.TextureDiffuse)
-    echo "diffusemaps:" & $diffuseMaps.len
+    let diffuseMaps = LoadMaterialTextures(model,material,TTextureType.TexDiffuse,TextureType.TextureDiffuse)    
     let specularMaps = LoadMaterialTextures(model,material,TTextureType.TexSpecular,TextureType.TextureSpecular)
     let normalMaps = LoadMaterialTextures(model,material,TTextureType.TexNormals,TextureType.TextureNormal)
     let heightMaps = LoadMaterialTextures(model,material,TTextureType.TexHeight,TextureType.TextureHeight)
     textures = textures & diffuseMaps
     textures = textures & specularMaps
     textures = textures & normalMaps
-    textures = textures & heightMaps
-    echo "texlen:" & $textures.len
+    textures = textures & heightMaps    
     newMesh(vertices,indices,textures)
     
 
@@ -116,8 +113,7 @@ proc ProcessMesh(model:var Model, mesh:PMesh, scene:PScene) : Mesh =
 
 proc ProcessNode(model:var Model,node:PNode, scene:PScene) = 
     let meshCount = node.meshCount.int    
-    for i in 0 .. <meshCount:
-        echo "mesh:" & $i
+    for i in 0 .. <meshCount:        
         model.meshes.add(ProcessMesh(model,scene.meshes[node.meshes[i]],scene))
     let childrenCount = node.childrenCount.int
     for i in 0 .. <childrenCount:
