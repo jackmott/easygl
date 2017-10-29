@@ -16,6 +16,9 @@ proc Enable*(cap:Capability) =
 proc Disable*(cap:Capability) =
     glDisable(cap.GLenum)
 
+proc PolygonMode*(face:PolygonFace, mode:PolygonModeEnum) {.inline.} =
+    glPolygonMode(face.GLenum, mode.GLenum)
+
 proc GenBuffer*() : BufferId {.inline.} =
     glGenBuffers(1,cast[ptr GLuint](addr result))
 

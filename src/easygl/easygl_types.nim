@@ -285,3 +285,13 @@ type
         UNSIGNED_SHORT_1_5_5_5_REV = GL_UNSIGNED_SHORT_1_5_5_5_REV,
         UNSIGNED_INT_8_8_8_8_REV = GL_UNSIGNED_INT_8_8_8_8_REV,
         UNSIGNED_INT_2_10_10_10_REV = GL_UNSIGNED_INT_2_10_10_10_REV # 0x8368
+    
+    PolygonFace* {.pure.} = enum
+        FRONT = GL_FRONT,
+        BACK = GL_BACK,        
+        FRONT_AND_BACK = GL_FRONT_AND_BACK
+                
+    PolygonModeEnum* {.pure.} = enum
+        POINT = GL_POINT,
+        LINE = GL_LINE,
+        FILL = GL_FILL

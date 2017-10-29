@@ -29,7 +29,7 @@ let appDir = getAppDir()
 let ourShader = CreateAndLinkProgram(appDir&"/shaders/model_loading.vert",appDir&"/shaders/model_loading.frag")
 let ourModel = LoadModel(appDir&"/models/nanosuit.obj")
 
-#glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+#PolygonMode(PolygonFace.FRONT_AND_BACK,PolygonModeEnum.LINE)
 
 Enable(Capability.DEPTH_TEST)
 
