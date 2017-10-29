@@ -28,6 +28,7 @@ let shader = CreateAndLinkProgram(appDir&"/shaders/depth_testing.vert",appDir&"/
 
 
 Enable(Capability.DEPTH_TEST)
+DepthFunc(DepthFuncEnum.LESS)
 
 # Set up vertex data
 let cubeVertices  =
@@ -100,6 +101,7 @@ let planeVAO = GenBindVertexArray()
 let planeVBO = GenBindBufferData(BufferTarget.ARRAY_BUFFER,planeVertices,BufferDataUsage.STATIC_DRAW)
 EnableVertexAttribArray(0)
 VertexAttribPointer(0,3,VertexAttribType.FLOAT,false,5*float32.sizeof(),0)
+EnableVertexAttribArray(1)
 VertexAttribPointer(1,2,VertexAttribType.FLOAT,false,5*float32.sizeof(),3*float32.sizeof())
 BindVertexArray(VERTEX_ARRAY_NULL)
 
@@ -178,7 +180,7 @@ while run:
   DrawArrays(DrawMode.TRIANGLES,0,36)
 
   # floor
-  BindVertexArray(planeVAO)
+  BindVertexArray(planeVAO)  
   BindTexture(TextureTarget.TEXTURE_2D,floorTexture)
   model = mat4(1.0'f32)
   shader.SetMat4("model",false,model)
