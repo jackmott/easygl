@@ -1,18 +1,17 @@
 
 # OpenGL example using SDL2
 
-import sdl2
-import opengl
-import easygl
-import easygl.utils
-import easygl.model
-import stb_image/read as stbi
-import glm
-import ../utils/camera_util
-import times
-import os
-import random
-
+import 
+  sdl2,
+  opengl,
+  easygl,
+  easygl.utils,
+  easygl.model,
+  stb_image/read as stbi,
+  glm,
+  ../utils/camera_util,
+  times,
+  os
 
 discard sdl2.init(INIT_EVERYTHING)
 
@@ -93,12 +92,14 @@ while run:
 
   var projection = perspective(radians(camera.Zoom),screenWidth.float32/screenHeight.float32,0.1'f32,100.0'f32)
   var view = camera.GetViewMatrix()
-
   ourShader.SetMat4("projection",false,projection)
   ourShader.SetMat4("view",false,view)
   
   var model = mat4(1.0'f32)
+  model = translate(model,vec3(0.0'f32,-1.75'f32,0.0'f32))
+  model = scale(model,vec3(0.2'f32,0.2'f32,0.2'f32))  
   ourShader.SetMat4("model",false,model)
+  ourModel.Draw(ourShader)
 
   
   window.glSwapWindow()

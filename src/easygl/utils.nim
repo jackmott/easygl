@@ -44,7 +44,8 @@ proc LoadTextureWithMips*(path:string) : TextureId =
         var
             width,height,channels:int
             data: seq[uint8]
-        stbi.setFlipVerticallyOnLoad(true)        
+        stbi.setFlipVerticallyOnLoad(true)       
+        echo "LoadTex:" & path 
         data = stbi.load(path,width,height,channels,stbi.Default)
         
         if data != nil and data.len != 0:

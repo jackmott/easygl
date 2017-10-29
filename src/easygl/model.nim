@@ -13,11 +13,20 @@ type Model* = object
     directory:string
     gammaCorrection:bool
 
+proc Draw*(model:Model, shaderProgram:ShaderProgramId) =
+    for mesh in model.meshes:
+        mesh.Draw(shaderProgram)
+
 proc LoadMaterialTextures(model: var Model, mat:PMaterial, texType:TTextureType, typeName:TextureType) : seq[Texture] =
     var textures = newSeq[Texture]()
-    for i in 0 .. <GetTextureCount(texType):
+    let texCount = getTextureCount(mat,texType).int
+    echo "TexCount:" & $texCount
+    for i in 0 .. <texCount:
+        echo "i:" & $i
         var str : AIString
-        discard getTexture(mat,texType,i.cint,addr str)
+        let ret = getTexture(mat,texType,i.cint,addr str)        
+        echo "ret:" & $ret
+        echo "loadmat loop:" & $str
         var skip = false
         for j,loadedTex in model.texturesLoaded:
             if loadedTex.path == $str:
@@ -35,9 +44,9 @@ proc LoadMaterialTextures(model: var Model, mat:PMaterial, texType:TTextureType,
 
 
 proc ProcessMesh(model:var Model, mesh:PMesh, scene:PScene) : Mesh =
-    var vertices : seq[Vertex]
-    var indices: seq[uint32]
-    var textures: seq[Texture]
+    var vertices = newSeq[Vertex]()
+    var indices = newSeq[uint32]()
+    var textures = newSeq[Texture]()
 
     for i in 0 .. <mesh.vertexCount:
         var vertex:Vertex
@@ -55,9 +64,10 @@ proc ProcessMesh(model:var Model, mesh:PMesh, scene:PScene) : Mesh =
         # todo - texCoords are a multidimensional array
         # will this work??
         if mesh.texCoords[0] != nil:
+            let m = mesh.texCoords[0]
             var vec : Vec2f
-            vec.x = mesh.texCoords[i].x
-            vec.y = mesh.texCoords[i].y
+            vec.x = m[i].x
+            vec.y = m[i].y
             vertex.TexCoords = vec
         else:
             vertex.TexCoords = vec2(0.0'f32,0.0'f32)
@@ -107,8 +117,11 @@ proc ProcessNode(model:var Model,node:PNode, scene:PScene) =
         ProcessNode(model,node.children[i],scene)
 
 
-proc LoadModel(path:string) : Model = 
+proc LoadModel*(path:string) : Model = 
     var model:Model
+    model.texturesLoaded = newSeq[Texture]()
+    model.meshes = newSeq[Mesh]()
+    echo path
     let scene = aiImportFile(path,aiProcess_Triangulate or aiProcess_FlipUVs or aiProcess_CalcTangentSpace)
     #todo error check
     model.directory = path.substr(0,path.rfind("/"))
