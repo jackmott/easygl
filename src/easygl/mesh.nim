@@ -68,22 +68,24 @@ proc newMesh*(vertices:seq[Vertex], indices:seq[uint32], textures:seq[Texture]) 
 proc Draw*(mesh:Mesh,shaderProgram:ShaderProgramId) =
     var diffuseNr,specularNr,normalNr,heightNr = 1'u32
     for i,tex in mesh.textures:
+        echo "i:" & $i        
         ActiveTexture((TextureUnit.TEXTURE0.ord + i).TextureUnit)
         let texIndex =
             case tex.texType:
                 of TextureType.TextureDiffuse:
                     diffuseNr.inc()
-                    diffuseNr
+                    diffuseNr-1
                 of TextureType.TextureSpecular:
                     specularNr.inc()
-                    specularNr
+                    specularNr-1
                 of TextureType.TextureNormal:
                     normalNr.inc()
-                    normalNr
+                    normalNr-1
                 of TextureType.TextureHeight:
                     heightNr.inc()
-                    heightNr
+                    heightNr-1
         let uniform = $tex.texType & $texIndex
+        echo "uniform:" & uniform
         shaderProgram.SetInt(uniform,i.int32)
 
     BindVertexArray(mesh.VAO)

@@ -19,14 +19,13 @@ proc Draw*(model:Model, shaderProgram:ShaderProgramId) =
 
 proc LoadMaterialTextures(model: var Model, mat:PMaterial, texType:TTextureType, typeName:TextureType) : seq[Texture] =
     var textures = newSeq[Texture]()
-    let texCount = getTextureCount(mat,texType).int
-    echo "TexCount:" & $texCount
-    for i in 0 .. <texCount:
-        echo "i:" & $i
+    let texCount = getTextureCount(mat,texType).int    
+    for i in 0 .. <texCount:        
         var str : AIString
-        let ret = getTexture(mat,texType,i.cint,addr str)        
-        echo "ret:" & $ret
-        echo "loadmat loop:" & $str
+        let ret = getTexture(mat,texType,i.cint,addr str)       
+        if ret == ReturnFailure:
+            echo "failed to get texture"
+            break;         
         var skip = false
         for j,loadedTex in model.texturesLoaded:
             if loadedTex.path == $str:
@@ -48,7 +47,8 @@ proc ProcessMesh(model:var Model, mesh:PMesh, scene:PScene) : Mesh =
     var indices = newSeq[uint32]()
     var textures = newSeq[Texture]()
 
-    for i in 0 .. <mesh.vertexCount:
+    let vertexCount = mesh.vertexCount.int
+    for i in 0 .. <vertexCount:
         var vertex:Vertex
         var vector:Vec3f
         vector.x = mesh.vertices[i].x
@@ -83,10 +83,10 @@ proc ProcessMesh(model:var Model, mesh:PMesh, scene:PScene) : Mesh =
         vertex.Bitangent = vector
 
         vertices.add(vertex)
-
-    for i in 0 .. <mesh.faceCount:
+    
+    for i in 0 .. <mesh.faceCount.int:
         let face = mesh.faces[i]
-        for j in 0 .. <face.indexCount:
+        for j in 0 .. <face.indexCount.int:
             indices.add(face.indices[j].uint32)
 
     let material = scene.materials[mesh.materialIndex]          
@@ -111,9 +111,12 @@ proc ProcessMesh(model:var Model, mesh:PMesh, scene:PScene) : Mesh =
     
 
 proc ProcessNode(model:var Model,node:PNode, scene:PScene) = 
-    for i in 0 .. <node.meshCount:
+    let meshCount = node.meshCount.int
+    for i in 0 .. <meshCount:
+        echo "mesh"
         model.meshes.add(ProcessMesh(model,scene.meshes[i],scene))
-    for i in 0 .. <node.childrenCount:
+    let childrenCount = node.childrenCount.int
+    for i in 0 .. <childrenCount:
         ProcessNode(model,node.children[i],scene)
 
 
@@ -125,5 +128,6 @@ proc LoadModel*(path:string) : Model =
     let scene = aiImportFile(path,aiProcess_Triangulate or aiProcess_FlipUVs or aiProcess_CalcTangentSpace)
     #todo error check
     model.directory = path.substr(0,path.rfind("/"))
+    echo model.directory
     ProcessNode(model,scene.rootNode,scene)
     model

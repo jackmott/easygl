@@ -18,7 +18,7 @@ discard sdl2.init(INIT_EVERYTHING)
 var screenWidth: cint = 800
 var screenHeight: cint = 600
 
-let window = createWindow("Multiple Lights", 100, 100, screenWidth, screenHeight, SDL_WINDOW_OPENGL or SDL_WINDOW_RESIZABLE)
+let window = createWindow("Model Loading", 100, 100, screenWidth, screenHeight, SDL_WINDOW_OPENGL or SDL_WINDOW_RESIZABLE)
 discard window.glCreateContext()
 
 # Initialize OpenGL
