@@ -18,7 +18,7 @@ discard sdl2.init(INIT_EVERYTHING)
 var screenWidth: cint = 800
 var screenHeight: cint = 600
 
-let window = createWindow("Model Loading", 100, 100, screenWidth, screenHeight, SDL_WINDOW_OPENGL or SDL_WINDOW_RESIZABLE)
+let window = createWindow("Float", 100, 100, screenWidth, screenHeight, SDL_WINDOW_OPENGL or SDL_WINDOW_RESIZABLE)
 discard window.glCreateContext()
 
 # Initialize OpenGL
@@ -28,6 +28,8 @@ loadExtensions()
 let appDir = getAppDir()
 let ourShader = CreateAndLinkProgram(appDir&"/shaders/model_loading.vert",appDir&"/shaders/model_loading.frag")
 let ourModel = LoadModel(appDir&"/models/nanosuit.obj")
+
+#glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
 
 Enable(Capability.DEPTH_TEST)
 

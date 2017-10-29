@@ -14,9 +14,10 @@ type Model* = object
     gammaCorrection:bool
 
 proc Draw*(model:Model, shaderProgram:ShaderProgramId) =
+   
     for mesh in model.meshes:
         mesh.Draw(shaderProgram)
-
+    
 proc LoadMaterialTextures(model: var Model, mat:PMaterial, texType:TTextureType, typeName:TextureType) : seq[Texture] =
     var textures = newSeq[Texture]()
     let texCount = getTextureCount(mat,texType).int    
@@ -43,6 +44,7 @@ proc LoadMaterialTextures(model: var Model, mat:PMaterial, texType:TTextureType,
 
 
 proc ProcessMesh(model:var Model, mesh:PMesh, scene:PScene) : Mesh =
+    echo "Processing Mesh..."
     var vertices = newSeq[Vertex]()
     var indices = newSeq[uint32]()
     var textures = newSeq[Texture]()
@@ -98,6 +100,7 @@ proc ProcessMesh(model:var Model, mesh:PMesh, scene:PScene) : Mesh =
     # specular: texture_specularN
     # normal: texture_normalN
     let diffuseMaps = LoadMaterialTextures(model,material,TTextureType.TexDiffuse,TextureType.TextureDiffuse)
+    echo "diffusemaps:" & $diffuseMaps.len
     let specularMaps = LoadMaterialTextures(model,material,TTextureType.TexSpecular,TextureType.TextureSpecular)
     let normalMaps = LoadMaterialTextures(model,material,TTextureType.TexNormals,TextureType.TextureNormal)
     let heightMaps = LoadMaterialTextures(model,material,TTextureType.TexHeight,TextureType.TextureHeight)
@@ -105,16 +108,17 @@ proc ProcessMesh(model:var Model, mesh:PMesh, scene:PScene) : Mesh =
     textures = textures & specularMaps
     textures = textures & normalMaps
     textures = textures & heightMaps
+    echo "texlen:" & $textures.len
     newMesh(vertices,indices,textures)
     
 
     
 
 proc ProcessNode(model:var Model,node:PNode, scene:PScene) = 
-    let meshCount = node.meshCount.int
+    let meshCount = node.meshCount.int    
     for i in 0 .. <meshCount:
-        echo "mesh"
-        model.meshes.add(ProcessMesh(model,scene.meshes[i],scene))
+        echo "mesh:" & $i
+        model.meshes.add(ProcessMesh(model,scene.meshes[node.meshes[i]],scene))
     let childrenCount = node.childrenCount.int
     for i in 0 .. <childrenCount:
         ProcessNode(model,node.children[i],scene)
