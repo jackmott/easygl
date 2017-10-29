@@ -40,6 +40,17 @@ proc BindBuffer*(target:BufferTarget, buffer:BufferId) {.inline.} =
     
 proc BufferData*[T](target:BufferTarget, data:openarray[T], usage:BufferDataUsage) {.inline.} =
     glBufferData(target.GLenum,data.len*T.sizeof().GLsizeiptr,data.unsafeAddr,usage.GLenum)
+
+#bind and set buffer data in one go
+proc BindBufferData*[T](target:BufferTarget, buffer:BufferId, data:openarray[T], usage:BufferDataUsage) {.inline.} = 
+    glBindBuffer(target.GLenum,buffer.GLuint)
+    glBufferData(target.GLenum,data.len*T.sizeof().GLsizeiptr,data.unsafeAddr,usage.GLenum)
+
+# generate, bind, and set buffer data in one go
+proc GenBindBufferData*[T](target:BufferTarget, data:openarray[T], usage:BufferDataUsage) :BufferId {.inline.} = 
+    glGenBuffers(1,cast[ptr GLuint](addr result))
+    glBindBuffer(target.GLenum,result.GLuint)
+    glBufferData(target.GLenum,data.len*T.sizeof().GLsizeiptr,data.unsafeAddr,usage.GLenum)
     
 proc DeleteBuffer*(buffer:BufferId) =
     var b = buffer
@@ -50,6 +61,10 @@ proc DeleteBuffers*(buffers:openArray[BufferId]) =
     
 proc GenVertexArray*() : VertexArrayId {.inline.} =
     glGenVertexArrays(1.GLsizei,cast[ptr GLuint](addr result))
+
+proc GenBindVertexArray*() : VertexArrayId {.inline.} =
+    glGenVertexArrays(1.GLsizei,cast[ptr GLuint](addr result))
+    glBindVertexArray(result.GLuint)
     
 proc GenVertexArrays*(count:int32) : seq[VertexArrayId] {.inline.} =
     result = newSeq[VertexArrayId](count)

@@ -107,10 +107,9 @@ let camera = newCamera(vec3(0.0'f32,0.0'f32,9.0'f32))
 
 var currentTime,prevTime:float
 prevTime=cpuTime()
-var pressedKeys = newSeq[ScanCode]()
-while run:
-  pressedKeys.setLen(0)
+while run:  
   currentTime = cpuTime()
+  let keyState = getKeyboardState()
   let elapsedTime = (currentTime - prevTime).float32*10.0'f32
   prevTime = currentTime
   while pollEvent(evt):
@@ -122,10 +121,7 @@ while run:
             if windowEvent.event == WindowEvent_Resized:
                 let newWidth = windowEvent.data1
                 let newHeight = windowEvent.data2
-                glViewport(0, 0, newWidth, newHeight)   # Set the viewport to cover the new window
-        of KeyDown:
-            var keyEvent = cast[KeyboardEventPtr](addr(evt))
-            pressedKeys.add(keyEvent.keysym.scancode)
+                glViewport(0, 0, newWidth, newHeight)   # Set the viewport to cover the new window       
         of MouseWheel:
             var wheelEvent = cast[MouseWheelEventPtr](addr(evt))
             camera.ProcessMouseScroll(wheelEvent.y.float32)
@@ -135,16 +131,15 @@ while run:
         else:
             discard
              
-
-  if SDL_SCANCODE_W in pressedKeys:
+  if keyState[SDL_SCANCODE_W.uint8] != 0:
     camera.ProcessKeyboard(FORWARD,elapsedTime)
-  if SDL_SCANCODE_S in pressedKeys:
-    camera.ProcessKeyboard(BACKWARD,elapsedTime)
-  if SDL_SCANCODE_A in pressedKeys:
-    camera.ProcessKeyboard(LEFT,elapsedTime)
-  if SDL_SCANCODE_D in pressedKeys:
-    camera.ProcessKeyboard(RIGHT,elapsedTime)
-  if SDL_SCANCODE_ESCAPE in pressedKeys:
+  if keyState[SDL_SCANCODE_S.uint8] != 0:
+    camera.ProcessKeyBoard(BACKWARD,elapsedTime)
+  if keyState[SDL_SCANCODE_A.uint8] != 0:
+    camera.ProcessKeyBoard(LEFT,elapsedTime)
+  if keyState[SDL_SCANCODE_D.uint8] != 0:
+    camera.ProcessKeyBoard(RIGHT,elapsedTime)
+  if keyState[SDL_SCANCODE_ESCAPE.uint8] != 0:
     break
 
   # Render

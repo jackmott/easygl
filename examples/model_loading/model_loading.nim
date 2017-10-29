@@ -18,7 +18,7 @@ discard sdl2.init(INIT_EVERYTHING)
 var screenWidth: cint = 800
 var screenHeight: cint = 600
 
-let window = createWindow("Float", 100, 100, screenWidth, screenHeight, SDL_WINDOW_OPENGL or SDL_WINDOW_RESIZABLE)
+let window = createWindow("Model Loading", 100, 100, screenWidth, screenHeight, SDL_WINDOW_OPENGL or SDL_WINDOW_RESIZABLE)
 discard window.glCreateContext()
 
 # Initialize OpenGL
@@ -45,7 +45,7 @@ let camera = newCamera(vec3(0.0'f32,0.0'f32,3.0'f32))
 var currentTime,prevTime:float
 prevTime=cpuTime()
 while run:
-  let keystate = GetKeyboardState()
+  let keystate = getKeyboardState()
   currentTime = cpuTime()
   let elapsedTime = (currentTime - prevTime).float32*10.0'f32
   prevTime = currentTime
@@ -71,13 +71,13 @@ while run:
   
   if keyState[SDL_SCANCODE_W.uint8] != 0:
     camera.ProcessKeyboard(FORWARD,elapsedTime)
-  elif keyState[SDL_SCANCODE_S.uint8] != 0:
+  if keyState[SDL_SCANCODE_S.uint8] != 0:
     camera.ProcessKeyBoard(BACKWARD,elapsedTime)
-  elif keyState[SDL_SCANCODE_A.uint8] != 0:
+  if keyState[SDL_SCANCODE_A.uint8] != 0:
     camera.ProcessKeyBoard(LEFT,elapsedTime)
-  elif keyState[SDL_SCANCODE_D.uint8] != 0:
+  if keyState[SDL_SCANCODE_D.uint8] != 0:
     camera.ProcessKeyBoard(RIGHT,elapsedTime)
-  elif keyState[SDL_SCANCODE_ESCAPE.uint8] != 0:
+  if keyState[SDL_SCANCODE_ESCAPE.uint8] != 0:
     break
   
   # Render
