@@ -87,6 +87,7 @@ proc Draw*(mesh:Mesh,shaderProgram:ShaderProgramId) =
         let uniform = $tex.texType & $texIndex
         echo "uniform:" & uniform
         shaderProgram.SetInt(uniform,i.int32)
+        BindTexture(TextureTarget.TEXTURE_2D, mesh.textures[i].id)
 
     BindVertexArray(mesh.VAO)
     DrawElements(DrawMode.TRIANGLES,mesh.indices.len,IndexType.UNSIGNED_INT,0)
