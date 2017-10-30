@@ -188,11 +188,11 @@ while run:
   var projection = perspective(radians(camera.Zoom),screenWidth.float32/screenHeight.float32,0.1'f32,100.0'f32)
   var view = camera.GetViewMatrix()
 
-  lightingShader.SetMat4("projection",false,projection)
-  lightingShader.SetMat4("view",false,view)
+  lightingShader.SetMat4("projection",projection)
+  lightingShader.SetMat4("view",view)
   
   var model = mat4(1.0'f32)
-  lightingShader.SetMat4("model",false,model)
+  lightingShader.SetMat4("model",model)
 
   ActiveTexture(TextureUnit.TEXTURE0)
   BindTexture(TextureTarget.TEXTURE_2D,diffuseMap)
@@ -207,7 +207,7 @@ while run:
     model = translate(model,cubePos)
     let angle = 20.0'f32 * i.float32
     model = rotate(model,radians(angle),vec3(1.0'f32,0.3'f32,0.5'f32))
-    lightingShader.SetMat4("model",false,model)
+    lightingShader.SetMat4("model",model)
     DrawArrays(DrawMode.TRIANGLES,0,36)
   
   

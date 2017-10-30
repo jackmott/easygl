@@ -90,13 +90,13 @@ while run:
 
   var projection = perspective(radians(camera.Zoom),screenWidth.float32/screenHeight.float32,0.1'f32,100.0'f32)
   var view = camera.GetViewMatrix()
-  ourShader.SetMat4("projection",false,projection)
-  ourShader.SetMat4("view",false,view)
+  ourShader.SetMat4("projection",projection)
+  ourShader.SetMat4("view",view)
   
   var model = mat4(1.0'f32)
   model = translate(model,vec3(0.0'f32,-1.75'f32,0.0'f32))
   model = scale(model,vec3(0.2'f32,0.2'f32,0.2'f32))  
-  ourShader.SetMat4("model",false,model)
+  ourShader.SetMat4("model",model)
   ourModel.Draw(ourShader)
 
   

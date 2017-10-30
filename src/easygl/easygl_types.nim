@@ -46,7 +46,7 @@ type
         PRIMITIVE_RESTART = GL_PRIMITIVE_RESTART, #0x8F9D
         DEBUG_OUTPUT = GL_DEBUG_OUTPUT, #0x92E0
     
-    DepthFuncEnum* {.pure.} = enum        
+    CompareFunc* {.pure.} = enum        
         NEVER = GL_NEVER,
         LESS = GL_LESS,
         EQUAL = GL_EQUAL,
@@ -55,6 +55,17 @@ type
         NOTEQUAL = GL_NOTEQUAL,
         GEQUAL = GL_GEQUAL,
         ALWAYS = GL_ALWAYS
+
+    StencilAction* {.pure.} = enum
+        ZERO = GL_ZERO,
+        INVERT = GL_INVERT, #0x150A.GLenum
+        KEEP = GL_KEEP, #0x1E00.GLenum                
+        REPLACE = GL_REPLACE,
+        INCR = GL_INCR,
+        DECR = GL_DECR, #0x1E03.GLenum
+        INCR_WRAP = GL_INCR_WRAP,        
+        DECR_WRAP = GL_DECR_WRAP
+        
 
     BufferTarget* {.pure.} = enum
         ARRAY_BUFFER = GL_ARRAY_BUFFER, #0x88923

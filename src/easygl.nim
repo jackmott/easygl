@@ -10,193 +10,216 @@ const VERTEX_ARRAY_NULL* = 0.VertexArrayId
 const BUFFER_NULL* = 0.BufferId
 const TEXTURE_NULL* = 0.TextureId
 
-proc Enable*(cap:Capability) =
+template Enable*(cap:Capability) =
     glEnable(cap.GLenum)
 
-proc Disable*(cap:Capability) =
+template Disable*(cap:Capability) =
     glDisable(cap.GLenum)
 
-proc PolygonMode*(face:PolygonFace, mode:PolygonModeEnum) {.inline.} =
+template PolygonMode*(face:PolygonFace, mode:PolygonModeEnum) =
     glPolygonMode(face.GLenum, mode.GLenum)
 
-proc DepthMask*(flag: bool) {.inline.} =
+template DepthMask*(flag: bool) =
     glDepthMask(flag.GLboolean)
 
-proc DepthFunc*(fun: DepthFuncEnum) {.inline.} = 
+template DepthFunc*(fun: CompareFunc) = 
     glDepthFunc(fun.GLenum)
 
-proc StencilMask*(mask:uint32) {.inline.} = 
+template StencilMask*(mask:uint32)  = 
     glStencilMask(mask.GLuint)
 
-proc GenBuffer*() : BufferId {.inline.} =
-    glGenBuffers(1,cast[ptr GLuint](addr result))
+template StencilFunc*(fun:CompareFunc, reference: int32, mask:uint32) = 
+    glStencilFunc(fun.GLenum, reference.GLint, mask.GLuint)
 
-proc GenBuffers*(count:int32) : seq[BufferId] =
-    result = newSeq[BufferId](count)
-    glGenBuffers(count.GLsizei,cast[ptr GLuint](result[0].unsafeAddr))
+template StencilOp*(sfail: StencilAction, dpfail: StencilAction, dppass: StencilAction) =
+    glStencilOp(sfail.GLenum, dpfail.GLenum, dppass.GLenum)
 
-proc BindBuffer*(target:BufferTarget, buffer:BufferId) {.inline.} =
+template StencilOpSeparate*(face:PolygonFace, sfail: StencilAction, dpfail: StencilAction, dppass: StencilAction) =
+    glStencilOpSeparate(face.GLenum,sfail.GLenum, dpfail.GLenum, dppass.GLenum)
+
+template GenBuffer*() : BufferId  =
+    var buffer:GLuint
+    glGenBuffers(1,addr buffer)
+    buffer.BufferId
+
+template GenBuffers*(count:int32) : seq[BufferId] =
+    let buffers = newSeq[BufferId](count)
+    glGenBuffers(count.GLsizei,cast[ptr GLuint](buffers[0].unsafeAddr))
+    buffers
+
+template BindBuffer*(target:BufferTarget, buffer:BufferId)  =
     glBindBuffer(target.GLenum,buffer.GLuint)
     
 proc BufferData*[T](target:BufferTarget, data:openarray[T], usage:BufferDataUsage) {.inline.} =
     glBufferData(target.GLenum,data.len*T.sizeof().GLsizeiptr,data.unsafeAddr,usage.GLenum)
 
-#bind and set buffer data in one go
+# bind and set buffer data in one go
 proc BindBufferData*[T](target:BufferTarget, buffer:BufferId, data:openarray[T], usage:BufferDataUsage) {.inline.} = 
     glBindBuffer(target.GLenum,buffer.GLuint)
     glBufferData(target.GLenum,data.len*T.sizeof().GLsizeiptr,data.unsafeAddr,usage.GLenum)
 
 # generate, bind, and set buffer data in one go
-proc GenBindBufferData*[T](target:BufferTarget, data:openarray[T], usage:BufferDataUsage) :BufferId {.inline.} = 
-    glGenBuffers(1,cast[ptr GLuint](addr result))
-    glBindBuffer(target.GLenum,result.GLuint)
+proc GenBindBufferData*[T](target:BufferTarget, data:openarray[T], usage:BufferDataUsage) :BufferId  {.inline.} = 
+    var buffer : GLuint
+    glGenBuffers(1,addr buffer)
+    glBindBuffer(target.GLenum,buffer)
     glBufferData(target.GLenum,data.len*T.sizeof().GLsizeiptr,data.unsafeAddr,usage.GLenum)
+    buffer.BufferId
     
-proc DeleteBuffer*(buffer:BufferId) =
+template DeleteBuffer*(buffer:BufferId) =    
     var b = buffer
     glDeleteBuffers(1,b.GLuint.addr)
 
-proc DeleteBuffers*(buffers:openArray[BufferId]) =
+template DeleteBuffers*(buffers:openArray[BufferId]) =
     glDeleteBuffers(buffers.len.GLsizei,cast[ptr GLUint](buffers.unsafeAddr))
     
-proc GenVertexArray*() : VertexArrayId {.inline.} =
-    glGenVertexArrays(1.GLsizei,cast[ptr GLuint](addr result))
+template GenVertexArray*() : VertexArrayId  =
+    var VAO : GLuint
+    glGenVertexArrays(1.GLsizei,cast[ptr GLuint](addr VAO))
+    VAO.VertexArrayId
 
-proc GenBindVertexArray*() : VertexArrayId {.inline.} =
-    glGenVertexArrays(1.GLsizei,cast[ptr GLuint](addr result))
-    glBindVertexArray(result.GLuint)
+# Gen and bind vertex array in one go
+template GenBindVertexArray*() : VertexArrayId  =
+    var VAO : GLuint
+    glGenVertexArrays(1.GLsizei,addr VAO)
+    glBindVertexArray(VAO)
+    VAO.VertexArrayId
     
-proc GenVertexArrays*(count:int32) : seq[VertexArrayId] {.inline.} =
-    result = newSeq[VertexArrayId](count)
-    glGenVertexArrays(count.GLsizei,cast[ptr GLuint](result[0].unsafeAddr))
+template GenVertexArrays*(count:int32) : seq[VertexArrayId]  =
+    let vertexArrays = newSeq[VertexArrayId](count)
+    glGenVertexArrays(count.GLsizei,cast[ptr GLuint](vertexArrays[0].unsafeAddr))
+    vertexArrays
     
-proc BindVertexArray*(vertexArray:VertexArrayId) {.inline.} =
+template BindVertexArray*(vertexArray:VertexArrayId)  =
     glBindVertexArray(vertexArray.GLuint)
 
-proc DeleteVertexArray*(vertexArray:VertexArrayId) =
+template DeleteVertexArray*(vertexArray:VertexArrayId) =    
     var v = vertexArray
     glDeleteVertexArrays(1,v.GLUint.addr)
 
-proc DeleteVertexArrays*(vertexArrays:openArray[VertexArrayId]) =
-    glDeleteVertexArrays(vertexArrays.len.GLsizei,cast[ptr GLUint](vertexArrays.unsafeAddr))
+template DeleteVertexArrays*(vertexArrays:openArray[VertexArrayId]) =
+    glDeleteVertexArrays(vertexArrays.len.GLsizei,cast[ptr GLUint](vertexArrays[0].unsafeAddr))
     
-proc GenTexture*() : TextureId =
-    glGenTextures(1.GLsizei,cast[ptr GLuint](addr result))
+template GenTexture*() : TextureId =
+    var tex : GLuint
+    glGenTextures(1.GLsizei,addr tex)
+    tex.TextureId
 
-proc GenTextures*(count:int32) : seq[TextureId] =
-    result = newSeq[TextureId](count)
-    glGenTextures(count.GLsizei,cast[ptr GLuint](result[0].unsafeAddr))
+template GenTextures*(count:int32) : seq[TextureId] =
+    let textures = newSeq[TextureId](count)
+    glGenTextures(count.GLsizei,cast[ptr GLuint](textures[0].unsafeAddr))
+    textures
 
-proc BindTexture*(target:TextureTarget, texture:TextureId) =
+template BindTexture*(target:TextureTarget, texture:TextureId) =
     glBindTexture(target.GLenum, texture.GLuint)
 
-
-proc ActiveTexture*(texture:TextureUnit) =
+template ActiveTexture*(texture:TextureUnit) =
     glActiveTexture(texture.GLenum)
 
-proc TexParameteri*(target:TextureTarget, pname:TextureParameter, param:GLint) =
+template TexParameteri*(target:TextureTarget, pname:TextureParameter, param:GLint) =
     glTexParameteri(target.GLenum,pname.GLenum,param)
 
-proc TexImage2D*[T](target:TexImageTarget, level:int32, internalFormat:TextureInternalFormat, width:int32, height:int32, format:PixelDataFormat, `type`:PixelDataType, data: openArray[T] ) =
-    glTexImage2D(target.GLenum,level.GLint,internalFormat.GLint,width.GLsizei,height.GLsizei,0,format.GLenum,`type`.GLenum,data.unsafeAddr)
+# todo why not template work?
+proc TexImage2D*[T](target:TexImageTarget, level:int32, internalFormat:TextureInternalFormat, width:int32, height:int32, format:PixelDataFormat, pixelType:PixelDataType, data: openArray[T] ) {.inline.} =
+    glTexImage2D(target.GLenum,level.GLint,internalFormat.GLint,width.GLsizei,height.GLsizei,0,format.GLenum,pixelType.GLenum,data.unsafeAddr)
 
-proc GenerateMipmap*(target:MipmapTarget) =
+template GenerateMipmap*(target:MipmapTarget) =
     glGenerateMipmap(target.GLenum)
 
 # Doesn't seem to exist on win10
-#proc GenerateTextureMipmap*(texture:TextureId) =
+#template GenerateTextureMipmap*(texture:TextureId) =
 #    glGenerateTextureMipmap(texture.GLuint)
 
-proc CreateShader*(shaderType:ShaderType) : ShaderId {.inline.} =
+template CreateShader*(shaderType:ShaderType) : ShaderId  =
     glCreateShader(shaderType.GLenum).ShaderId
 
-proc ShaderSource*(shader:ShaderId, src: string) =
+template ShaderSource*(shader:ShaderId, src: string) =
     let cstr =  allocCStringArray([src])
     glShaderSource(shader.GLuint, 1, cstr, nil)
     deallocCStringArray(cstr)
 
-proc CompileShader*(shader:ShaderId) {.inline.} =
+template CompileShader*(shader:ShaderId)  =
     glCompileShader(shader.GLuint)
 
-proc GetShaderCompileStatus*(shader:ShaderId) : bool {.inline.} =
+template GetShaderCompileStatus*(shader:ShaderId) : bool  =
     var r : GLint
     glGetShaderiv(shader.GLuint,GL_COMPILE_STATUS,addr r)
     r.bool
 
-proc GetShaderInfoLog*(shader:ShaderId) : string =
+template GetShaderInfoLog*(shader:ShaderId) : string =
     var logLen : GLint
     glGetShaderiv(shader.GLuint,GL_INFO_LOG_LENGTH, addr logLen)
     var logStr = cast[ptr GLchar](alloc(logLen))
     glGetShaderInfoLog(shader.GLuint,logLen,addr logLen,logStr)
     $logStr
 
-proc DeleteShader*(shader:ShaderId) {.inline.} =
+template DeleteShader*(shader:ShaderId)  =
     glDeleteShader(shader.GLuint)
 
-proc CreateProgram*() : ShaderProgramId {.inline.} =
+template CreateProgram*() : ShaderProgramId  =
     glCreateProgram().ShaderProgramId
 
-proc AttachShader*(program:ShaderProgramId, shader:ShaderId) {.inline.} =
+template AttachShader*(program:ShaderProgramId, shader:ShaderId)  =
     glAttachShader(program.GLuint,shader.GLuint)
 
-proc LinkProgram*(program:ShaderProgramId) {.inline.} =
+template LinkProgram*(program:ShaderProgramId)  =
     glLinkProgram(program.GLuint)
 
-proc GetProgramLinkStatus*(program:ShaderProgramId) : bool {.inline.} =
+template GetProgramLinkStatus*(program:ShaderProgramId) : bool  =
     var r : GLint
     glGetProgramiv(program.GLuint,GL_LINK_STATUS,addr r)
     r.bool
 
-proc GetProgramInfoLog*(program:ShaderProgramId) : string {.inline.} =
+template GetProgramInfoLog*(program:ShaderProgramId) : string  =
     var logLen : GLint
     glGetProgramiv(program.GLuint,GL_INFO_LOG_LENGTH, addr logLen)
     var logStr = cast[ptr GLchar](alloc(logLen))
     glGetProgramInfoLog(program.GLuint,logLen,addr logLen,logStr)
     $logStr
 
-proc UseProgram*(program:ShaderProgramId) {.inline.} =
+template UseProgram*(program:ShaderProgramId)  =
     glUseProgram(program.GLuint)
 
-proc GetUniformLocation*(program: ShaderProgramId, name: string) : UniformLocation {.inline.} =
+template GetUniformLocation*(program: ShaderProgramId, name: string) : UniformLocation  =
     glGetUniformLocation(program.GLuint,name).UniformLocation
 
-proc Uniform1i*(location:UniformLocation, value: int32)  {.inline.} =
+template Uniform1i*(location:UniformLocation, value: int32)   =
     glUniform1i(location.GLint,value.GLint)
 
-proc Uniform1f*(location:UniformLocation,value: float32)  {.inline.} =
+template Uniform1f*(location:UniformLocation,value: float32)   =
     glUniform1f(location.GLint,value.GLfloat)
 
-proc Uniform2f*(location:UniformLocation,x:float32, y:float32)  {.inline.} =
+template Uniform2f*(location:UniformLocation,x:float32, y:float32)   =
     glUniform2f(location.GLint,x.GLfloat,y.GLfloat)
         
-proc Uniform3f*(location:UniformLocation,x:float32, y:float32, z:float32)  {.inline.} =
+template Uniform3f*(location:UniformLocation,x:float32, y:float32, z:float32)   =
     glUniform3f(location.GLint,x.GLfloat,y.GLfloat,z.GLfloat)
 
-proc Uniform4f*(location:UniformLocation,x:float32, y:float32, z:float32, w:float32)  {.inline.} =
+template Uniform4f*(location:UniformLocation,x:float32, y:float32, z:float32, w:float32)   =
     glUniform4f(location.GLint,x.GLfloat,y.GLfloat,z.GLfloat, w.GLfloat)
                 
 type VertexAttribSize = range[1..4]
-proc VertexAttribPointer*(index:uint32, size:VertexAttribSize, attribType:VertexAttribType, normalized:bool, stride:int32, `pointer`:int32) {.inline.} =
-    glVertexAttribPointer(index.GLuint, size.GLint, attribType.GLenum, normalized.GLboolean,stride.GLsizei, cast[pointer](`pointer`))
+template VertexAttribPointer*(index:uint32, size:VertexAttribSize, attribType:VertexAttribType, normalized:bool, stride:int32, offset:int32)  =
+    glVertexAttribPointer(index.GLuint, size.GLint, attribType.GLenum, normalized.GLboolean,stride.GLsizei, cast[pointer](offset))
     
-proc EnableVertexAttribArray*(indeX:uint32) {.inline.} =
+template EnableVertexAttribArray*(index:uint32)  =
     glEnableVertexAttribArray(index.GLuint)
 
-proc DrawArrays*(mode:DrawMode, first:int32, count:int32)  {.inline.} =
+template DrawArrays*(mode:DrawMode, first:int32, count:int32)   =
     glDrawArrays(mode.GLenum, first.GLint, count.GLsizei)
 
-proc DrawElements*[T](mode:DrawMode, count:int, indexType:IndexType, indices:openarray[T]) =
+proc DrawElements*[T](mode:DrawMode, count:int, indexType:IndexType, indices:openarray[T]) {.inline.} =
     glDrawElements(mode.GLenum, count.GLsizei, indexType.GLenum, indices.unsafeAddr)
 
-proc DrawElements*(mode:DrawMode, count:int, indexType:IndexType, offset:int) =
+template DrawElements*(mode:DrawMode, count:int, indexType:IndexType, offset:int) =
     glDrawElements(mode.GLenum, count.GLsizei, indexType.GLenum, cast[pointer](offset))
     
-proc Clear*(buffersToClear:varargs[ClearBufferMask]) {.inline.} =
+template Clear*(buffersToClear:varargs[ClearBufferMask])  =
     var mask = buffersToClear[0].uint32
     for i in countup(1,<buffersToClear.len):
         mask = mask or buffersToClear[i].uint32
     glClear(mask.GLbitfield)
 
-proc ClearColor*(r:float32, g:float32, b:float32, a:float32) =
+template ClearColor*(r:float32, g:float32, b:float32, a:float32) =
         glClearColor(r.GLfloat, g.GLfloat, b.GLfloat, a.GLfloat)
     

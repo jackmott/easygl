@@ -151,22 +151,22 @@ while run:
   var projection = perspective(radians(camera.Zoom),screenWidth.float32/screenHeight.float32,0.1'f32,100.0'f32)
   var view = camera.GetViewMatrix()
 
-  lightingShader.SetMat4("projection",false,projection)
-  lightingShader.SetMat4("view",false,view)
+  lightingShader.SetMat4("projection",projection)
+  lightingShader.SetMat4("view",view)
   
   var model = mat4(1.0'f32)
-  lightingShader.SetMat4("model",false,model)
+  lightingShader.SetMat4("model",model)
 
   BindVertexArray(cubeVAO)
   DrawArrays(DrawMode.TRIANGLES,0,36)
   
   lampShader.UseProgram()
-  lampShader.SetMat4("projection",false,projection)
-  lampShader.SetMat4("view",false,view)
+  lampShader.SetMat4("projection",projection)
+  lampShader.SetMat4("view",view)
 
   model = translate(model,lightPos)
   model = scale(model,vec3(0.2'f32))
-  lampShader.SetMat4("model",false,model)
+  lampShader.SetMat4("model",model)
   BindVertexArray(lightVao)
   DrawArrays(DrawMode.TRIANGLES,0,36)
 

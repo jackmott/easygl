@@ -73,32 +73,32 @@ proc LoadTextureWithMips*(path:string) : TextureId =
                             
 
 # Uniform funcs with easier / shorter names and glm types
-proc SetBool*(program:ShaderProgramId, name: string, value: bool) =
+template SetBool*(program:ShaderProgramId, name: string, value: bool) =
     glUniform1i(GetUniformLocation(program,name).GLint,value.GLint)
 
-proc SetInt*(program:ShaderProgramId, name: string, value: int32) =
+template SetInt*(program:ShaderProgramId, name: string, value: int32) =
     glUniform1i(GetUniformLocation(program,name).GLint,value.GLint)
     
-proc SetFloat*(program:ShaderProgramId, name: string, value: float32) =
+template SetFloat*(program:ShaderProgramId, name: string, value: float32) =
     glUniform1f(GetUniformLocation(program,name).GLint,value.GLfloat)
 
-proc SetVec2*(program:ShaderProgramId, name: string, value:var Vec2f) =
+template SetVec2*(program:ShaderProgramId, name: string, value:var Vec2f) =
     glUniform2fv(GetUniformLocation(program,name).GLint,1,value.caddr)
 
-proc SetVec2*(program:ShaderProgramId, name: string, x:float32, y:float32) =
+template SetVec2*(program:ShaderProgramId, name: string, x:float32, y:float32) =
     glUniform2f(GetUniformLocation(program,name).GLint,x.GLfloat,y.GLfloat)
     
-proc SetVec3*(program:ShaderProgramId, name: string, value:var Vec3f) =
+template SetVec3*(program:ShaderProgramId, name: string, value:var Vec3f) =
     glUniform3fv(GetUniformLocation(program,name).GLint,1,value.caddr)
     
-proc SetVec3*(program:ShaderProgramId, name: string, x:float32, y:float32, z:float32) =
+template SetVec3*(program:ShaderProgramId, name: string, x:float32, y:float32, z:float32) =
     glUniform3f(GetUniformLocation(program,name).GLint,x.GLfloat,y.GLfloat,z.GLfloat)
 
-proc SetVec4*(program:ShaderProgramId, name:string, value: var Vec4f) =
+template SetVec4*(program:ShaderProgramId, name:string, value: var Vec4f) =
     glUniform4fv(GetUniformLocation(program,name).GLint,1,value.caddr)
 
-proc SetVec4*(program:ShaderProgramId, name: string, x:float32, y:float32, z:float32, w:float32) =
+template SetVec4*(program:ShaderProgramId, name: string, x:float32, y:float32, z:float32, w:float32) =
     glUniform4f(GetUniformLocation(program,name).GLint,x.GLfloat,y.GLfloat,z.GLfloat,w.GLfloat)
             
-proc SetMat4*(program:ShaderProgramId, name: string, transpose:bool, value: var Mat4f ) =
-    glUniformMatrix4fv(GetUniformLocation(program,name).GLint,1,transpose.GLboolean,value.caddr)
+template SetMat4*(program:ShaderProgramId, name: string, value: var Mat4f ) =
+    glUniformMatrix4fv(GetUniformLocation(program,name).GLint,1,GL_FALSE,value.caddr)

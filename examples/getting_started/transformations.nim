@@ -99,7 +99,7 @@ while run:
   transform = rotate(transform,vec3(0.0'f32,0.0'f32,1.0'f32),getTicks().float32/1000.0'f32)
 
   ourShader.UseProgram()
-  ourShader.SetMat4("transform",false,transform)
+  ourShader.SetMat4("transform",transform)
 
   BindVertexArray(VAO) # Not necessary since we only have one VAO
   DrawElements(DrawMode.TRIANGLES,6,IndexType.UNSIGNED_INT,0)

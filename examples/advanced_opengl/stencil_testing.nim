@@ -22,13 +22,18 @@ discard window.glCreateContext()
 # Initialize OpenGL
 loadExtensions()
 
-### Build and compile shader program
-let appDir = getAppDir()
-let shader = CreateAndLinkProgram(appDir&"/shaders/depth_testing.vert",appDir&"/shaders/depth_testing.frag")
-
 
 Enable(Capability.DEPTH_TEST)
 DepthFunc(CompareFunc.LESS)
+Enable(Capability.STENCIL_TEST)
+StencilFunc(CompareFunc.NOTEQUAL,1,0xFF)
+StencilOp(StencilAction.KEEP,StencilAction.KEEP,StencilAction.REPLACE)
+
+### Build and compile shader program
+let appDir = getAppDir()
+let shader = CreateAndLinkProgram(appDir&"/shaders/stencil_testing.vert",appDir&"/shaders/stencil_testing.frag")
+let shaderSingleColor = CreateAndLinkProgram(appDir&"/shaders/stencil_testing.vert",appDir&"/shaders/stencil_single_color.frag")
+
 
 # Set up vertex data
 let cubeVertices  =
@@ -95,6 +100,7 @@ EnableVertexAttribArray(0)
 VertexAttribPointer(0,3,VertexAttribType.FLOAT,false,5*float32.sizeof(),0)
 EnableVertexAttribArray(1)
 VertexAttribPointer(1,2,VertexAttribType.FLOAT,false,5*float32.sizeof(),3*float32.sizeof())
+BindVertexArray(VERTEX_ARRAY_NULL)
 
 # Plane
 let planeVAO = GenBindVertexArray()
@@ -116,7 +122,7 @@ var
   run = true
 
 glViewport(0, 0, screenWidth, screenHeight)   # Set the viewport to cover the new window
-let camera = newCamera(vec3(0.0'f32,0.0'f32,9.0'f32))
+let camera = newCamera(vec3(0.0'f32,0.0'f32,4.0'f32))
 
 var currentTime,prevTime:float
 prevTime=cpuTime()
@@ -157,16 +163,34 @@ while run:
     break
   # Render
   ClearColor(0.1,0.1,0.1,1.0)
-  easygl.Clear(ClearBufferMask.COLOR_BUFFER_BIT, ClearBufferMask.DEPTH_BUFFER_BIT)
+  Clear(ClearBufferMask.COLOR_BUFFER_BIT, 
+               ClearBufferMask.DEPTH_BUFFER_BIT,
+               ClearBufferMask.STENCIL_BUFFER_BIT)
 
- 
-  shader.UseProgram()
+  shaderSingleColor.UseProgram()
   var model = mat4(1.0'f32)    
   var view = camera.GetViewMatrix()
   var projection = perspective(radians(camera.Zoom),screenWidth.float32/screenHeight.float32,0.1'f32,100.0'f32)
+  shaderSingleColor.SetMat4("view",view)
+  shaderSingleColor.SetMat4("projection",projection)
+ 
+  shader.UseProgram()  
   shader.SetMat4("projection",projection)
   shader.SetMat4("view",view)
     
+ 
+  # floor
+  StencilMask(0x00)
+  BindVertexArray(planeVAO)  
+  BindTexture(TextureTarget.TEXTURE_2D,floorTexture)  
+  shader.SetMat4("model",model)
+  DrawArrays(DrawMode.TRIANGLES,0,6)
+  BindVertexArray(VERTEX_ARRAY_NULL)
+
+  # 1st. render pass, draw objects as normal, writing to the stencil buffer
+  # --------------------------------------------------------------------
+  StencilFunc(CompareFunc.ALWAYS,1,0xFF)
+  StencilMask(0xFF)
   # cubes
   BindVertexArray(cubeVAO)
   ActiveTexture(TextureUnit.TEXTURE0)
@@ -179,13 +203,31 @@ while run:
   shader.SetMat4("model",model)
   DrawArrays(DrawMode.TRIANGLES,0,36)
 
-  # floor
-  BindVertexArray(planeVAO)  
-  BindTexture(TextureTarget.TEXTURE_2D,floorTexture)
+  # 2nd. render pass: now draw slightly scaled versions of the objects, this time disabling stencil writing.
+  # Because the stencil buffer is now filled with several 1s. The parts of the buffer that are 1 are not drawn, thus only drawing 
+  # the objects' size differences, making it look like borders.
+  # -----------------------------------------------------------------------------------------------------------------------------
+  StencilFunc(CompareFunc.NOTEQUAL,1,0xFF)
+  StencilMask(0x00)
+  Disable(Capability.DEPTH_TEST)
+  shaderSingleColor.UseProgram()
+  let scale = 1.1'f32
+  # cubes
+  BindVertexArray(cubeVAO)  
+  BindTexture(TextureTarget.TEXTURE_2D, cubeTexture)
   model = mat4(1.0'f32)
-  shader.SetMat4("model",model)
-  DrawArrays(DrawMode.TRIANGLES,0,6)
+  model = translate(model,vec3(-1.0'f32,0.0'f32,-1.0'f32))
+  model = scale(model,vec3(scale,scale,scale))
+  shaderSingleColor.SetMat4("model",model)
+  DrawArrays(DrawMode.TRIANGLES,0,36)
+  model = mat4(1.0'f32)
+  model = translate(model,vec3(2.0'f32,0.0'f32,0.0'f32))
+  model = scale(model,vec3(scale,scale,scale))
+  shaderSingleColor.SetMat4("model",model)
+  DrawArrays(DrawMode.TRIANGLES,0,36)  
   BindVertexArray(VERTEX_ARRAY_NULL)
+  StencilMask(0xFF)
+  Enable(Capability.DEPTH_TEST)
   
   window.glSwapWindow()
 

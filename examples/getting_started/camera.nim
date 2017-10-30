@@ -166,8 +166,8 @@ while run:
   ourShader.UseProgram()
   var projection = perspective(radians(camera.Zoom),screenWidth.float32/screenHeight.float32,0.1'f32,100.0'f32)
   var view = camera.GetViewMatrix()
-  ourShader.SetMat4("projection",false,projection)
-  ourShader.SetMat4("view",false,view)
+  ourShader.SetMat4("projection",projection)
+  ourShader.SetMat4("view",view)
   BindVertexArray(VAO) # Not necessary since we only have one VAO
 
   for i in 0 .. <10:
@@ -175,7 +175,7 @@ while run:
     model = translate(model,cubePositions[i])
     let angle = 20.0'f32*i.float32
     model = rotate(model,vec3(1.0'f32,0.3'f32,0.5'f32),radians(angle))
-    ourShader.SetMat4("model",false,model)
+    ourShader.SetMat4("model",model)
     DrawArrays(DrawMode.TRIANGLES,0,36)
   window.glSwapWindow()
 
