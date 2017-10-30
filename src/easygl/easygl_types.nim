@@ -46,7 +46,7 @@ type
         PRIMITIVE_RESTART = GL_PRIMITIVE_RESTART, #0x8F9D
         DEBUG_OUTPUT = GL_DEBUG_OUTPUT, #0x92E0
     
-    CompareFunc* {.pure.} = enum        
+    AlphaFunc* {.pure.} = enum        
         NEVER = GL_NEVER,
         LESS = GL_LESS,
         EQUAL = GL_EQUAL,
@@ -56,7 +56,7 @@ type
         GEQUAL = GL_GEQUAL,
         ALWAYS = GL_ALWAYS
 
-    StencilAction* {.pure.} = enum
+    StencilOpEnum* {.pure.} = enum
         ZERO = GL_ZERO,
         INVERT = GL_INVERT, #0x150A.GLenum
         KEEP = GL_KEEP, #0x1E00.GLenum                

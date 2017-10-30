@@ -68,7 +68,7 @@ proc LoadTextureWithMips*(path:string) : TextureId =
             textureId
         else:
             echo "Failure to Load Image"            
-            TEXTURE_NULL
+            0.TextureId
             
                             
 

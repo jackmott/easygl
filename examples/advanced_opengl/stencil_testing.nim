@@ -24,10 +24,10 @@ loadExtensions()
 
 
 Enable(Capability.DEPTH_TEST)
-DepthFunc(CompareFunc.LESS)
 Enable(Capability.STENCIL_TEST)
-StencilFunc(CompareFunc.NOTEQUAL,1,0xFF)
-StencilOp(StencilAction.KEEP,StencilAction.KEEP,StencilAction.REPLACE)
+DepthFunc(AlphaFunc.LESS)
+StencilFunc(AlphaFunc.NOTEQUAL,1,0xFF)
+StencilOp(StencilOpEnum.KEEP,StencilOpEnum.KEEP,StencilOpEnum.REPLACE)
 
 ### Build and compile shader program
 let appDir = getAppDir()
@@ -100,7 +100,7 @@ EnableVertexAttribArray(0)
 VertexAttribPointer(0,3,VertexAttribType.FLOAT,false,5*float32.sizeof(),0)
 EnableVertexAttribArray(1)
 VertexAttribPointer(1,2,VertexAttribType.FLOAT,false,5*float32.sizeof(),3*float32.sizeof())
-BindVertexArray(VERTEX_ARRAY_NULL)
+UnBindVertexArray()
 
 # Plane
 let planeVAO = GenBindVertexArray()
@@ -109,7 +109,7 @@ EnableVertexAttribArray(0)
 VertexAttribPointer(0,3,VertexAttribType.FLOAT,false,5*float32.sizeof(),0)
 EnableVertexAttribArray(1)
 VertexAttribPointer(1,2,VertexAttribType.FLOAT,false,5*float32.sizeof(),3*float32.sizeof())
-BindVertexArray(VERTEX_ARRAY_NULL)
+UnBindVertexArray()
 
 let cubeTexture = LoadTextureWithMips(appDir&"/textures/marble.jpg")
 let floorTexture = LoadTextureWithMips(appDir&"/textures/metal.png")
@@ -161,7 +161,7 @@ while run:
     camera.ProcessKeyBoard(RIGHT,elapsedTime)
   if keyState[SDL_SCANCODE_ESCAPE.uint8] != 0:
     break
-  # Render
+  # Render  
   ClearColor(0.1,0.1,0.1,1.0)
   Clear(ClearBufferMask.COLOR_BUFFER_BIT, 
                ClearBufferMask.DEPTH_BUFFER_BIT,
@@ -175,21 +175,20 @@ while run:
   shaderSingleColor.SetMat4("projection",projection)
  
   shader.UseProgram()  
-  shader.SetMat4("projection",projection)
   shader.SetMat4("view",view)
-    
- 
+  shader.SetMat4("projection",projection)
+      
   # floor
   StencilMask(0x00)
   BindVertexArray(planeVAO)  
   BindTexture(TextureTarget.TEXTURE_2D,floorTexture)  
   shader.SetMat4("model",model)
   DrawArrays(DrawMode.TRIANGLES,0,6)
-  BindVertexArray(VERTEX_ARRAY_NULL)
+  UnBindVertexArray()
 
   # 1st. render pass, draw objects as normal, writing to the stencil buffer
   # --------------------------------------------------------------------
-  StencilFunc(CompareFunc.ALWAYS,1,0xFF)
+  StencilFunc(AlphaFunc.ALWAYS,1,0xFF)
   StencilMask(0xFF)
   # cubes
   BindVertexArray(cubeVAO)
@@ -207,7 +206,7 @@ while run:
   # Because the stencil buffer is now filled with several 1s. The parts of the buffer that are 1 are not drawn, thus only drawing 
   # the objects' size differences, making it look like borders.
   # -----------------------------------------------------------------------------------------------------------------------------
-  StencilFunc(CompareFunc.NOTEQUAL,1,0xFF)
+  StencilFunc(AlphaFunc.NOTEQUAL,1,0xFF)
   StencilMask(0x00)
   Disable(Capability.DEPTH_TEST)
   shaderSingleColor.UseProgram()
@@ -225,7 +224,7 @@ while run:
   model = scale(model,vec3(scale,scale,scale))
   shaderSingleColor.SetMat4("model",model)
   DrawArrays(DrawMode.TRIANGLES,0,36)  
-  BindVertexArray(VERTEX_ARRAY_NULL)
+  UnBindVertexArray()
   StencilMask(0xFF)
   Enable(Capability.DEPTH_TEST)
   

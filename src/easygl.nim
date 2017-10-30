@@ -4,12 +4,6 @@ include easygl.easygl_types
 # When passing objects to opengl you may need this to get a relative pointer
 template offsetof*(typ, field): untyped = (var dummy: typ; cast[int](addr(dummy.field)) - cast[int](addr(dummy)))
 
-# OpenGL uses the convention of 0 for 'null' which is used to clear things
-# These are convenience constants you can use
-const VERTEX_ARRAY_NULL* = 0.VertexArrayId
-const BUFFER_NULL* = 0.BufferId
-const TEXTURE_NULL* = 0.TextureId
-
 template Enable*(cap:Capability) =
     glEnable(cap.GLenum)
 
@@ -22,19 +16,22 @@ template PolygonMode*(face:PolygonFace, mode:PolygonModeEnum) =
 template DepthMask*(flag: bool) =
     glDepthMask(flag.GLboolean)
 
-template DepthFunc*(fun: CompareFunc) = 
+template DepthFunc*(fun: AlphaFunc) = 
     glDepthFunc(fun.GLenum)
 
 template StencilMask*(mask:uint32)  = 
     glStencilMask(mask.GLuint)
 
-template StencilFunc*(fun:CompareFunc, reference: int32, mask:uint32) = 
+template StencilFunc*(fun:AlphaFunc, reference: int32, mask:uint32) = 
     glStencilFunc(fun.GLenum, reference.GLint, mask.GLuint)
 
-template StencilOp*(sfail: StencilAction, dpfail: StencilAction, dppass: StencilAction) =
+template StencilFuncSeparate*(face:PolygonFace,fun:AlphaFunc, reference: int32, mask:uint32) =
+    glStencilFuncSeparate(face.GLenum, fun.GLenum, reference.GLint, mask.GLuint)
+
+template StencilOp*(sfail: StencilOpEnum, dpfail: StencilOpEnum, dppass: StencilOpEnum) =
     glStencilOp(sfail.GLenum, dpfail.GLenum, dppass.GLenum)
 
-template StencilOpSeparate*(face:PolygonFace, sfail: StencilAction, dpfail: StencilAction, dppass: StencilAction) =
+template StencilOpSeparate*(face:PolygonFace, sfail: StencilOpEnum, dpfail: StencilOpEnum, dppass: StencilOpEnum) =
     glStencilOpSeparate(face.GLenum,sfail.GLenum, dpfail.GLenum, dppass.GLenum)
 
 template GenBuffer*() : BufferId  =
@@ -92,6 +89,9 @@ template GenVertexArrays*(count:int32) : seq[VertexArrayId]  =
     
 template BindVertexArray*(vertexArray:VertexArrayId)  =
     glBindVertexArray(vertexArray.GLuint)
+
+template UnbindVertexArray*() =
+    glBindVertexArray(0)
 
 template DeleteVertexArray*(vertexArray:VertexArrayId) =    
     var v = vertexArray
@@ -215,9 +215,9 @@ template DrawElements*(mode:DrawMode, count:int, indexType:IndexType, offset:int
     glDrawElements(mode.GLenum, count.GLsizei, indexType.GLenum, cast[pointer](offset))
     
 template Clear*(buffersToClear:varargs[ClearBufferMask])  =
-    var mask = buffersToClear[0].uint32
-    for i in countup(1,<buffersToClear.len):
-        mask = mask or buffersToClear[i].uint32
+    var mask : uint32 
+    for m in buffersToClear:
+        mask = mask or m.uint32
     glClear(mask.GLbitfield)
 
 template ClearColor*(r:float32, g:float32, b:float32, a:float32) =

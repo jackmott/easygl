@@ -56,7 +56,7 @@ proc SetupMesh(mesh:var Mesh) =
     EnableVertexAttribArray(4)
     VertexAttribPointer(4,3,VertexAttribType.FLOAT,false,Vertex.sizeof().int32,offsetof(Vertex,Bitangent).int32)
 
-    BindVertexArray(VERTEX_ARRAY_NULL)
+    UnBindVertexArray()
 
 
 proc newMesh*(vertices:seq[Vertex], indices:seq[uint32], textures:seq[Texture]) : Mesh =
@@ -89,5 +89,5 @@ proc Draw*(mesh:Mesh,shaderProgram:ShaderProgramId) =
 
     BindVertexArray(mesh.VAO)
     DrawElements(DrawMode.TRIANGLES,mesh.indices.len,IndexType.UNSIGNED_INT,0)
-    BindVertexArray(VERTEX_ARRAY_NULL)
+    UnBindVertexArray()
     ActiveTexture(TextureUnit.TEXTURE0)

@@ -28,7 +28,7 @@ let shader = CreateAndLinkProgram(appDir&"/shaders/depth_testing.vert",appDir&"/
 
 
 Enable(Capability.DEPTH_TEST)
-DepthFunc(CompareFunc.LESS)
+DepthFunc(AlphaFunc.LESS)
 
 # Set up vertex data
 let cubeVertices  =
@@ -103,7 +103,7 @@ EnableVertexAttribArray(0)
 VertexAttribPointer(0,3,VertexAttribType.FLOAT,false,5*float32.sizeof(),0)
 EnableVertexAttribArray(1)
 VertexAttribPointer(1,2,VertexAttribType.FLOAT,false,5*float32.sizeof(),3*float32.sizeof())
-BindVertexArray(VERTEX_ARRAY_NULL)
+UnbindVertexArray()
 
 let cubeTexture = LoadTextureWithMips(appDir&"/textures/marble.jpg")
 let floorTexture = LoadTextureWithMips(appDir&"/textures/metal.png")
@@ -185,7 +185,7 @@ while run:
   model = mat4(1.0'f32)
   shader.SetMat4("model",model)
   DrawArrays(DrawMode.TRIANGLES,0,6)
-  BindVertexArray(VERTEX_ARRAY_NULL)
+  UnBindVertexArray()
   
   window.glSwapWindow()
 
