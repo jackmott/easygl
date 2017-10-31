@@ -63,13 +63,62 @@ template GenBindFramebuffer*(target:FramebufferTarget) : FramebufferId =
 template CheckFramebufferStatus*(target:FramebufferTarget) : FramebufferStatus =
     glCheckFramebufferStatus(target.GLenum)
 
+# todo: this has a lot of rules about what the arguments can be, see:
+# https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glFramebufferTexture.xhtml
+# can we get compile time gaurantees on these?  asserts in debug mode maybe?
+template glFramebufferTexture2D*(target:FramebufferTarget,
+                                attachment:FramebufferAttachment,
+                                textarget: FramebufferTextureTarget,
+                                texture: TextureId,
+                                level:int) =
+    glFramebufferTexture2D(target.GLenum,attachment.GLenum,textarget.GLenum,texture.GLuint,level.int32)
+
 template DeleteFramebuffers*(framebuffers:openarray[FramebufferId]) =
-    glDeleteBuffers(framebuffers.len.GLsizei,cast[ptr GLUint](framebuffers.unsafeAddr))
+    glDeleteBuffers(framebuffers.len.GLsizei,cast[ptr GLUint](framebuffers[0].unsafeAddr))
 
 template DeleteFramebuffer*(framebuffer:FramebufferId) =
     glDeleteBuffers(1,framebuffer.addr)
 
+template GenRenderbuffer*() : RenderbufferId =
+    var renderbuffer:GLuint
+    glGenRenderBuffers(1, addr renderbuffer)
+    renderbuffer.RenderbufferId
 
+template GenRenderbuffers*(count:int32) : seq[RenderbufferId] =
+    let renderbuffers = newSeq[RenderbufferId](count)
+    glGenRenderBuffers(count.GLsizei,cast[ptr GLuint](renderbuffers[0].unsafeAddr))
+    renderbuffers
+
+# target can only be GL_RENDERBUFFER so we don't both asking for it
+template BindRenderbuffer*(renderbuffer:RenderbufferId) = 
+    glBindRenderBuffer(GL_RENDERBUFFER,renderbuffer.GLuint)
+
+template UnBindRenderbuffer*(renderbuffer:RenderbufferId) = 
+    glBindRenderBuffer(GL_RENDERBUFFER,0)
+
+template GenBindRenderBuffer*() : RenderbufferId =
+    var renderbuffer:GLuint
+    glGenRenderBuffers(1, addr renderbuffer)
+    glBindRenderBuffer(GL_RENDERBUFFER,renderbuffer)
+    renderbuffer.RenderbufferId
+
+# renderbuffertarget must be GL_RENDERBUFFER so we don't ask for it
+template FramebufferRenderbuffer*(target:FramebufferTarget, 
+                                 attachment: FramebufferAttachment,
+                                 renderbuffer:RenderbufferId) =
+    glFramebufferRenderBuffer(target.GLenum,attachment.GLenum,GL_RENDERBUFFER,renderbuffer.GLuint)
+
+template GenBindAttachRenderBuffer*(target:FramebufferTarget,attachment:FramebufferAttachment) : RenderbufferId =
+    var renderbuffer:GLuint
+    glGenRenderBuffers(1, addr renderbuffer)
+    glBindRenderBuffer(GL_RENDERBUFFER,renderbuffer)
+    glFramebufferRenderBuffer(target.GLenum,attachment.GLenum,GL_RENDERBUFFER,renderbuffer)
+    renderbuffer.RenderbufferId
+
+type RenderbufferSize* =  range[1..GL_MAX_RENDERBUFFER_SIZE.int]
+template RenderbufferStorage*(internalformat:RenderbufferFormat, width:RenderbufferSize,height:RenderbufferSize) =
+    glRenderBufferStorage(GL_RENDERBUFFER,internalformat.GLenum,width.GLsizei,height.GLsize)
+                                 
 template GenBuffer*() : BufferId  =
     var buffer:GLuint
     glGenBuffers(1,addr buffer)
@@ -83,20 +132,20 @@ template GenBuffers*(count:int32) : seq[BufferId] =
 template BindBuffer*(target:BufferTarget, buffer:BufferId)  =
     glBindBuffer(target.GLenum,buffer.GLuint)
     
-proc BufferData*[T](target:BufferTarget, data:openarray[T], usage:BufferDataUsage) {.inline.} =
-    glBufferData(target.GLenum,data.len*T.sizeof().GLsizeiptr,data.unsafeAddr,usage.GLenum)
+template BufferData*[T](target:BufferTarget, data:openarray[T], usage:BufferDataUsage)  =
+    glBufferData(target.GLenum,data.len*T.sizeof().GLsizeiptr,data[0].unsafeAddr,usage.GLenum)
 
 # bind and set buffer data in one go
-proc BindBufferData*[T](target:BufferTarget, buffer:BufferId, data:openarray[T], usage:BufferDataUsage) {.inline.} = 
+template BindBufferData*[T](target:BufferTarget, buffer:BufferId, data:openarray[T], usage:BufferDataUsage)  = 
     glBindBuffer(target.GLenum,buffer.GLuint)
-    glBufferData(target.GLenum,data.len*T.sizeof().GLsizeiptr,data.unsafeAddr,usage.GLenum)
+    glBufferData(target.GLenum,data.len*T.sizeof().GLsizeiptr,data[0].unsafeAddr,usage.GLenum)
 
 # generate, bind, and set buffer data in one go
-proc GenBindBufferData*[T](target:BufferTarget, data:openarray[T], usage:BufferDataUsage) :BufferId  {.inline.} =     
+template GenBindBufferData*[T](target:BufferTarget, data:openarray[T], usage:BufferDataUsage) :BufferId   =     
     var buffer : GLuint
     glGenBuffers(1,addr buffer)
     glBindBuffer(target.GLenum,buffer)
-    glBufferData(target.GLenum,data.len*T.sizeof().GLsizeiptr,data.unsafeAddr,usage.GLenum)
+    glBufferData(target.GLenum,data.len*T.sizeof().GLsizeiptr,data[0].unsafeAddr,usage.GLenum)
     buffer.BufferId
     
 template DeleteBuffer*(buffer:BufferId) =    
@@ -104,7 +153,7 @@ template DeleteBuffer*(buffer:BufferId) =
     glDeleteBuffers(1,b.GLuint.addr)
 
 template DeleteBuffers*(buffers:openArray[BufferId]) =
-    glDeleteBuffers(buffers.len.GLsizei,cast[ptr GLUint](buffers.unsafeAddr))
+    glDeleteBuffers(buffers.len.GLsizei,cast[ptr GLUint](buffers[0].unsafeAddr))
     
 template GenVertexArray*() : VertexArrayId  =
     var VAO : GLuint
@@ -156,8 +205,8 @@ template TexParameteri*(target:TextureTarget, pname:TextureParameter, param:GLin
     glTexParameteri(target.GLenum,pname.GLenum,param)
 
 # todo why not template work?
-proc TexImage2D*[T](target:TexImageTarget, level:int32, internalFormat:TextureInternalFormat, width:int32, height:int32, format:PixelDataFormat, pixelType:PixelDataType, data: openArray[T] ) {.inline.} =
-    glTexImage2D(target.GLenum,level.GLint,internalFormat.GLint,width.GLsizei,height.GLsizei,0,format.GLenum,pixelType.GLenum,data.unsafeAddr)
+template TexImage2D*[T](target:TexImageTarget, level:int32, internalFormat:TextureInternalFormat, width:int32, height:int32, format:PixelDataFormat, pixelType:PixelDataType, data: openArray[T] )  =
+    glTexImage2D(target.GLenum,level.GLint,internalFormat.GLint,width.GLsizei,height.GLsizei,0,format.GLenum,pixelType.GLenum,data[0].unsafeAddr)
 
 template GenerateMipmap*(target:MipmapTarget) =
     glGenerateMipmap(target.GLenum)
@@ -244,8 +293,8 @@ template EnableVertexAttribArray*(index:uint32)  =
 template DrawArrays*(mode:DrawMode, first:int32, count:int32)   =
     glDrawArrays(mode.GLenum, first.GLint, count.GLsizei)
 
-proc DrawElements*[T](mode:DrawMode, count:int, indexType:IndexType, indices:openarray[T]) {.inline.} =
-    glDrawElements(mode.GLenum, count.GLsizei, indexType.GLenum, indices.unsafeAddr)
+template DrawElements*[T](mode:DrawMode, count:int, indexType:IndexType, indices:openarray[T])  =
+    glDrawElements(mode.GLenum, count.GLsizei, indexType.GLenum, indices[0].unsafeAddr)
 
 template DrawElements*(mode:DrawMode, count:int, indexType:IndexType, offset:int) =
     glDrawElements(mode.GLenum, count.GLsizei, indexType.GLenum, cast[pointer](offset))

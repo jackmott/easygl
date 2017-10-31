@@ -8,6 +8,7 @@ type
     ShaderId* = distinct GLuint
     ShaderProgramId* = distinct GLuint
     FrameBufferId* = distinct GLuint
+    RenderBufferID* = distinct GLuint
     UniformLocation* = distinct GLint
     
     ErrorType* {.pure.} = enum        
@@ -134,7 +135,29 @@ type
         FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT = GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT,
         FRAMEBUFFER_INCOMPLETE_DIMENSIONS = GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS,        
         FRAMEBUFFER_UNSUPPORTED = GL_FRAMEBUFFER_UNSUPPORTED
-        
+
+    # todo: i should range from 0 to GL_MAX_COLOR_ATTACHMENTS-1
+    FramebufferAttachment* {.pure.} = enum
+        DEPTH_STENCIL_ATTACHMENT = GL_DEPTH_STENCIL_ATTACHMENT,
+        COLOR_ATTACHMENT0 = GL_COLOR_ATTACHMENT0, #              0x8CE0
+        COLOR_ATTACHMENT1 = GL_COLOR_ATTACHMENT1, #              0x8CE1
+        COLOR_ATTACHMENT2 = GL_COLOR_ATTACHMENT2, #              0x8CE2
+        COLOR_ATTACHMENT3 = GL_COLOR_ATTACHMENT3, #              0x8CE3
+        COLOR_ATTACHMENT4 = GL_COLOR_ATTACHMENT4, #              0x8CE4
+        COLOR_ATTACHMENT5 = GL_COLOR_ATTACHMENT5, #              0x8CE5
+        COLOR_ATTACHMENT6 = GL_COLOR_ATTACHMENT6, #              0x8CE6
+        COLOR_ATTACHMENT7 = GL_COLOR_ATTACHMENT7, #              0x8CE7
+        COLOR_ATTACHMENT8 = GL_COLOR_ATTACHMENT8, #              0x8CE8
+        COLOR_ATTACHMENT9 = GL_COLOR_ATTACHMENT9, #              0x8CE9
+        COLOR_ATTACHMENT10 = GL_COLOR_ATTACHMENT10, #             0x8CEA
+        COLOR_ATTACHMENT11 = GL_COLOR_ATTACHMENT11, #             0x8CEB
+        COLOR_ATTACHMENT12 = GL_COLOR_ATTACHMENT12, #             0x8CEC
+        COLOR_ATTACHMENT13 = GL_COLOR_ATTACHMENT13, #             0x8CED
+        COLOR_ATTACHMENT14 = GL_COLOR_ATTACHMENT14, #             0x8CEE
+        COLOR_ATTACHMENT15 = GL_COLOR_ATTACHMENT15, #             0x8CEF        
+        DEPTH_ATTACHMENT = GL_DEPTH_ATTACHMENT,
+        STENCIL_ATTACHMENT = GL_STENCIL_ATTACHMENT
+                
     BufferDataUsage* {.pure.} = enum
         STREAM_DRAW = GL_STREAM_DRAW, 
         STREAM_READ = GL_STREAM_READ, 
@@ -222,6 +245,28 @@ type
         TEXTURE_CUBE_MAP_ARRAY = GL_TEXTURE_CUBE_MAP_ARRAY,  
         TEXTURE_2D_MULTISAMPLE = GL_TEXTURE_2D_MULTISAMPLE,
         TEXTURE_2D_MULTISAMPLE_ARRAY = GL_TEXTURE_2D_MULTISAMPLE_ARRAY
+    
+    # todo - refine?  https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glFramebufferTexture.xhtml
+    FramebufferTextureTarget* {.pure.} = enum
+        TEXTURE_1D = GL_TEXTURE_1D, 
+        TEXTURE_2D = GL_TEXTURE_2D, 
+        TEXTURE_3D = GL_TEXTURE_3D, 
+        TEXTURE_RECTANGLE = GL_TEXTURE_RECTANGLE, #0x84F5
+        TEXTURE_CUBE_MAP = GL_TEXTURE_CUBE_MAP, #0x8513 
+        # if texture is a cube map then this must be one of:
+        TEXTURE_CUBE_MAP_POSITIVE_X = GL_TEXTURE_CUBE_MAP_POSITIVE_X,
+        TEXTURE_CUBE_MAP_NEGATIVE_X = GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 
+        TEXTURE_CUBE_MAP_POSITIVE_Y = GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 
+        TEXTURE_CUBE_MAP_NEGATIVE_Y = GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 
+        TEXTURE_CUBE_MAP_POSITIVE_Z = GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
+        TEXTURE_CUBE_MAP_NEGATIVE_Z = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z        
+        # endif
+        TEXTURE_1D_ARRAY = GL_TEXTURE_1D_ARRAY, 
+        TEXTURE_2D_ARRAY = GL_TEXTURE_2D_ARRAY, #0x8C1A  
+        TEXTURE_BUFFER = GL_TEXTURE_BUFFER, #0x8C2A
+        TEXTURE_CUBE_MAP_ARRAY = GL_TEXTURE_CUBE_MAP_ARRAY,  
+        TEXTURE_2D_MULTISAMPLE = GL_TEXTURE_2D_MULTISAMPLE,
+        TEXTURE_2D_MULTISAMPLE_ARRAY = GL_TEXTURE_2D_MULTISAMPLE_ARRAY,                                
     
     TexImageTarget* {.pure.} = enum
         TEXTURE_2D = GL_TEXTURE_2D, 
@@ -312,6 +357,48 @@ type
         TEXTURE30 = GL_TEXTURE_30,
         TEXTURE31 = GL_TEXTURE_31
 
+    RenderBufferFormat* {.pure.} = enum                        
+        RGBA8 = GL_RGBA8,
+        RGB10_A2 = GL_RGB10_A2,        
+        RGBA16 = GL_RGBA16,        
+        DEPTH_COMPONENT16 = GL_DEPTH_COMPONENT16,
+        DEPTH_COMPONENT24 = GL_DEPTH_COMPONENT24,             
+        R8 = GL_R8,
+        R16 = GL_R16,
+        RG8 = GL_RG8,        
+        RG16 = GL_RG16,
+        R16F = GL_R16F,                
+        R32F = GL_R32F,        
+        RG16F = GL_RG16F,        
+        RG32F = GL_RG32F,
+        R8I = GL_R8I,                                
+        R8UI = GL_R8UI,        
+        R16I = GL_R16I,        
+        R16UI = GL_R16UI,                                                                        
+        R32I = GL_R32I,
+        R32UI = GL_R32UI,                                                        
+        RG8I = GL_RG8I,
+        RG8UI = GL_RG8UI,                        
+        RG16I = GL_RG16I,
+        RG16UI = GL_RG16UI,                                                                  
+        RG32I = GL_RG32I,
+        RG32UI = GL_RG32UI,                                  
+        GBA32F = GL_RGBA32F,
+        RGBA16F = GL_RGBA16F,
+        DEPTH24_STENCIL8 = GL_DEPTH24_STENCIL8,        
+        R11F_G11F_B10F = GL_R11F_G11F_B10F
+        SRGB8_ALPHA8 = GL_SRGB8_ALPHA8,                
+        DEPTH_COMPONENT32F = GL_DEPTH_COMPONENT32F,        
+        DEPTH32F_STENCIL8 = GL_DEPTH32F_STENCIL8,                                
+        RGBA32UI = GL_RGBA32UI,
+        RGBA16UI = GL_RGBA16UI,        
+        RGBA8UI = GL_RGBA8UI,
+        RGBA32I = GL_RGBA32I,        
+        RGBA16I = GL_RGBA16I,                
+        RGBA8I = GL_RGBA8I,                        
+        RGB10_A2UI = GL_RGB10_A2UI,
+
+    # Todo reconcile this with spec                                                  
     TextureInternalFormat* {.pure.} = enum
         DEPTH_COMPONENT = GL_DEPTH_COMPONENT, #0x1902
         RED = GL_RED, #0x1903
