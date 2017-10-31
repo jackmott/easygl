@@ -4,6 +4,13 @@ include easygl.easygl_types
 # When passing objects to opengl you may need this to get a relative pointer
 template offsetof*(typ, field): untyped = (var dummy: typ; cast[int](addr(dummy.field)) - cast[int](addr(dummy)))
 
+# Deviate from opengl name here because GetError conflicts with SDL2
+template GetGLError*() : ErrorType =
+    glGetError().ErrorType
+
+template Viewport*(x,y,width,height:int32) =
+    glViewport(x.GLint,y.GLint,width.GLsizei,height.GLsizei)
+
 template Enable*(cap:Capability) =
     glEnable(cap.GLenum)
 
@@ -19,10 +26,10 @@ template DepthMask*(flag: bool) =
 template DepthFunc*(fun: AlphaFunc) = 
     glDepthFunc(fun.GLenum)
 
-template StencilMask*(mask:uint32)  = 
+template StencilMask*(mask:uint32)  =     
     glStencilMask(mask.GLuint)
 
-template StencilFunc*(fun:AlphaFunc, reference: int32, mask:uint32) = 
+template StencilFunc*(fun:AlphaFunc, reference: int32, mask:uint32) =     
     glStencilFunc(fun.GLenum, reference.GLint, mask.GLuint)
 
 template StencilFuncSeparate*(face:PolygonFace,fun:AlphaFunc, reference: int32, mask:uint32) =
@@ -33,6 +40,35 @@ template StencilOp*(sfail: StencilOpEnum, dpfail: StencilOpEnum, dppass: Stencil
 
 template StencilOpSeparate*(face:PolygonFace, sfail: StencilOpEnum, dpfail: StencilOpEnum, dppass: StencilOpEnum) =
     glStencilOpSeparate(face.GLenum,sfail.GLenum, dpfail.GLenum, dppass.GLenum)
+
+template GenFramebuffer*() : FramebufferId =
+    var frameBuffer:GLuint
+    glGenFramebuffers(1,addr frameBuffer)
+    frameBuffer
+
+template GenFramebuffers*(count:int32) : seq[FramebufferId] =
+    let frames = newSeq[FramebufferId](count)
+    glGenFramebuffers(count.GLsizei,cast[ptr GLuint](buffers[0].unsafeAddr))
+    frames
+
+template BindFramebuffer*(target:FramebufferTarget, frameBuffer:FramebufferId) =
+    glBindFramebuffer(target.GLenum,frameBuffer.GLuint)
+
+template GenBindFramebuffer*(target:FramebufferTarget) : FramebufferId =
+    var frameBuffer:GLuint
+    glGenFramebuffers(1,addr frameBuffer)
+    glBindFramebuffer(target.GLenum,frameBuffer)
+    frameBuffer
+
+template CheckFramebufferStatus*(target:FramebufferTarget) : FramebufferStatus =
+    glCheckFramebufferStatus(target.GLenum)
+
+template DeleteFramebuffers*(framebuffers:openarray[FramebufferId]) =
+    glDeleteBuffers(framebuffers.len.GLsizei,cast[ptr GLUint](framebuffers.unsafeAddr))
+
+template DeleteFramebuffer*(framebuffer:FramebufferId) =
+    glDeleteBuffers(1,framebuffer.addr)
+
 
 template GenBuffer*() : BufferId  =
     var buffer:GLuint
@@ -56,7 +92,7 @@ proc BindBufferData*[T](target:BufferTarget, buffer:BufferId, data:openarray[T],
     glBufferData(target.GLenum,data.len*T.sizeof().GLsizeiptr,data.unsafeAddr,usage.GLenum)
 
 # generate, bind, and set buffer data in one go
-proc GenBindBufferData*[T](target:BufferTarget, data:openarray[T], usage:BufferDataUsage) :BufferId  {.inline.} = 
+proc GenBindBufferData*[T](target:BufferTarget, data:openarray[T], usage:BufferDataUsage) :BufferId  {.inline.} =     
     var buffer : GLuint
     glGenBuffers(1,addr buffer)
     glBindBuffer(target.GLenum,buffer)
@@ -221,5 +257,29 @@ template Clear*(buffersToClear:varargs[ClearBufferMask])  =
     glClear(mask.GLbitfield)
 
 template ClearColor*(r:float32, g:float32, b:float32, a:float32) =
-        glClearColor(r.GLfloat, g.GLfloat, b.GLfloat, a.GLfloat)
+    glClearColor(r.GLfloat, g.GLfloat, b.GLfloat, a.GLfloat)
     
+template BlendFunc*(sfactor: BlendFactor, dfactor: BlendFactor) =
+    glBlendFunc(sfactor.GLenum, dfactor.GLenum)
+
+template BlendFunci*(buf:BufferId, sfactor: BlendFactor, dfactor: BlendFactor) =
+    glBlendFunci(buf.GLuint,sfactor.GLenum, dfactor.GLenum)
+    
+template BlendFuncSeparate*(srcRGB: BlendFactor, dstRGB: BlendFactor,srcAlpha: BlendFactor,dstAlpha: BlendFactor) =
+    glBlendFunc(srcRGB.GLenum,dstRGB.GLenum,srcAlpha.GLenum,dstAlpha.GLenum)
+
+template BlendFuncSeparatei*(buf: BufferId,srcRGB: BlendFactor, dstRGB: BlendFactor,srcAlpha: BlendFactor,dstAlpha: BlendFactor) =
+    glBlendFunc(buf.GLuint,srcRGB.GLenum,dstRGB.GLenum,srcAlpha.GLenum,dstAlpha.GLenum)
+
+template BlendEquation*(mode:BlendEquationEnum) =
+    glBlendEquation(mode.GLenum)
+
+template BlendEquationi*(buf:BufferId,mode:BlendEquationEnum) =
+    glBlendEquation(buf.GLuint,mode.GLenum)
+
+template CullFace*(face:PolygonFace) = 
+    glCullFace(face.GLenum)
+
+template FrontFace(mode:FaceMode) =
+    glFrontFace(mode.GLenum)
+

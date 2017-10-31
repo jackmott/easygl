@@ -60,9 +60,14 @@ proc LoadTextureWithMips*(path:string) : TextureId =
             
             BindTexture(TextureTarget.TEXTURE_2D,textureId)
             TexImage2D(TexImageTarget.TEXTURE_2D,0'i32,format.TextureInternalFormat,width.int32,height.int32,format,PixelDataType.UNSIGNED_BYTE,data)
-            GenerateMipmap(MipmapTarget.TEXTURE_2D)                        
-            TexParameteri(TextureTarget.TEXTURE_2D,TextureParameter.TEXTURE_WRAP_S,GL_REPEAT)
-            TexParameteri(TextureTarget.TEXTURE_2D,TextureParameter.TEXTURE_WRAP_T,GL_REPEAT)            
+            GenerateMipmap(MipmapTarget.TEXTURE_2D)        
+
+            if format == PixelDataFormat.RGBA:
+                TexParameteri(TextureTarget.TEXTURE_2D,TextureParameter.TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE)
+                TexParameteri(TextureTarget.TEXTURE_2D,TextureParameter.TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE)            
+            else:                
+                TexParameteri(TextureTarget.TEXTURE_2D,TextureParameter.TEXTURE_WRAP_S,GL_REPEAT)
+                TexParameteri(TextureTarget.TEXTURE_2D,TextureParameter.TEXTURE_WRAP_T,GL_REPEAT)            
             TexParameteri(TextureTarget.TEXTURE_2D,TextureParameter.TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_LINEAR)
             TexParameteri(TextureTarget.TEXTURE_2D,TextureParameter.TEXTURE_MAG_FILTER,GL_LINEAR)               
             textureId

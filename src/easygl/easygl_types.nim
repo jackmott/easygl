@@ -7,8 +7,18 @@ type
     TextureId* = distinct GLuint
     ShaderId* = distinct GLuint
     ShaderProgramId* = distinct GLuint
+    FrameBufferId* = distinct GLuint
     UniformLocation* = distinct GLint
     
+    ErrorType* {.pure.} = enum        
+        NO_ERROR = GL_NO_ERROR,
+        INVALUD_ENUM = GL_INVALID_ENUM,
+        INVALID_VALUE = GL_INVALID_VALUE,
+        INVALID_OPERATION = GL_INVALID_OPERATION,
+        OUT_OF_MEMORY = GL_OUT_OF_MEMORY,
+        INVALID_FRAMEBUFFER_OPERATION = GL_INVALID_FRAMEBUFFER_OPERATION
+        
+
     Capability* {.pure.} = enum
         LINE_SMOOTH = GL_LINE_SMOOTH, #0x0B20
         POLYGON_SMOOTH = GL_POLYGON_SMOOTH, #0x0B41
@@ -65,8 +75,39 @@ type
         DECR = GL_DECR, #0x1E03.GLenum
         INCR_WRAP = GL_INCR_WRAP,        
         DECR_WRAP = GL_DECR_WRAP
-        
 
+    BlendFactor* {.pure.} = enum
+        ZERO = GL_ZERO,
+        ONE = GL_ONE,
+        SRC_COLOR = GL_SRC_COLOR, 
+        ONE_MINUS_SRC_COLOR = GL_ONE_MINUS_SRC_COLOR, 
+        SRC_ALPHA = GL_SRC_ALPHA, #302
+        ONE_MINUS_SRC_ALPHA = GL_ONE_MINUS_SRC_ALPHA, 
+        DST_ALPHA = GL_DST_ALPHA, 
+        ONE_MINUS_DST_ALPHA = GL_ONE_MINUS_DST_ALPHA,        
+        DST_COLOR = GL_DST_COLOR, 
+        ONE_MINUS_DST_COLOR = GL_ONE_MINUS_DST_COLOR,
+        SRC_ALPHA_SATURATE = GL_SRC_ALPHA_SATURATE,                                 
+        CONSTANT_COLOR = GL_CONSTANT_COLOR, 
+        ONE_MINUS_CONSTANT_COLOR = GL_ONE_MINUS_CONSTANT_COLOR, 
+        CONSTANT_ALPHA = GL_CONSTANT_ALPHA,
+        ONE_MINUS_CONSTANT_ALPHA = GL_ONE_MINUS_CONSTANT_ALPHA
+        SRC1_ALPHA = GL_SRC1_ALPHA,
+        SRC1_COLOR = GL_SRC1_COLOR, 
+        ONE_MINUS_SRC1_COLOR = GL_ONE_MINUS_SRC1_COLOR,         
+        ONE_MINUS_SRC1_ALPHA = GL_ONE_MINUS_SRC1_ALPHA
+
+    BlendEquationEnum* {.pure.} = enum
+        FUNC_ADD = GL_FUNC_ADD,
+        MIN = GL_MIN,
+        MAX = GL_MAX        
+        FUNC_SUBTRACT = GL_FUNC_SUBTRACT,
+        FUNC_REVERSE_SUBTRACT = GL_FUNC_REVERSE_SUBTRACT,
+        
+    FaceMode* {.pure.} = enum
+        CW = GL_CW,
+        CCW = GL_CCW
+                
     BufferTarget* {.pure.} = enum
         ARRAY_BUFFER = GL_ARRAY_BUFFER, #0x88923
         ELEMENT_ARRAY_BUFFER = GL_ELEMENT_ARRAY_BUFFER, #0x8893 
@@ -83,6 +124,17 @@ type
         QUERY_BUFFER = GL_QUERY_BUFFER, #0x9192
         ATOMIC_COUNTER_BUFFER = GL_ATOMIC_COUNTER_BUFFER, #0x92C0
     
+    FramebufferTarget* {.pure.} = enum        
+        READ_FRAMEBUFFER = GL_READ_FRAMEBUFFER,
+        DRAW_FRAME_BUFFER = GL_DRAW_FRAMEBUFFER,
+        FRAMEBUFFER = GL_FRAMEBUFFER
+
+    FramebufferStatus* {.pure.} = enum
+        FRAMEBUFFER_INCOMPLETE_ATTACHMENT = GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT,
+        FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT = GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT,
+        FRAMEBUFFER_INCOMPLETE_DIMENSIONS = GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS,        
+        FRAMEBUFFER_UNSUPPORTED = GL_FRAMEBUFFER_UNSUPPORTED
+        
     BufferDataUsage* {.pure.} = enum
         STREAM_DRAW = GL_STREAM_DRAW, 
         STREAM_READ = GL_STREAM_READ, 

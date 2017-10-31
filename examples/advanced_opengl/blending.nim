@@ -10,15 +10,12 @@ import ../utils/camera_util
 import times
 import os
 import easygl.utils
+import algorithm
 
 discard sdl2.init(INIT_EVERYTHING)
 
 var screenWidth: cint = 1280
 var screenHeight: cint = 720
-
- ### IMPORTANT! - unlike glfw used by LearnOpenGL - SDL2 requies you to explicitly 
- ### create a stencil buffer like so:
-discard glSetAttribute(SDL_GL_STENCIL_SIZE,8)
 
 let window = createWindow("Float", 100, 100, screenWidth, screenHeight, SDL_WINDOW_OPENGL or SDL_WINDOW_RESIZABLE)
 discard window.glCreateContext()
@@ -26,16 +23,13 @@ discard window.glCreateContext()
 # Initialize OpenGL
 loadExtensions()
 Enable(Capability.DEPTH_TEST)
-DepthFunc(AlphaFunc.LESS)
-Enable(Capability.STENCIL_TEST)
-StencilOp(StencilOpEnum.KEEP,StencilOpEnum.KEEP,StencilOpEnum.REPLACE)
-StencilFunc(AlphaFunc.NOTEQUAL,1,0xFF)
+Enable(Capability.BLEND)
+BlendFunc(BlendFactor.SRC_ALPHA,BlendFactor.ONE_MINUS_SRC_ALPHA)
 
 
 ### Build and compile shader program
 let appDir = getAppDir()
 let shader = CreateAndLinkProgram(appDir&"/shaders/stencil_testing.vert",appDir&"/shaders/stencil_testing.frag")
-let shaderSingleColor = CreateAndLinkProgram(appDir&"/shaders/stencil_testing.vert",appDir&"/shaders/stencil_single_color.frag")
 
 
 # Set up vertex data
@@ -95,6 +89,17 @@ let planeVertices =
         -5.0'f32, -0.5'f32, -5.0'f32,  0.0'f32, 2.0'f32,
          5.0'f32, -0.5'f32, -5.0'f32,  2.0'f32, 2.0'f32
     ]
+
+let transparentVertices = 
+  @[
+    0.0'f32,  0.5'f32,  0.0'f32,  0.0'f32,  0.0'f32,
+    0.0'f32, -0.5'f32,  0.0'f32,  0.0'f32,  1.0'f32,
+    1.0'f32, -0.5'f32,  0.0'f32,  1.0'f32,  1.0'f32,
+
+    0.0'f32,  0.5'f32,  0.0'f32,  0.0'f32,  0.0'f32,
+    1.0'f32, -0.5'f32,  0.0'f32,  1.0'f32,  1.0'f32,
+    1.0'f32,  0.5'f32,  0.0'f32,  1.0'f32,  0.0'f32
+  ]
     
 # Cube
 let cubeVAO = GenBindVertexArray()
@@ -112,10 +117,29 @@ EnableVertexAttribArray(0)
 VertexAttribPointer(0,3,VertexAttribType.FLOAT,false,5*float32.sizeof(),0)
 EnableVertexAttribArray(1)
 VertexAttribPointer(1,2,VertexAttribType.FLOAT,false,5*float32.sizeof(),3*float32.sizeof())
-UnBindVertexArray()
+
+
+# Transparent VAO
+let transparentVAO = GenBindVertexArray()
+let transparentVBO = GenBindBufferData(BufferTarget.ARRAY_BUFFER,transparentVertices,BufferDataUsage.STATIC_DRAW)
+EnableVertexAttribArray(0)
+VertexAttribPointer(0,3,VertexAttribType.FLOAT,false,5*float32.sizeof(),0)
+EnableVertexAttribArray(1)
+VertexAttribPointer(1,2,VertexAttribType.FLOAT,false,5*float32.sizeof(),3*float32.sizeof())
+UnbindVertexArray()
+
 
 let cubeTexture = LoadTextureWithMips(appDir&"/textures/marble.jpg")
 let floorTexture = LoadTextureWithMips(appDir&"/textures/metal.png")
+let transparentTexture = LoadTextureWithMips(appDir&"/textures/window.png")
+
+var windows :seq[Vec3f] = @[
+  vec3(-1.5'f32,0.0'f32,-0.48'f32),
+  vec3(1.5'f32,0.0'f32,0.51'f32),
+  vec3(0.0'f32,0.0'f32,0.7'f32),
+  vec3(-0.3'f32,0.0'f32,-2.3'f32),
+  vec3(-0.5'f32,0.0'f32,0.6'f32)
+]
 
 shader.UseProgram()
 shader.SetInt("texture1",0)
@@ -171,38 +195,19 @@ while run:
     break
   # Render  
   
-  ClearColor(0.1,0.1,0.1,1.0)
-  
-  StencilMask(0xFF)
+  ClearColor(0.1,0.1,0.1,1.0)    
   easygl.Clear(ClearBufferMask.COLOR_BUFFER_BIT, 
-         ClearBufferMask.DEPTH_BUFFER_BIT,
-         ClearBufferMask.STENCIL_BUFFER_BIT)
+         ClearBufferMask.DEPTH_BUFFER_BIT)
   
 
-  shaderSingleColor.UseProgram()
+  shader.UseProgram()
   var model = mat4(1.0'f32)    
   var view = camera.GetViewMatrix()
   var projection = perspective(radians(camera.Zoom),screenWidth.float32/screenHeight.float32,0.1'f32,100.0'f32)
-  shaderSingleColor.SetMat4("view",view)
-  shaderSingleColor.SetMat4("projection",projection)
- 
-  shader.UseProgram()  
   shader.SetMat4("view",view)
   shader.SetMat4("projection",projection)
 
-  # dont write to stencil when drawing floor    
-  StencilMask(0x00)
-  # floor  
-  BindVertexArray(planeVAO)  
-  BindTexture(TextureTarget.TEXTURE_2D,floorTexture)  
-  shader.SetMat4("model",model)
-  DrawArrays(DrawMode.TRIANGLES,0,6)
-  UnBindVertexArray()
 
-  # 1st. render pass, draw objects as normal, writing to the stencil buffer
-  # --------------------------------------------------------------------
-  StencilFunc(AlphaFunc.ALWAYS,1,0xFF)
-  StencilMask(0xFF)
   # cubes
   BindVertexArray(cubeVAO)
   ActiveTexture(TextureUnit.TEXTURE0)
@@ -214,37 +219,33 @@ while run:
   model = translate(model,vec3(2.0'f32,0.0'f32,0.0'f32))
   shader.SetMat4("model",model)
   DrawArrays(DrawMode.TRIANGLES,0,36)
+ 
+  # floor  
+  BindVertexArray(planeVAO)  
+  BindTexture(TextureTarget.TEXTURE_2D,floorTexture)  
+  shader.SetMat4("model",model)
+  DrawArrays(DrawMode.TRIANGLES,0,6)
+    
+  # windows
+  BindVertexArray(transparentVAO)
+  BindTexture(TextureTarget.TEXTURE_2D,transparentTexture)
 
-  # 2nd. render pass: now draw slightly scaled versions of the objects, this time disabling stencil writing.
-  # Because the stencil buffer is now filled with several 1s. The parts of the buffer that are 1 are not drawn, thus only drawing 
-  # the objects' size differences, making it look like borders.
-  # -----------------------------------------------------------------------------------------------------------------------------
-  StencilFunc(AlphaFunc.NOTEQUAL,1,0xFF)
-  StencilMask(0x00)
-  Disable(Capability.DEPTH_TEST)
-  shaderSingleColor.UseProgram()
-  let scale = 1.1'f32
-  # cubes
-  BindVertexArray(cubeVAO)  
-  BindTexture(TextureTarget.TEXTURE_2D, cubeTexture)
-  model = mat4(1.0'f32)
-  model = translate(model,vec3(-1.0'f32,0.0'f32,-1.0'f32))
-  model = scale(model,vec3(scale,scale,scale))
-  shaderSingleColor.SetMat4("model",model)
-  DrawArrays(DrawMode.TRIANGLES,0,36)
-  model = mat4(1.0'f32)
-  model = translate(model,vec3(2.0'f32,0.0'f32,0.0'f32))
-  model = scale(model,vec3(scale,scale,scale))
-  shaderSingleColor.SetMat4("model",model)
-  DrawArrays(DrawMode.TRIANGLES,0,36)  
-  UnBindVertexArray()
-  StencilMask(0xFF)
-  Enable(Capability.DEPTH_TEST)
-  
+  # we use a less verbose method of sorting vs learnOpenGL
+  windows.sort(proc(a,b:Vec3f) : int =            
+    # Compute squared distance which is faster and sufficient
+    let aDistSq = dot(a-camera.Position,a-camera.Position)
+    let bDistSq = dot(b-camera.Position,b-camera.Position)
+    # reverse order
+    cmp(bDistSq,aDistSq)
+    )
+    
+  for w in windows:
+    model = mat4(1.0'f32)
+    model = translate(model,w)
+    shader.SetMat4("model",model)
+    DrawArrays(DrawMode.TRIANGLES,0,6)
+    
   window.glSwapWindow()
 
-DeleteVertexArray(cubeVAO)
-DeleteVertexArray(planeVAO)
-DeleteBuffer(cubeVBO)
-DeleteBuffer(planeVBO)
+
 destroy window
