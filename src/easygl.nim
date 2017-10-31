@@ -212,7 +212,7 @@ template TexImage2D*[T](target:TexImageTarget, level:int32, internalFormat:Textu
 
 # for cases where data is null, just don't pass it in
 template TexImage2D*(target:TexImageTarget, level:int32, internalFormat:TextureInternalFormat, width:int32, height:int32, format:PixelDataFormat, pixelType:PixelDataType) =
-        glTexImage2D(target.GLenum,level.GLint,internalFormat.GLint,width.GLsizei,height.GLsizei,0,format.GLenum,pixelType.GLenum,nil)    
+    glTexImage2D(target.GLenum,level.GLint,internalFormat.GLint,width.GLsizei,height.GLsizei,0,format.GLenum,pixelType.GLenum,nil)    
 
 template GenerateMipmap*(target:MipmapTarget) =
     glGenerateMipmap(target.GLenum)
