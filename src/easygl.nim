@@ -55,18 +55,21 @@ template BindFramebuffer*(target:FramebufferTarget, frameBuffer:FramebufferId) =
     glBindFramebuffer(target.GLenum,frameBuffer.GLuint)
 
 template GenBindFramebuffer*(target:FramebufferTarget) : FramebufferId =
-    var frameBuffer:GLuint
-    glGenFramebuffers(1,addr frameBuffer)
-    glBindFramebuffer(target.GLenum,frameBuffer)
-    frameBuffer
+    var framebuffer:GLuint
+    glGenFramebuffers(1,addr framebuffer)
+    glBindFramebuffer(target.GLenum,framebuffer)
+    frameBuffer.FramebufferId
+
+template UnbindFramebuffer*(target:FramebufferTarget) = 
+    glBindFramebuffer(target.GLenum,0)
 
 template CheckFramebufferStatus*(target:FramebufferTarget) : FramebufferStatus =
-    glCheckFramebufferStatus(target.GLenum)
+    glCheckFramebufferStatus(target.GLenum).FramebufferStatus
 
 # todo: this has a lot of rules about what the arguments can be, see:
 # https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glFramebufferTexture.xhtml
 # can we get compile time gaurantees on these?  asserts in debug mode maybe?
-template glFramebufferTexture2D*(target:FramebufferTarget,
+template FramebufferTexture2D*(target:FramebufferTarget,
                                 attachment:FramebufferAttachment,
                                 textarget: FramebufferTextureTarget,
                                 texture: TextureId,
@@ -108,16 +111,10 @@ template FramebufferRenderbuffer*(target:FramebufferTarget,
                                  renderbuffer:RenderbufferId) =
     glFramebufferRenderBuffer(target.GLenum,attachment.GLenum,GL_RENDERBUFFER,renderbuffer.GLuint)
 
-template GenBindAttachRenderBuffer*(target:FramebufferTarget,attachment:FramebufferAttachment) : RenderbufferId =
-    var renderbuffer:GLuint
-    glGenRenderBuffers(1, addr renderbuffer)
-    glBindRenderBuffer(GL_RENDERBUFFER,renderbuffer)
-    glFramebufferRenderBuffer(target.GLenum,attachment.GLenum,GL_RENDERBUFFER,renderbuffer)
-    renderbuffer.RenderbufferId
 
 type RenderbufferSize* =  range[1..GL_MAX_RENDERBUFFER_SIZE.int]
 template RenderbufferStorage*(internalformat:RenderbufferFormat, width:RenderbufferSize,height:RenderbufferSize) =
-    glRenderBufferStorage(GL_RENDERBUFFER,internalformat.GLenum,width.GLsizei,height.GLsize)
+    glRenderBufferStorage(GL_RENDERBUFFER,internalformat.GLenum,width.GLsizei,height.GLsizei)
                                  
 template GenBuffer*() : BufferId  =
     var buffer:GLuint
@@ -195,6 +192,12 @@ template GenTextures*(count:int32) : seq[TextureId] =
     glGenTextures(count.GLsizei,cast[ptr GLuint](textures[0].unsafeAddr))
     textures
 
+template GenBindTexture*(target:TextureTarget) : TextureId = 
+    var tex : GLuint
+    glGenTextures(1.GLsizei,addr tex)
+    glBindTexture(target.GLenum, tex)
+    tex.TextureId
+
 template BindTexture*(target:TextureTarget, texture:TextureId) =
     glBindTexture(target.GLenum, texture.GLuint)
 
@@ -204,9 +207,12 @@ template ActiveTexture*(texture:TextureUnit) =
 template TexParameteri*(target:TextureTarget, pname:TextureParameter, param:GLint) =
     glTexParameteri(target.GLenum,pname.GLenum,param)
 
-# todo why not template work?
 template TexImage2D*[T](target:TexImageTarget, level:int32, internalFormat:TextureInternalFormat, width:int32, height:int32, format:PixelDataFormat, pixelType:PixelDataType, data: openArray[T] )  =
     glTexImage2D(target.GLenum,level.GLint,internalFormat.GLint,width.GLsizei,height.GLsizei,0,format.GLenum,pixelType.GLenum,data[0].unsafeAddr)
+
+# for cases where data is null, just don't pass it in
+template TexImage2D*(target:TexImageTarget, level:int32, internalFormat:TextureInternalFormat, width:int32, height:int32, format:PixelDataFormat, pixelType:PixelDataType) =
+        glTexImage2D(target.GLenum,level.GLint,internalFormat.GLint,width.GLsizei,height.GLsizei,0,format.GLenum,pixelType.GLenum,nil)    
 
 template GenerateMipmap*(target:MipmapTarget) =
     glGenerateMipmap(target.GLenum)
@@ -262,7 +268,7 @@ template GetProgramInfoLog*(program:ShaderProgramId) : string  =
     glGetProgramInfoLog(program.GLuint,logLen,addr logLen,logStr)
     $logStr
 
-template UseProgram*(program:ShaderProgramId)  =
+template Use*(program:ShaderProgramId)  =
     glUseProgram(program.GLuint)
 
 template GetUniformLocation*(program: ShaderProgramId, name: string) : UniformLocation  =

@@ -125,7 +125,7 @@ EnableVertexAttribArray(0)
 let diffuseMap = LoadTextureWithMips(appDir&"/textures/container2.png")
 let specularMap = LoadTextureWithMips(appDir&"/textures/container2_specular.png")
 
-lightingShader.UseProgram()
+lightingShader.Use()
 lightingShader.SetInt("diffuse",0)
 lightingShader.SetInt("specular",1)
 
@@ -180,7 +180,7 @@ while run:
   easygl.Clear(ClearBufferMask.COLOR_BUFFER_BIT, ClearBufferMask.DEPTH_BUFFER_BIT)
 
  
-  lightingShader.UseProgram()  
+  lightingShader.Use()  
   lightingShader.SetVec3("viewPos",camera.Position)
   lightingShader.SetFloat("material.shininess", 32.0'f32)
 
@@ -249,7 +249,7 @@ while run:
     lightingShader.SetMat4("model",false,model)
     DrawArrays(DrawMode.TRIANGLES,0,36)
   
-  lampShader.UseProgram()
+  lampShader.Use()
   lampShader.SetMat4("projection",false,projection)
   lampShader.SetMat4("view",false,view)  
 

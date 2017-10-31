@@ -62,7 +62,7 @@ EnableVertexAttribArray(1)
 let texture1 = LoadTextureWithMips(appDir&"/textures/container.jpg")
 let texture2 = LoadTextureWithMips(appDir&"/textures/awesomeface.png")
 
-ourShader.UseProgram()
+ourShader.Use()
 ourShader.SetInt("texture1",0)
 ourShader.SetInt("texture2",1)
 
@@ -98,7 +98,7 @@ while run:
   transform = translate(transform,vec3(0.5'f32,-0.5'f32,0.0'f32))
   transform = rotate(transform,vec3(0.0'f32,0.0'f32,1.0'f32),getTicks().float32/1000.0'f32)
 
-  ourShader.UseProgram()
+  ourShader.Use()
   ourShader.SetMat4("transform",transform)
 
   BindVertexArray(VAO) # Not necessary since we only have one VAO

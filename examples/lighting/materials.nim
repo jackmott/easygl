@@ -147,7 +147,7 @@ while run:
   easygl.Clear(ClearBufferMask.COLOR_BUFFER_BIT, ClearBufferMask.DEPTH_BUFFER_BIT)
 
  
-  lightingShader.UseProgram()
+  lightingShader.Use()
   lightingShader.SetVec3("light.position", lightPos)
   lightingShader.SetVec3("viewPos",camera.Position)
   var lightColor = vec3(sin(currentTime).float32*4.0'f32, sin(currentTime).float32*1.7'f32, sin(currentTime).float32*2.3'f32)  
@@ -174,7 +174,7 @@ while run:
   BindVertexArray(cubeVAO)
   DrawArrays(DrawMode.TRIANGLES,0,36)
   
-  lampShader.UseProgram()
+  lampShader.Use()
   lampShader.SetMat4("projection",projection)
   lampShader.SetMat4("view",view)
 

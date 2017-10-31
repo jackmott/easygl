@@ -29,7 +29,7 @@ BlendFunc(BlendFactor.SRC_ALPHA,BlendFactor.ONE_MINUS_SRC_ALPHA)
 
 ### Build and compile shader program
 let appDir = getAppDir()
-let shader = CreateAndLinkProgram(appDir&"/shaders/stencil_testing.vert",appDir&"/shaders/stencil_testing.frag")
+let shader = CreateAndLinkProgram(appDir&"/shaders/blending.vert",appDir&"/shaders/blending.frag")
 
 
 # Set up vertex data
@@ -141,7 +141,7 @@ var windows :seq[Vec3f] = @[
   vec3(-0.5'f32,0.0'f32,0.6'f32)
 ]
 
-shader.UseProgram()
+shader.Use()
 shader.SetInt("texture1",0)
 
 var
@@ -200,7 +200,7 @@ while run:
          ClearBufferMask.DEPTH_BUFFER_BIT)
   
 
-  shader.UseProgram()
+  shader.Use()
   var model = mat4(1.0'f32)    
   var view = camera.GetViewMatrix()
   var projection = perspective(radians(camera.Zoom),screenWidth.float32/screenHeight.float32,0.1'f32,100.0'f32)

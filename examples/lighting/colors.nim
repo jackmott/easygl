@@ -144,7 +144,7 @@ while run:
   easygl.Clear(ClearBufferMask.COLOR_BUFFER_BIT, ClearBufferMask.DEPTH_BUFFER_BIT)
 
  
-  lightingShader.UseProgram()
+  lightingShader.Use()
   lightingShader.SetVec3("objectColor",1.0'f32,0.5'f32,0.31'f32)
   lightingShader.SetVec3("lightColor",1.0'f32,1.0'f32,1.0'f32)
 
@@ -160,7 +160,7 @@ while run:
   BindVertexArray(cubeVAO)
   DrawArrays(DrawMode.TRIANGLES,0,36)
   
-  lampShader.UseProgram()
+  lampShader.Use()
   lampShader.SetMat4("projection",projection)
   lampShader.SetMat4("view",view)
 

@@ -117,7 +117,7 @@ UnBindVertexArray()
 let cubeTexture = LoadTextureWithMips(appDir&"/textures/marble.jpg")
 let floorTexture = LoadTextureWithMips(appDir&"/textures/metal.png")
 
-shader.UseProgram()
+shader.Use()
 shader.SetInt("texture1",0)
 
 var
@@ -179,14 +179,14 @@ while run:
          ClearBufferMask.STENCIL_BUFFER_BIT)
   
 
-  shaderSingleColor.UseProgram()
+  shaderSingleColor.Use()
   var model = mat4(1.0'f32)    
   var view = camera.GetViewMatrix()
   var projection = perspective(radians(camera.Zoom),screenWidth.float32/screenHeight.float32,0.1'f32,100.0'f32)
   shaderSingleColor.SetMat4("view",view)
   shaderSingleColor.SetMat4("projection",projection)
  
-  shader.UseProgram()  
+  shader.Use()  
   shader.SetMat4("view",view)
   shader.SetMat4("projection",projection)
 
@@ -222,7 +222,7 @@ while run:
   StencilFunc(AlphaFunc.NOTEQUAL,1,0xFF)
   StencilMask(0x00)
   Disable(Capability.DEPTH_TEST)
-  shaderSingleColor.UseProgram()
+  shaderSingleColor.Use()
   let scale = 1.1'f32
   # cubes
   BindVertexArray(cubeVAO)  

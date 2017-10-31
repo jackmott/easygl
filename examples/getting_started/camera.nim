@@ -104,7 +104,7 @@ EnableVertexAttribArray(1)
 let texture1 = LoadTextureWithMips(appDir&"/textures/container.jpg")
 let texture2 = LoadTextureWithMips(appDir&"/textures/awesomeface.png")
 
-ourShader.UseProgram()
+ourShader.Use()
 ourShader.SetInt("texture1",0)
 ourShader.SetInt("texture2",1)
 
@@ -163,7 +163,7 @@ while run:
   ActiveTexture(TextureUnit.TEXTURE1)
   BindTexture(TextureTarget.TEXTURE_2D, texture2)
   
-  ourShader.UseProgram()
+  ourShader.Use()
   var projection = perspective(radians(camera.Zoom),screenWidth.float32/screenHeight.float32,0.1'f32,100.0'f32)
   var view = camera.GetViewMatrix()
   ourShader.SetMat4("projection",projection)

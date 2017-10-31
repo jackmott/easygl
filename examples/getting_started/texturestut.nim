@@ -65,7 +65,7 @@ let texture1 = LoadTextureWithMips(appDir&"/textures/container.jpg")
 
 let texture2 = LoadTextureWithMips(appDir&"/textures/awesomeface.png")
 
-ourShader.UseProgram()
+ourShader.Use()
 ourShader.SetInt("texture2",1)
 
 
@@ -96,7 +96,7 @@ while run:
   ActiveTexture(TextureUnit.TEXTURE1)
   BindTexture(TextureTarget.TEXTURE_2D, texture2)
 
-  ourShader.UseProgram()
+  ourShader.Use()
   BindVertexArray(VAO) # Not necessary since we only have one VAO
   DrawElements(DrawMode.TRIANGLES,6,IndexType.UNSIGNED_INT,0)
   window.glSwapWindow()
