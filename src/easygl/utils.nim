@@ -41,34 +41,32 @@ proc CreateAndLinkProgram*(vertexPath:string, fragmentPath:string, geometryPath:
 #handles most image types automatically
 proc LoadCubemap*(faces:array[6,string]) : TextureId =        
         let textureId = GenBindTexture(TextureTarget.TEXTURE_CUBE_MAP)
-        var
-            width,height,channels:int
-            data: seq[uint8]
-        stbi.setFlipVerticallyOnLoad(true)               
+        
+        stbi.setFlipVerticallyOnLoad(false)               
 
         for i,face in faces:
-            data = stbi.load(face,width,height,channels,stbi.Default)        
+            echo "Face:" & face
+            var width,height,channels:int                
+            let data = stbi.load(face,width,height,channels,stbi.Default)        
             if data != nil and data.len != 0:                
                 let target = (GL_TEXTURE_CUBE_MAP_POSITIVE_X.int+i).TexImageTarget
                 TexImage2D(target,0'i32,TextureInternalFormat.RGB,width.int32,height.int32,PixelDataFormat.RGB,PixelDataType.UNSIGNED_BYTE,data)                    
             else:
                 echo "Failure to Load Cubemap Image"            
                                                           
-        TexParameteri(TextureTarget.TEXTURE_2D,TextureParameter.TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_LINEAR)
-        TexParameteri(TextureTarget.TEXTURE_2D,TextureParameter.TEXTURE_MAG_FILTER,GL_LINEAR)               
-        TexParameteri(TextureTarget.TEXTURE_2D,TextureParameter.TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE)
-        TexParameteri(TextureTarget.TEXTURE_2D,TextureParameter.TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE)
-        TexParameteri(TextureTarget.TEXTURE_2D,TextureParameter.TEXTURE_WRAP_R,GL_CLAMP_TO_EDGE)
+        TexParameteri(TextureTarget.TEXTURE_CUBE_MAP,TextureParameter.TEXTURE_MIN_FILTER,GL_LINEAR)
+        TexParameteri(TextureTarget.TEXTURE_CUBE_MAP,TextureParameter.TEXTURE_MAG_FILTER,GL_LINEAR)               
+        TexParameteri(TextureTarget.TEXTURE_CUBE_MAP,TextureParameter.TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE)
+        TexParameteri(TextureTarget.TEXTURE_CUBE_MAP,TextureParameter.TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE)
+        TexParameteri(TextureTarget.TEXTURE_CUBE_MAP,TextureParameter.TEXTURE_WRAP_R,GL_CLAMP_TO_EDGE)
         textureId
        
             
 proc LoadTextureWithMips*(path:string) : TextureId =        
-    let textureId = GenBindTexture(TextureTarget.Texture2D)
-    var
-        width,height,channels:int
-        data: seq[uint8]
+    let textureId = GenBindTexture(TextureTarget.Texture2D)    
     stbi.setFlipVerticallyOnLoad(true)               
-    data = stbi.load(path,width,height,channels,stbi.Default)        
+    var width,height,channels:int        
+    let data = stbi.load(path,width,height,channels,stbi.Default)        
     if data != nil and data.len != 0:
         let (format,param) = 
             if channels == 1:                    

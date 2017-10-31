@@ -144,7 +144,7 @@ template GenBindBufferData*[T](target:BufferTarget, data:openarray[T], usage:Buf
     glBindBuffer(target.GLenum,buffer)
     glBufferData(target.GLenum,data.len*T.sizeof().GLsizeiptr,data[0].unsafeAddr,usage.GLenum)
     buffer.BufferId
-    
+        
 template DeleteBuffer*(buffer:BufferId) =    
     var b = buffer
     glDeleteBuffers(1,b.GLuint.addr)
@@ -292,7 +292,7 @@ template Uniform4f*(location:UniformLocation,x:float32, y:float32, z:float32, w:
 type VertexAttribSize = range[1..4]
 template VertexAttribPointer*(index:uint32, size:VertexAttribSize, attribType:VertexAttribType, normalized:bool, stride:int32, offset:int32)  =
     glVertexAttribPointer(index.GLuint, size.GLint, attribType.GLenum, normalized.GLboolean,stride.GLsizei, cast[pointer](offset))
-    
+            
 template EnableVertexAttribArray*(index:uint32)  =
     glEnableVertexAttribArray(index.GLuint)
 
