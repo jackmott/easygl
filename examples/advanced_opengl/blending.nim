@@ -152,7 +152,7 @@ glViewport(0, 0, screenWidth, screenHeight)   # Set the viewport to cover the ne
 let camera = newCamera(vec3(0.0'f32,0.0'f32,4.0'f32))
 
 var currentTime,prevTime:float
-prevTime=cpuTime()
+prevTime=epochTime()
 
 while run:
   
@@ -161,7 +161,7 @@ while run:
     echo "Error:" & $error
 
   let keyState = getKeyboardState()
-  currentTime = cpuTime()
+  currentTime = epochTime()
   let elapsedTime = (currentTime - prevTime).float32*10.0'f32
   prevTime = currentTime
   while pollEvent(evt):

@@ -333,11 +333,20 @@ template VertexAttribPointer*(index:uint32, size:VertexAttribSize, attribType:Ve
 template EnableVertexAttribArray*(index:uint32)  =
     glEnableVertexAttribArray(index.GLuint)
 
+template VertexAttribDivisor*(index:uint32,divisor:uint32) =
+    glVertexAttribDivisor(index.GLuint,divisor.GLuint)
+
 template DrawArrays*(mode:DrawMode, first:int32, count:int32)   =
     glDrawArrays(mode.GLenum, first.GLint, count.GLsizei)
 
+template DrawArraysInstanced*(mode:DrawMode, first:int32, count:int32,primcount:int32) =
+    glDrawArraysInstanced(mode.GLenum, first.GLint, count.GLsizei,primcount.GLsizei)
+
 template DrawElements*[T](mode:DrawMode, count:int, indexType:IndexType, indices:openarray[T])  =
     glDrawElements(mode.GLenum, count.GLsizei, indexType.GLenum, indices[0].unsafeAddr)
+
+template DrawElementsInstanced*[T](mode:DrawMode, count:int, indexType:IndexType, indices:openarray[T],primcount:int32)  =
+    glDrawElementsInstanced(mode.GLenum, count.GLsizei, indexType.GLenum, indices[0].unsafeAddr,primcount.GLsizei)
 
 template DrawElements*(mode:DrawMode, count:int, indexType:IndexType, offset:int) =
     glDrawElements(mode.GLenum, count.GLsizei, indexType.GLenum, cast[pointer](offset))

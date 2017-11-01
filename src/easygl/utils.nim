@@ -1,8 +1,10 @@
+{.experimental.}
 import 
     ../easygl,
     stb_image/read as stbi,
     opengl,
-    glm
+    glm,
+    threadPool
 
 # Compiles and attaches in 1 step with error reporting
 proc CompileAndAttachShader*(shaderType:ShaderType, shaderPath: string, programId:ShaderProgramId) : ShaderId =    
@@ -44,8 +46,8 @@ proc LoadCubemap*(faces:array[6,string]) : TextureId =
         
         stbi.setFlipVerticallyOnLoad(false)               
 
-        for i,face in faces:
-            echo "Face:" & face
+        # todo parallelize this
+        for i,face in faces:            
             var width,height,channels:int                
             let data = stbi.load(face,width,height,channels,stbi.Default)        
             if data != nil and data.len != 0:                
