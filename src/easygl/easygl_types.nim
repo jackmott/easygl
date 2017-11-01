@@ -9,7 +9,7 @@ type
     ShaderProgramId* = distinct GLuint
     FrameBufferId* = distinct GLuint
     RenderBufferID* = distinct GLuint
-    UniformLocation* = distinct GLint
+    UniformLocation* = distinct GLint    
     
     ErrorType* {.pure.} = enum        
         NO_ERROR = GL_NO_ERROR,
@@ -57,6 +57,11 @@ type
         PRIMITIVE_RESTART = GL_PRIMITIVE_RESTART, #0x8F9D
         DEBUG_OUTPUT = GL_DEBUG_OUTPUT, #0x92E0
     
+    Access* {.pure.} = enum
+        READ_ONLY = GL_READ_ONLY,
+        WRITE_ONLY = GL_WRITE_ONLY,
+        READ_WRITE = GL_READ_WRITE    
+
     AlphaFunc* {.pure.} = enum        
         NEVER = GL_NEVER,
         LESS = GL_LESS,
@@ -124,7 +129,13 @@ type
         DISPATCH_INDIRECT_BUFFER = GL_DISPATCH_INDIRECT_BUFFER, #0x90EE
         QUERY_BUFFER = GL_QUERY_BUFFER, #0x9192
         ATOMIC_COUNTER_BUFFER = GL_ATOMIC_COUNTER_BUFFER, #0x92C0
-    
+
+    BufferRangeTarget* {.pure.} = enum        
+        UNIFORM_BUFFER = GL_UNIFORM_BUFFER,
+        TRANSFORM_FEEDBACK_BUFFER = GL_TRANSFORM_FEEDBACK_BUFFER,         
+        SHADER_STORAGE_BUFFER = GL_SHADER_STORAGE_BUFFER,
+        ATOMIC_COUNTER_BUFFER = GL_ATOMIC_COUNTER_BUFFER, 
+        
     FramebufferTarget* {.pure.} = enum        
         READ_FRAMEBUFFER = GL_READ_FRAMEBUFFER,
         DRAW_FRAME_BUFFER = GL_DRAW_FRAMEBUFFER,
