@@ -144,6 +144,9 @@ template BindBufferRange*(target:BufferRangeTarget,index:uint32,buffer:BufferId,
 template BufferData*[T](target:BufferTarget, data:openarray[T], usage:BufferDataUsage)  =
     glBufferData(target.GLenum,data.len*T.sizeof().GLsizeiptr,data[0].unsafeAddr,usage.GLenum)
 
+template BufferData*[T](target:BufferTarget,size:int, data:ptr T, usage:BufferDataUsage)  =
+    glBufferData(target.GLenum,size.GLsizeiptr,cast[pointer](data),usage.GLenum)
+
 template BufferData*(target:BufferTarget,size:int,usage:BufferDataUsage) =
     glBufferData(target.GLenum,size.GLsizeiptr,nil,usage.GLenum)
 
@@ -327,7 +330,7 @@ template Uniform4f*(location:UniformLocation,x:float32, y:float32, z:float32, w:
     glUniform4f(location.GLint,x.GLfloat,y.GLfloat,z.GLfloat, w.GLfloat)
                 
 type VertexAttribSize = range[1..4]
-template VertexAttribPointer*(index:uint32, size:VertexAttribSize, attribType:VertexAttribType, normalized:bool, stride:int32, offset:int32)  =
+template VertexAttribPointer*(index:uint32, size:VertexAttribSize, attribType:VertexAttribType, normalized:bool, stride:int, offset:int)  =
     glVertexAttribPointer(index.GLuint, size.GLint, attribType.GLenum, normalized.GLboolean,stride.GLsizei, cast[pointer](offset))
             
 template EnableVertexAttribArray*(index:uint32)  =
@@ -345,8 +348,11 @@ template DrawArraysInstanced*(mode:DrawMode, first:int32, count:int32,primcount:
 template DrawElements*[T](mode:DrawMode, count:int, indexType:IndexType, indices:openarray[T])  =
     glDrawElements(mode.GLenum, count.GLsizei, indexType.GLenum, indices[0].unsafeAddr)
 
-template DrawElementsInstanced*[T](mode:DrawMode, count:int, indexType:IndexType, indices:openarray[T],primcount:int32)  =
+template DrawElementsInstanced*[T](mode:DrawMode, count:int, indexType:IndexType, indices:openarray[T],primcount:int)  =
     glDrawElementsInstanced(mode.GLenum, count.GLsizei, indexType.GLenum, indices[0].unsafeAddr,primcount.GLsizei)
+    
+template DrawElementsInstanced*(mode:DrawMode, count:int, indexType:IndexType,primcount:int)  =
+    glDrawElementsInstanced(mode.GLenum, count.GLsizei, indexType.GLenum, nil,primcount.GLsizei)
 
 template DrawElements*(mode:DrawMode, count:int, indexType:IndexType, offset:int) =
     glDrawElements(mode.GLenum, count.GLsizei, indexType.GLenum, cast[pointer](offset))

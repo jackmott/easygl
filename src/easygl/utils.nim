@@ -1,10 +1,8 @@
-{.experimental.}
 import 
     ../easygl,
     stb_image/read as stbi,
     opengl,
-    glm,
-    threadPool
+    glm    
 
 # Compiles and attaches in 1 step with error reporting
 proc CompileAndAttachShader*(shaderType:ShaderType, shaderPath: string, programId:ShaderProgramId) : ShaderId =    

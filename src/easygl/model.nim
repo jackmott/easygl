@@ -8,10 +8,10 @@ import
     strutils
 
 type Model* = object
-    texturesLoaded : seq[Texture]
-    meshes: seq[Mesh]
-    directory:string
-    gammaCorrection:bool
+    texturesLoaded* : seq[Texture]
+    meshes*: seq[Mesh]
+    directory*:string
+    gammaCorrection*:bool
 
 proc Draw*(model:Model, shaderProgram:ShaderProgramId) =
    
