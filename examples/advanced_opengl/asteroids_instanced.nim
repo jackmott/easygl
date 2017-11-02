@@ -21,6 +21,7 @@ var screenWidth: cint = 800
 var screenHeight: cint = 600
 
 let window = createWindow("Float", 100, 100, screenWidth, screenHeight, SDL_WINDOW_OPENGL or SDL_WINDOW_RESIZABLE)
+discard setRelativeMouseMode(true.Bool32)
 discard window.glCreateContext()
 
 # Initialize OpenGL
@@ -139,7 +140,7 @@ while run:
   
   # Render
   ClearColor(0.05,0.05,0.05,1.0)
-  easygl.Clear(ClearBufferMask.COLOR_BUFFER_BIT, ClearBufferMask.DEPTH_BUFFER_BIT)
+  easygl.Clear(BufferMask.COLOR_BUFFER_BIT, BufferMask.DEPTH_BUFFER_BIT)
 
   # configure transform matrices
   var projection = perspective(radians(45.0'f32),screenWidth.float32/screenHeight.float32,0.1'f32,1000.0'f32)

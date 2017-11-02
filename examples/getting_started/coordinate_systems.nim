@@ -14,6 +14,7 @@ var screenWidth: cint = 800
 var screenHeight: cint = 600
 
 let window = createWindow("Coordinate Systems", 100, 100, screenWidth, screenHeight, SDL_WINDOW_OPENGL or SDL_WINDOW_RESIZABLE)
+discard setRelativeMouseMode(true.Bool32)
 discard window.glCreateContext()
 
 # Initialize OpenGL
@@ -127,7 +128,7 @@ while run:
         
   # Render
   ClearColor(0.2,0.3,0.3,1.0)
-  Clear(ClearBufferMask.COLOR_BUFFER_BIT, ClearBufferMask.DEPTH_BUFFER_BIT)
+  Clear(BufferMask.COLOR_BUFFER_BIT, BufferMask.DEPTH_BUFFER_BIT)
 
   ActiveTexture(TextureUnit.TEXTURE0)
   BindTexture(TextureTarget.TEXTURE_2D,texture1)

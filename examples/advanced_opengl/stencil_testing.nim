@@ -21,6 +21,7 @@ var screenHeight: cint = 720
 discard glSetAttribute(SDL_GL_STENCIL_SIZE,8)
 
 let window = createWindow("Float", 100, 100, screenWidth, screenHeight, SDL_WINDOW_OPENGL or SDL_WINDOW_RESIZABLE)
+discard setRelativeMouseMode(true.Bool32)
 discard window.glCreateContext()
 
 # Initialize OpenGL
@@ -174,9 +175,9 @@ while run:
   ClearColor(0.1,0.1,0.1,1.0)
   
   StencilMask(0xFF)
-  easygl.Clear(ClearBufferMask.COLOR_BUFFER_BIT, 
-         ClearBufferMask.DEPTH_BUFFER_BIT,
-         ClearBufferMask.STENCIL_BUFFER_BIT)
+  easygl.Clear(BufferMask.COLOR_BUFFER_BIT, 
+         BufferMask.DEPTH_BUFFER_BIT,
+         BufferMask.STENCIL_BUFFER_BIT)
   
 
   shaderSingleColor.Use()

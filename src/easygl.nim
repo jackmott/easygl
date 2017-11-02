@@ -76,6 +76,12 @@ template FramebufferTexture2D*(target:FramebufferTarget,
                                 level:int) =
     glFramebufferTexture2D(target.GLenum,attachment.GLenum,textarget.GLenum,texture.GLuint,level.int32)
 
+template BlitFramebuffer*(srcX0,srcY0,srcX1,srcY1,dstX0,dstY0,dstX1,dsyY1:int,masks:varargs[BufferMask],filter:BlitFilter) =
+    var mask : uint32 
+    for m in masks:
+        mask = mask or m.uint32
+    glBlitFramebuffer(srcX0.GLint,srcY0.GLint,srcX1.GLint,srcY1.GLint,dstX0.GLint,dstY0.GLint,dstX1.GLint,dsyY1.GLint,mask.GLbitfield,filter.GLenum)
+
 template DeleteFramebuffers*(framebuffers:openarray[FramebufferId]) =
     glDeleteBuffers(framebuffers.len.GLsizei,cast[ptr GLUint](framebuffers[0].unsafeAddr))
 
@@ -96,7 +102,7 @@ template GenRenderbuffers*(count:int32) : seq[RenderbufferId] =
 template BindRenderbuffer*(renderbuffer:RenderbufferId) = 
     glBindRenderBuffer(GL_RENDERBUFFER,renderbuffer.GLuint)
 
-template UnBindRenderbuffer*(renderbuffer:RenderbufferId) = 
+template UnBindRenderbuffer*() = 
     glBindRenderBuffer(GL_RENDERBUFFER,0)
 
 template GenBindRenderBuffer*() : RenderbufferId =
@@ -115,6 +121,9 @@ template FramebufferRenderbuffer*(target:FramebufferTarget,
 type RenderbufferSize* =  range[1..GL_MAX_RENDERBUFFER_SIZE.int]
 template RenderbufferStorage*(internalformat:RenderbufferFormat, width:RenderbufferSize,height:RenderbufferSize) =
     glRenderBufferStorage(GL_RENDERBUFFER,internalformat.GLenum,width.GLsizei,height.GLsizei)
+
+template RenderbufferStorageMultisample*(samples:int,internalformat:RenderbufferFormat, width:RenderbufferSize,height:RenderbufferSize) =
+    glRenderBufferStorageMultisample(GL_RENDERBUFFER,samples.GLsizei,internalformat.GLenum,width.GLsizei,height.GLsizei)
                                  
 template GenBuffer*() : BufferId  =
     var buffer:GLuint
@@ -235,6 +244,9 @@ template GenBindTexture*(target:TextureTarget) : TextureId =
 template BindTexture*(target:TextureTarget, texture:TextureId) =
     glBindTexture(target.GLenum, texture.GLuint)
 
+template UnbindTexture*(target:TextureTarget) =
+    glBindTexture(target.GLenum, 0.GLuint)
+
 template ActiveTexture*(texture:TextureUnit) =
     glActiveTexture(texture.GLenum)
 
@@ -247,6 +259,9 @@ template TexImage2D*[T](target:TexImageTarget, level:int32, internalFormat:Textu
 # for cases where data is null, just don't pass it in
 template TexImage2D*(target:TexImageTarget, level:int32, internalFormat:TextureInternalFormat, width:int32, height:int32, format:PixelDataFormat, pixelType:PixelDataType) =
     glTexImage2D(target.GLenum,level.GLint,internalFormat.GLint,width.GLsizei,height.GLsizei,0,format.GLenum,pixelType.GLenum,nil)    
+
+template TexImage2DMultisample*(target:TexImageMultiSampleTarget,samples:int,internalformat:TextureInternalFormat,width:int,height:int,fixedsamplelocations:bool) = 
+    glTexImage2DMultisample(target.GLenum,samples.GLsizei,internalformat.GLint,width.GLsizei,height.GLsizei,fixedsamplelocations.GLboolean)
 
 template GenerateMipmap*(target:MipmapTarget) =
     glGenerateMipmap(target.GLenum)
@@ -357,7 +372,7 @@ template DrawElementsInstanced*(mode:DrawMode, count:int, indexType:IndexType,pr
 template DrawElements*(mode:DrawMode, count:int, indexType:IndexType, offset:int) =
     glDrawElements(mode.GLenum, count.GLsizei, indexType.GLenum, cast[pointer](offset))
     
-template Clear*(buffersToClear:varargs[ClearBufferMask])  =
+template Clear*(buffersToClear:varargs[BufferMask])  =
     var mask : uint32 
     for m in buffersToClear:
         mask = mask or m.uint32
@@ -387,6 +402,6 @@ template BlendEquationi*(buf:BufferId,mode:BlendEquationEnum) =
 template CullFace*(face:PolygonFace) = 
     glCullFace(face.GLenum)
 
-template FrontFace(mode:FaceMode) =
+template FrontFace*(mode:FaceMode) =
     glFrontFace(mode.GLenum)
 

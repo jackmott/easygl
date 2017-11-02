@@ -226,7 +226,7 @@ type
         TRIANGLE_STRIP_ADJACENCY = GL_TRIANGLE_STRIP_ADJACENCY, #0x000D        
         PATCHES = GL_PATCHES #0x000E
 
-    ClearBufferMask* {.pure.} = enum
+    BufferMask* {.pure.} = enum
         DEPTH_BUFFER_BIT = GL_DEPTH_BUFFER_BIT,
         STENCIL_BUFFER_BIT = GL_STENCIL_BUFFER_BIT,
         COLOR_BUFFER_BIT = GL_COLOR_BUFFER_BIT
@@ -294,6 +294,10 @@ type
         PROXY_TEXTURE_CUBE_MAP = GL_PROXY_TEXTURE_CUBE_MAP   
         TEXTURE_1D_ARRAY = GL_TEXTURE_1D_ARRAY,
         PROXY_TEXTURE1D_ARRAY = GL_PROXY_TEXTURE_1D_ARRAY, #0x8C19 
+    
+    TexImageMultiSampleTarget* {.pure.} = enum
+        TEXTURE_2D_MULTISAMPLE = GL_TEXTURE_2D_MULTISAMPLE,
+        PROXY_TEXTURE_2D_MULTISAMPLE =  GL_PROXY_TEXTURE_2D_MULTISAMPLE
         
     TextureParameter* {.pure.} = enum
         TEXTURE_MAG_FILTER = GL_TEXTURE_MAG_FILTER,
@@ -467,3 +471,8 @@ type
         POINT = GL_POINT,
         LINE = GL_LINE,
         FILL = GL_FILL
+
+    BlitFilter* {.pure.} = enum
+        NEAREST = GL_NEAREST
+        LINEAR = GL_LINEAR
+    

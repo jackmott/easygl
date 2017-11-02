@@ -18,6 +18,7 @@ var screenWidth: cint = 1280
 var screenHeight: cint = 720
 
 let window = createWindow("Float", 100, 100, screenWidth, screenHeight, SDL_WINDOW_OPENGL or SDL_WINDOW_RESIZABLE)
+discard setRelativeMouseMode(true.Bool32)
 discard window.glCreateContext()
 
 # Initialize OpenGL
@@ -208,8 +209,8 @@ while run:
  
   # make sure we clear the framebuffer's content
   ClearColor(0.1,0.1,0.1,1.0)    
-  easygl.Clear(ClearBufferMask.COLOR_BUFFER_BIT, 
-               ClearBufferMask.DEPTH_BUFFER_BIT)
+  easygl.Clear(BufferMask.COLOR_BUFFER_BIT, 
+               BufferMask.DEPTH_BUFFER_BIT)
   
 
   shader.Use()
@@ -243,7 +244,7 @@ while run:
   Disable(Capability.DEPTH_TEST) # disable depth test so screen-space quad isn't discarded due to depth test.
   # clear all relevant buffers
   ClearColor(1.0,1.0,1.0,1.0) # set clear color to white (not really necessery actually, since we won't be able to see behind the quad anyways)  
-  easygl.Clear(ClearBufferMask.COLOR_BUFFER_BIT) 
+  easygl.Clear(BufferMask.COLOR_BUFFER_BIT) 
 
   screenShader.Use()
   BindVertexArray(quadVAO)

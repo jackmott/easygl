@@ -89,7 +89,7 @@ while run:
         
   # Render
   ClearColor(0.2,0.3,0.3,1.0)
-  Clear(ClearBufferMask.COLOR_BUFFER_BIT)
+  Clear(BufferMask.COLOR_BUFFER_BIT)
 
   ActiveTexture(TextureUnit.TEXTURE0)
   BindTexture(TextureTarget.TEXTURE_2D,texture1)

@@ -1,3 +1,4 @@
+{.experimental.}
 import 
     ../easygl,
     stb_image/read as stbi,
@@ -43,8 +44,8 @@ proc LoadCubemap*(faces:array[6,string]) : TextureId =
         let textureId = GenBindTexture(TextureTarget.TEXTURE_CUBE_MAP)
         
         stbi.setFlipVerticallyOnLoad(false)               
-
         # todo parallelize this
+        
         for i,face in faces:            
             var width,height,channels:int                
             let data = stbi.load(face,width,height,channels,stbi.Default)        

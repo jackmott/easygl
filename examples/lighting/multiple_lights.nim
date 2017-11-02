@@ -19,6 +19,7 @@ var screenWidth: cint = 800
 var screenHeight: cint = 600
 
 let window = createWindow("Multiple Lights", 100, 100, screenWidth, screenHeight, SDL_WINDOW_OPENGL or SDL_WINDOW_RESIZABLE)
+discard setRelativeMouseMode(true.Bool32)
 discard window.glCreateContext()
 
 # Initialize OpenGL
@@ -177,7 +178,7 @@ while run:
 
   # Render
   ClearColor(0.1,0.1,0.1,1.0)
-  easygl.Clear(ClearBufferMask.COLOR_BUFFER_BIT, ClearBufferMask.DEPTH_BUFFER_BIT)
+  easygl.Clear(BufferMask.COLOR_BUFFER_BIT, BufferMask.DEPTH_BUFFER_BIT)
 
  
   lightingShader.Use()  
