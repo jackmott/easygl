@@ -355,7 +355,7 @@ template EnableVertexAttribArray*(index:uint32)  =
     glEnableVertexAttribArray(index.GLuint)
 
 # works only for non overlaping offsets
-proc VertexAttribSetup*[T : int8|uint8|int16|uint16|int32|uint32|float32|float](
+template VertexAttribSetup*[T : int8|uint8|int16|uint16|int32|uint32|float32|float](
     target:BufferTarget,
     data:openarray[T],
     usage:BufferDataUsage,
@@ -375,8 +375,7 @@ proc VertexAttribSetup*[T : int8|uint8|int16|uint16|int32|uint32|float32|float](
         vertexType = VertexAttribType.INT
     when T is uint32:
         vertexType = VertexAttribType.UNSIGNED_INT
-    when T is float32:
-        echo "FLOAT!"
+    when T is float32:        
         vertexType = VertexAttribType.FLOAT
     when T is float:
         vertexType = VertexAttribType.DOUBLE
@@ -388,8 +387,7 @@ proc VertexAttribSetup*[T : int8|uint8|int16|uint16|int32|uint32|float32|float](
     var totalSize = 0
     for r in ranges:
         totalSize = totalSize + r.size
-    for i,r in ranges:
-        echo "i:" & $i & " offset:" & $offset
+    for i,r in ranges:        
         EnableVertexAttribArray(i.uint32)
         VertexAttribPointer(r.index.uint32,r.size,vertexType,normalized,totalSize*T.sizeof(),offset*T.sizeof())
         offset = offset + r.size
