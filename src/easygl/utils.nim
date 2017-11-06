@@ -62,24 +62,38 @@ proc LoadCubemap*(faces:array[6,string]) : TextureId =
         textureId
        
             
-proc LoadTextureWithMips*(path:string) : TextureId =        
+proc LoadTextureWithMips*(path:string, gammaCorrection:bool = false) : TextureId =        
     let textureId = GenBindTexture(TextureTarget.Texture2D)    
     stbi.setFlipVerticallyOnLoad(true)               
     var width,height,channels:int        
     let data = stbi.load(path,width,height,channels,stbi.Default)        
     if data != nil and data.len != 0:
-        let (format,param) = 
+        let gammaFormat = 
+            if gammaCorrection: 
+                TextureInternalFormat.SRGB 
+            else: 
+                TextureInternalFormat.RGB
+                
+        let (internalFormat,dataFormat,param) = 
             if channels == 1:                    
-                (PixelDataFormat.RED,GL_REPEAT)
+                (TextureInternalFormat.RED,PixelDataFormat.RED,GL_REPEAT)
             elif channels == 3:                    
-                (PixelDataFormat.RGB,GL_REPEAT)
+                (gammaFormat,PixelDataFormat.RGB,GL_REPEAT)
             elif channels == 4:
-                (PixelDataFormat.RGBA,GL_CLAMP_TO_EDGE)
+                (gammaFormat,PixelDataFormat.RGBA,GL_CLAMP_TO_EDGE)
             else:            
                 ( echo "texture unknown, assuming rgb";        
-                (PixelDataFormat.RGB,GL_REPEAT) )
+                (TextureInternalFormat.RGB,PixelDataFormat.RGB,GL_REPEAT) )
                 
-        TexImage2D(TexImageTarget.TEXTURE_2D,0'i32,format.TextureInternalFormat,width.int32,height.int32,format,PixelDataType.UNSIGNED_BYTE,data)
+        TexImage2D(TexImageTarget.TEXTURE_2D,
+                   0'i32,
+                   internalFormat.TextureInternalFormat,
+                   width.int32,
+                   height.int32,
+                   dataFormat,
+                   PixelDataType.UNSIGNED_BYTE,
+                   data)
+
         GenerateMipmap(MipmapTarget.TEXTURE_2D)        
         
         TexParameteri(TextureTarget.TEXTURE_2D,TextureParameter.TEXTURE_WRAP_S,param)

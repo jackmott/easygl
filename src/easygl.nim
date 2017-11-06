@@ -350,9 +350,52 @@ template Uniform4f*(location:UniformLocation,x:float32, y:float32, z:float32, w:
 type VertexAttribSize = range[1..4]
 template VertexAttribPointer*(index:uint32, size:VertexAttribSize, attribType:VertexAttribType, normalized:bool, stride:int, offset:int)  =
     glVertexAttribPointer(index.GLuint, size.GLint, attribType.GLenum, normalized.GLboolean,stride.GLsizei, cast[pointer](offset))
-            
+                    
 template EnableVertexAttribArray*(index:uint32)  =
     glEnableVertexAttribArray(index.GLuint)
+
+# works only for non overlaping offsets
+proc VertexAttribSetup*[T : int8|uint8|int16|uint16|int32|uint32|float32|float](
+    target:BufferTarget,
+    data:openarray[T],
+    usage:BufferDataUsage,
+    normalized:bool,
+    ranges:varargs[tuple[index:int,size:int]]) : tuple[vao:VertexArrayId,vbo:BufferId] =
+    
+    var vertexType : VertexAttribType
+    when T is int8:
+        vertexType = VertexAttribType.BYTE
+    when T is uint8:
+        vertexType = VertexAttribType.UNSIGNED_BYTE
+    when T is int16:
+        vertexType = VertexAttribType.SHORT
+    when T is uint16:
+        vertexType = VertexAttribType.UNSIGNED_SHORT
+    when T is int32:
+        vertexType = VertexAttribType.INT
+    when T is uint32:
+        vertexType = VertexAttribType.UNSIGNED_INT
+    when T is float32:
+        echo "FLOAT!"
+        vertexType = VertexAttribType.FLOAT
+    when T is float:
+        vertexType = VertexAttribType.DOUBLE
+
+    let vao = GenBindVertexArray()
+    let vbo = GenBindBufferData(target,data,usage)
+
+    var offset = 0    
+    var totalSize = 0
+    for r in ranges:
+        totalSize = totalSize + r.size
+    for i,r in ranges:
+        echo "i:" & $i & " offset:" & $offset
+        EnableVertexAttribArray(i.uint32)
+        VertexAttribPointer(r.index.uint32,r.size,vertexType,normalized,totalSize*T.sizeof(),offset*T.sizeof())
+        offset = offset + r.size
+
+    UnbindVertexArray()
+    (vao,vbo)
 
 template VertexAttribDivisor*(index:uint32,divisor:uint32) =
     glVertexAttribDivisor(index.GLuint,divisor.GLuint)

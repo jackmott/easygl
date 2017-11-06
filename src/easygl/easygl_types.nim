@@ -422,6 +422,8 @@ type
         RGBA = GL_RGBA, #0x1908
         RG = GL_RG,
         DEPTH_STENCIL = GL_DEPTH_STENCIL, #0x84F9
+        SRGB = GL_SRGB,
+        SRGB_ALPHA = GL_SRGB_ALPHA
         #todo sized formats
     
     PixelDataFormat* {.pure.} = enum

@@ -49,18 +49,16 @@ let planeVertices : seq[float32]  =
     -10.0'f32, -0.5'f32, -10.0'f32,  0.0'f32, 1.0'f32, 0.0'f32,   0.0'f32, 10.0'f32,
      10.0'f32, -0.5'f32, -10.0'f32,  0.0'f32, 1.0'f32, 0.0'f32,  10.0'f32, 10.0'f32]
 
-let planeVAO = GenBindVertexArray()
-let planeVBO = GenBindBufferData(BufferTarget.ARRAY_BUFFER,planeVertices,BufferDataUsage.STATIC_DRAW)
-EnableVertexAttribArray(0)
-VertexAttribPointer(0,3,VertexAttribType.FLOAT,false,8*float32.sizeof(),0)
-EnableVertexAttribArray(1)
-VertexAttribPointer(1,3,VertexAttribType.FLOAT,false,8*float32.sizeof(),3*float32.sizeof())
-EnableVertexAttribArray(2)
-VertexAttribPointer(2,2,VertexAttribType.FLOAT,false,8*float32.sizeof(),6*float32.sizeof())
-UnbindVertexArray()
+let (planeVAO,planeVBO) = VertexAttribSetup(
+                            BufferTarget.ARRAY_BUFFER,
+                            planeVertices,
+                            BufferDataUsage.STATIC_DRAW,
+                            false,
+                            (0,3),(1,3),(2,2))
 
-let floorTexture = LoadTextureWithMips(appDir&"/textures/wood.png")
-let floorTextureGammaCorrected = LoadTextureWithMips(appDir&"/textures/wood.png")
+
+let floorTexture = LoadTextureWithMips(appDir&"/textures/wood.png",false)
+let floorTextureGammaCorrected = LoadTextureWithMips(appDir&"/textures/wood.png",true)
 
 shader.Use()
 shader.SetInt("floorTexture",0)
@@ -162,7 +160,7 @@ while run:
   # floor
   BindVertexArray(planeVAO)
   ActiveTexture(TextureUnit.TEXTURE0)
-  BindTexture(TextureTarget.TEXTURE_2D,floorTexture)
+  BindTexture(TextureTarget.TEXTURE_2D,if gamma: floorTextureGammaCorrected else: floorTexture)
   DrawArrays(DrawMode.Triangles,0,6)
 
    
