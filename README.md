@@ -3,7 +3,7 @@ A typesafe opengl wrapper for the nim language with no runtime overhead
 
 # OpenGL ids are made type safe
 
-OpenGL uses object ids in it's api which are all just unsinged integers. This can cause hard to track down bugs. For instance, if you transposed program and shader on accident, it would compile fine in C or with a normal wrapper, as both are GLuint types. You would need to call glGetError() to find out what was wrong, and you wouldn't know what line of code it was caused by:
+OpenGL uses object ids in it's api which are all just unsigned integers. This can cause hard to track down bugs. For instance, if you transposed program and shader on accident, it would compile fine in C or with a normal wrapper, as both are GLuint types. You would need to call glGetError() to find out what was wrong, and you wouldn't know what line of code it was caused by:
 
 ```c
 // void glAttachShader(GLuint program,GLuint shader);
