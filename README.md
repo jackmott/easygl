@@ -36,7 +36,7 @@ DrawArrays(DrawMode.LINE_STRIPS,0,6)   # Compile error! should be LINE_STRIP
 
 # Range types prevent invalid input
 
-Some OpenGL functions only accept a certain range of values as valid, but the type system can't restrict that at compile time. With EasyGL we can use Nim's range type to constrain input. For instance glVertexAttribPointer can only accept 1..4 as valid input for the size parameter. Using a range type we can check this at compile time when possible, and a runtime in debug builds.
+Some OpenGL functions only accept a certain range of values as valid, but the type system can't restrict that at compile time. EasyGL uses Nim's range type to constrain input. For instance glVertexAttribPointer can only accept 1..4 as valid input for the size parameter. Using a range type this can be checked at compile time when possible, and a runtime in debug builds.
 
 ```nim
 type VertexAttribSize = range[1..4] 
@@ -53,8 +53,7 @@ Using the raw OpenGL bindings requries constant casting and non idiomatic code. 
 glBufferData(GL_ARRAY_BUFFER,data.len*T.sizeof().GLsizeiptr,data[0].unsafeAddr,GL_STATIC_DRAW)
 
 ```
-
-Here we have to pass an unsafe pointer to a `seq` type, and it's size, even though seq already knows it's size. EasyGl abstracts this away, and can accept seq or array types:
+Here one must pass an unsafe pointer to a `seq` type, and it's size, even though seq already knows it's size. EasyGl abstracts this away, and can accept seq or array types:
 
 ```nim
 BufferData(BufferTarget.ARRAY_BUFFER,data,BufferDataUsage.STATIC_DRAW)
@@ -62,7 +61,7 @@ BufferData(BufferTarget.ARRAY_BUFFER,data,BufferDataUsage.STATIC_DRAW)
 
 # Handy utility functions with Nim Generics
 
-Using Nim's generics features we can drastically reduce the amount of code needed for some common OpenGL patterns, for instance:
+Using Nim's generics features one can drastically reduce the amount of code needed for some common OpenGL patterns, for instance:
 
 ```c
 unsigned int planeVAO, planeVBO;
