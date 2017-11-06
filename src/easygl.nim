@@ -253,7 +253,7 @@ template ActiveTexture*(texture:TextureUnit) =
 template TexParameteri*(target:TextureTarget, pname:TextureParameter, param:GLint) =
     glTexParameteri(target.GLenum,pname.GLenum,param)
 
-template TexImage2D*[T](target:TexImageTarget, level:int32, internalFormat:TextureInternalFormat, width:int32, height:int32, format:PixelDataFormat, pixelType:PixelDataType, data: openArray[T] )  =
+template TexImage2D*[T](target:TexImageTarget, level:int32, internalFormat:TextureInternalFormat, width:int32, height:int32, format:PixelDataFormat, pixelType:PixelDataType, data: openArray[T] )  =    
     glTexImage2D(target.GLenum,level.GLint,internalFormat.GLint,width.GLsizei,height.GLsizei,0,format.GLenum,pixelType.GLenum,data[0].unsafeAddr)
 
 # for cases where data is null, just don't pass it in

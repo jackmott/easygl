@@ -1,4 +1,3 @@
-{.experimental.}
 import 
     ../easygl,
     stb_image/read as stbi,
