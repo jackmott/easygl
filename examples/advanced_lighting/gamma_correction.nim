@@ -33,7 +33,7 @@ BlendFunc(BlendFactor.SRC_ALPHA,BlendFactor.ONE_MINUS_SRC_ALPHA)
 
 ### Build and compile shader program
 let appDir = getAppDir()
-let shader = CreateAndLinkProgram(appDir&"/shaders/advanced_lighting.vert",appDir&"/shaders/advanced_lighting.frag")
+let shader = CreateAndLinkProgram(appDir&"/shaders/gamma_correction.vert",appDir&"/shaders/gamma_correction.frag")
 
 
 
@@ -60,11 +60,25 @@ VertexAttribPointer(2,2,VertexAttribType.FLOAT,false,8*float32.sizeof(),6*float3
 UnbindVertexArray()
 
 let floorTexture = LoadTextureWithMips(appDir&"/textures/wood.png")
-
-var lightPos = vec3(0.0'f32,0.0'f32,0.0'f32)
+let floorTextureGammaCorrected = LoadTextureWithMips(appDir&"/textures/wood.png")
 
 shader.Use()
-shader.SetInt("texture1",0)
+shader.SetInt("floorTexture",0)
+
+var lightPositions = [
+    vec3(-3.0'f32,0.0'f32,0.0'f32),
+    vec3(-1.0'f32,0.0'f32,0.0'f32),
+    vec3(1.0'f32,0.0'f32,0.0'f32),
+    vec3(3.0'f32,0.0'f32,0.0'f32)
+]
+
+var lightColors = [
+    vec3(0.25'f32),
+    vec3(0.50'f32),
+    vec3(0.75'f32),
+    vec3(1.0'f32)
+]
+
 
 var
   evt = sdl2.defaultEvent
@@ -113,7 +127,7 @@ while run:
 
 
   # toggle gamma
-  if keyState[SDL_SCANCODE_B.uint8] != 0:
+  if keyState[SDL_SCANCODE_SPACE.uint8] != 0:
     gammaKeyPress = true 
   else:
     if gammaKeyPress:
@@ -135,13 +149,14 @@ while run:
 
   shader.Use()
   var projection = perspective(radians(camera.Zoom), screenWidth.float32 / screenHeight.float32,0.1'f32,1000.0'f32)
-  var view = camera.GetViewMatrix()
-  
+  var view = camera.GetViewMatrix()  
   shader.SetMat4("projection",projection)
   shader.SetMat4("view",view)
+
   # set light uniforms  
-  shader.SetVec3("viewPos",camera.Position)
-  shader.SetVec3("lightPos",lightPos)
+  Uniform3fv(GetUniformLocation(shader,"lightPositions"),4,lightPositions)
+  Uniform3fv(GetUniformLocation(shader,"lightColors"),4,lightColors)  
+  shader.SetVec3("viewPos",camera.Position)  
   shader.SetInt("gamma", if gamma: 1 else: 0)
 
   # floor

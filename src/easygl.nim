@@ -341,6 +341,9 @@ template Uniform2f*(location:UniformLocation,x:float32, y:float32)   =
 template Uniform3f*(location:UniformLocation,x:float32, y:float32, z:float32)   =
     glUniform3f(location.GLint,x.GLfloat,y.GLfloat,z.GLfloat)
 
+template Uniform3fv*[T](location:UniformLocation,count:int,value:openarray[T]) =
+    glUniform3fv(location.GLint,count,cast[ptr GLfloat](value[0].unsafeAddr))
+
 template Uniform4f*(location:UniformLocation,x:float32, y:float32, z:float32, w:float32)   =
     glUniform4f(location.GLint,x.GLfloat,y.GLfloat,z.GLfloat, w.GLfloat)
                 
