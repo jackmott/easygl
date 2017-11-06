@@ -1,5 +1,12 @@
 # EasyGL
+
 A typesafe opengl wrapper for the nim language with no runtime overhead
+
+Also includes utility functions for working with shaders, model importing (using ASSIMP), and texture loading (using stb_image)
+
+/examples includes a port (ongoing) of the tutorials on learnopengl.com
+
+
 
 # OpenGL ids are made type safe
 
