@@ -76,7 +76,7 @@ while run:
   # Render
   ClearColor(0.2,0.3,0.3,1.0)
   Clear(BufferMask.COLOR_BUFFER_BIT)
-  UseProgram(shaderProgram)
+  shaderProgram.Use()
   BindVertexArray(VAO) # Not necessary since we only have one VAO
   DrawElements(DrawMode.TRIANGLES,6,IndexType.UNSIGNED_INT,0)
   window.glSwapWindow()
