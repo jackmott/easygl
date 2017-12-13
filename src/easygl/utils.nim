@@ -83,7 +83,7 @@ proc LoadTextureWithMips*(path:string, gammaCorrection:bool = false) : TextureId
                 (gammaFormat,PixelDataFormat.RGBA,GL_CLAMP_TO_EDGE)
             else:            
                 ( echo "texture unknown, assuming rgb";        
-                (TextureInternalFormat.RGB,PixelDataFormat.RGB,GL_REPEAT) )
+                       (TextureInternalFormat.RGB,PixelDataFormat.RGB,GL_REPEAT) )
                 
         TexImage2D(TexImageTarget.TEXTURE_2D,
                    0'i32,
