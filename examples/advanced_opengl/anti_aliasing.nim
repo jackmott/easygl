@@ -25,10 +25,10 @@ loadExtensions()
 
 ### Build and compile shader program
 let appDir = getAppDir()
-let shader = CreateAndLinkProgram(appDir&"/shaders/anti_aliasing.vert",appDir&"/shaders/anti_aliasing.frag")
+let shader = createAndLinkProgram(appDir&"/shaders/anti_aliasing.vert",appDir&"/shaders/anti_aliasing.frag")
 
-Enable(Capability.MULTISAMPLE)
-Enable(Capability.DEPTH_TEST)
+enable(Capability.MULTISAMPLE)
+enable(Capability.DEPTH_TEST)
 
 # Set up vertex data
 let cubeVertices : seq[float32]  = 
@@ -79,11 +79,11 @@ let cubeVertices : seq[float32]  =
 
 
 # cube VAO
-let cubeVAO = GenBindVertexArray()
-let cubeVBO = GenBindBufferData(BufferTarget.ARRAY_BUFFER,cubeVertices,BufferDataUsage.STATIC_DRAW)
-EnableVertexAttribArray(0)
-VertexAttribPointer(0,3,VertexAttribType.FLOAT,false,3*float32.sizeof(),0)
-UnbindVertexArray()
+let cubeVAO = genBindVertexArray()
+let cubeVBO = genBindBufferData(BufferTarget.ARRAY_BUFFER,cubeVertices,BufferDataUsage.STATIC_DRAW)
+enableVertexAttribArray(0)
+vertexAttribPointer(0,3,VertexAttribType.FLOAT,false,3*float32.sizeof(),0)
+unBindVertexArray()
 
 
 var
@@ -112,49 +112,47 @@ while run:
                 glViewport(0, 0, newWidth, newHeight)   # Set the viewport to cover the new window          
         of MouseWheel:
             var wheelEvent = cast[MouseWheelEventPtr](addr(evt))
-            camera.ProcessMouseScroll(wheelEvent.y.float32)
+            camera.processMouseScroll(wheelEvent.y.float32)
         of MouseMotion:
             var motionEvent = cast[MouseMotionEventPtr](addr(evt))
-            camera.ProcessMouseMovement(motionEvent.xrel.float32,motionEvent.yrel.float32)
+            camera.processMouseMovement(motionEvent.xrel.float32,motionEvent.yrel.float32)
         else:
             discard
                
 
   if keyState[SDL_SCANCODE_W.uint8] != 0:
-    camera.ProcessKeyboard(FORWARD,elapsedTime)
+    camera.processKeyboard(FORWARD,elapsedTime)
   if keyState[SDL_SCANCODE_S.uint8] != 0:
-    camera.ProcessKeyBoard(BACKWARD,elapsedTime)
+    camera.processKeyBoard(BACKWARD,elapsedTime)
   if keyState[SDL_SCANCODE_A.uint8] != 0:
-    camera.ProcessKeyBoard(LEFT,elapsedTime)
+    camera.processKeyBoard(LEFT,elapsedTime)
   if keyState[SDL_SCANCODE_D.uint8] != 0:
-    camera.ProcessKeyBoard(RIGHT,elapsedTime)
+    camera.processKeyBoard(RIGHT,elapsedTime)
   if keyState[SDL_SCANCODE_ESCAPE.uint8] != 0:
     break
 
-  let error = GetGLError()
+  let error = getGLError()
   if error != ErrorType.NO_ERROR:
     echo $error
 
   # Render
-  ClearColor(0.1,0.1,0.1,1.0)
-  easygl.Clear(BufferMask.COLOR_BUFFER_BIT, BufferMask.DEPTH_BUFFER_BIT)
+  clearColor(0.1,0.1,0.1,1.0)
+  easygl.clear(BufferMask.COLOR_BUFFER_BIT, BufferMask.DEPTH_BUFFER_BIT)
 
   
 
-  shader.Use()
+  shader.use()
   var projection = perspective(radians(camera.Zoom), screenWidth.float32 / screenHeight.float32,0.1'f32,1000.0'f32)
-  var view = camera.GetViewMatrix()
+  var view = camera.getViewMatrix()
   var model = mat4(1.0'f32)
-  shader.SetMat4("projection",projection)
-  shader.SetMat4("view",view)
-  shader.SetMat4("model",model)
+  shader.setMat4("projection",projection)
+  shader.setMat4("view",view)
+  shader.setMat4("model",model)
  
-  BindVertexArray(cubeVAO)
-  DrawArrays(DrawMode.TRIANGLES,0,36)
-  UnBindVertexArray()
-
+  bindVertexArray(cubeVAO)
+  drawArrays(DrawMode.TRIANGLES,0,36)
+  unBindVertexArray()
  
-
   window.glSwapWindow()
 
 

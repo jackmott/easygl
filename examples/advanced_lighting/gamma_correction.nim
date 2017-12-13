@@ -1,5 +1,4 @@
 # OpenGL example using SDL2
-
 import 
     sdl2,
     opengl,
@@ -26,14 +25,14 @@ discard window.glCreateContext()
 loadExtensions()
 
 
-Enable(Capability.DEPTH_TEST)
-Enable(Capability.BLEND)
-BlendFunc(BlendFactor.SRC_ALPHA,BlendFactor.ONE_MINUS_SRC_ALPHA)
+enable(Capability.DEPTH_TEST)
+enable(Capability.BLEND)
+blendFunc(BlendFactor.SRC_ALPHA,BlendFactor.ONE_MINUS_SRC_ALPHA)
 
 
 ### Build and compile shader program
 let appDir = getAppDir()
-let shader = CreateAndLinkProgram(appDir&"/shaders/gamma_correction.vert",appDir&"/shaders/gamma_correction.frag")
+let shader = createAndLinkProgram(appDir&"/shaders/gamma_correction.vert",appDir&"/shaders/gamma_correction.frag")
 
 
 
@@ -49,7 +48,7 @@ let planeVertices : seq[float32]  =
     -10.0'f32, -0.5'f32, -10.0'f32,  0.0'f32, 1.0'f32, 0.0'f32,   0.0'f32, 10.0'f32,
      10.0'f32, -0.5'f32, -10.0'f32,  0.0'f32, 1.0'f32, 0.0'f32,  10.0'f32, 10.0'f32]
 
-let (planeVAO,planeVBO) = VertexAttribSetup(
+let (planeVAO,planeVBO) = vertexAttribSetup(
                             BufferTarget.ARRAY_BUFFER,
                             planeVertices,
                             BufferDataUsage.STATIC_DRAW,
@@ -57,11 +56,11 @@ let (planeVAO,planeVBO) = VertexAttribSetup(
                             (0,3),(1,3),(2,2))
 
 
-let floorTexture = LoadTextureWithMips(appDir&"/textures/wood.png",false)
-let floorTextureGammaCorrected = LoadTextureWithMips(appDir&"/textures/wood.png",true)
+let floorTexture = loadTextureWithMips(appDir&"/textures/wood.png",false)
+let floorTextureGammaCorrected = loadTextureWithMips(appDir&"/textures/wood.png",true)
 
-shader.Use()
-shader.SetInt("floorTexture",0)
+shader.use()
+shader.setInt("floorTexture",0)
 
 var lightPositions = [
     vec3(-3.0'f32,0.0'f32,0.0'f32),
@@ -104,22 +103,22 @@ while run:
                 glViewport(0, 0, newWidth, newHeight)   # Set the viewport to cover the new window          
         of MouseWheel:
             var wheelEvent = cast[MouseWheelEventPtr](addr(evt))
-            camera.ProcessMouseScroll(wheelEvent.y.float32)
+            camera.processMouseScroll(wheelEvent.y.float32)
         of MouseMotion:
             var motionEvent = cast[MouseMotionEventPtr](addr(evt))
-            camera.ProcessMouseMovement(motionEvent.xrel.float32,motionEvent.yrel.float32) 
+            camera.processMouseMovement(motionEvent.xrel.float32,motionEvent.yrel.float32) 
         else:
             discard
                
 
   if keyState[SDL_SCANCODE_W.uint8] != 0:
-    camera.ProcessKeyboard(FORWARD,elapsedTime)
+    camera.processKeyboard(FORWARD,elapsedTime)
   if keyState[SDL_SCANCODE_S.uint8] != 0:
-    camera.ProcessKeyBoard(BACKWARD,elapsedTime)
+    camera.processKeyBoard(BACKWARD,elapsedTime)
   if keyState[SDL_SCANCODE_A.uint8] != 0:
-    camera.ProcessKeyBoard(LEFT,elapsedTime)
+    camera.processKeyBoard(LEFT,elapsedTime)
   if keyState[SDL_SCANCODE_D.uint8] != 0:
-    camera.ProcessKeyBoard(RIGHT,elapsedTime)
+    camera.processKeyBoard(RIGHT,elapsedTime)
   if keyState[SDL_SCANCODE_ESCAPE.uint8] != 0:
     break
 
@@ -135,33 +134,33 @@ while run:
     
   
 
-  let error = GetGLError()
+  let error = getGLError()
   if error != ErrorType.NO_ERROR:
     echo $error
 
   # Render
-  ClearColor(0.1,0.1,0.1,1.0)
-  easygl.Clear(BufferMask.COLOR_BUFFER_BIT, BufferMask.DEPTH_BUFFER_BIT)
+  clearColor(0.1,0.1,0.1,1.0)
+  easygl.clear(BufferMask.COLOR_BUFFER_BIT, BufferMask.DEPTH_BUFFER_BIT)
 
   
 
-  shader.Use()
+  shader.use()
   var projection = perspective(radians(camera.Zoom), screenWidth.float32 / screenHeight.float32,0.1'f32,1000.0'f32)
-  var view = camera.GetViewMatrix()  
-  shader.SetMat4("projection",projection)
-  shader.SetMat4("view",view)
+  var view = camera.getViewMatrix()  
+  shader.setMat4("projection",projection)
+  shader.setMat4("view",view)
 
   # set light uniforms  
-  Uniform3fv(GetUniformLocation(shader,"lightPositions"),4,lightPositions)
-  Uniform3fv(GetUniformLocation(shader,"lightColors"),4,lightColors)  
-  shader.SetVec3("viewPos",camera.Position)  
-  shader.SetInt("gamma", if gamma: 1 else: 0)
+  uniform3fv(getUniformLocation(shader,"lightPositions"),4,lightPositions)
+  uniform3fv(getUniformLocation(shader,"lightColors"),4,lightColors)  
+  shader.setVec3("viewPos",camera.Position)  
+  shader.setInt("gamma", if gamma: 1 else: 0)
 
   # floor
-  BindVertexArray(planeVAO)
-  ActiveTexture(TextureUnit.TEXTURE0)
-  BindTexture(TextureTarget.TEXTURE_2D,if gamma: floorTextureGammaCorrected else: floorTexture)
-  DrawArrays(DrawMode.Triangles,0,6)
+  bindVertexArray(planeVAO)
+  activeTexture(TextureUnit.TEXTURE0)
+  bindTexture(TextureTarget.TEXTURE_2D,if gamma: floorTextureGammaCorrected else: floorTexture)
+  drawArrays(DrawMode.Triangles,0,6)
 
    
   

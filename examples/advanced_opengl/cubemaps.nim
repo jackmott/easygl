@@ -25,10 +25,10 @@ loadExtensions()
 
 ### Build and compile shader program
 let appDir = getAppDir()
-let shader = CreateAndLinkProgram(appDir&"/shaders/cubemaps.vert",appDir&"/shaders/cubemaps.frag")
-let skyboxShader = CreateAndLinkProgram(appDir&"/shaders/skybox.vert",appDir&"/shaders/skybox.frag")
+let shader = createAndLinkProgram(appDir&"/shaders/cubemaps.vert",appDir&"/shaders/cubemaps.frag")
+let skyboxShader = createAndLinkProgram(appDir&"/shaders/skybox.vert",appDir&"/shaders/skybox.frag")
 
-Enable(Capability.DEPTH_TEST)
+enable(Capability.DEPTH_TEST)
 
 # Set up vertex data
 let cubeVertices : seq[float32]  = 
@@ -122,18 +122,18 @@ let skyboxVertices =
        1.0'f32, -1.0'f32,  1.0'f32]
 
 # cube VAO
-let cubeVAO = GenBindVertexArray()
-let cubeVBO = GenBindBufferData(BufferTarget.ARRAY_BUFFER,cubeVertices,BufferDataUsage.STATIC_DRAW)
-EnableVertexAttribArray(0)
-VertexAttribPointer(0,3,VertexAttribType.FLOAT,false,6*float32.sizeof(),0)
-EnableVertexAttribArray(1)
-VertexAttribPointer(1,3,VertexAttribType.FLOAT,false,6*float32.sizeof(),3*float32.sizeof())
+let cubeVAO = genBindVertexArray()
+let cubeVBO = genBindBufferData(BufferTarget.ARRAY_BUFFER,cubeVertices,BufferDataUsage.STATIC_DRAW)
+enableVertexAttribArray(0)
+vertexAttribPointer(0,3,VertexAttribType.FLOAT,false,6*float32.sizeof(),0)
+enableVertexAttribArray(1)
+vertexAttribPointer(1,3,VertexAttribType.FLOAT,false,6*float32.sizeof(),3*float32.sizeof())
 
 # skybox VAO
-let skyboxVAO = GenBindVertexArray()
-let skyboxVBO = GenBindBufferData(BufferTarget.ARRAY_BUFFER,skyboxVertices,BufferDataUsage.STATIC_DRAW)
-EnableVertexAttribArray(0)
-VertexAttribPointer(0,3,VertexAttribType.FLOAT,false,3*float32.sizeof(),0)
+let skyboxVAO = genBindVertexArray()
+let skyboxVBO = genBindBufferData(BufferTarget.ARRAY_BUFFER,skyboxVertices,BufferDataUsage.STATIC_DRAW)
+enableVertexAttribArray(0)
+vertexAttribPointer(0,3,VertexAttribType.FLOAT,false,3*float32.sizeof(),0)
 
 let faces = [
   appDir&"/textures/right.jpg",
@@ -143,12 +143,12 @@ let faces = [
   appDir&"/textures/back.jpg",
   appDir&"/textures/front.jpg"]
 
-let cubemapTexture = LoadCubemap(faces)
+let cubemapTexture = loadCubemap(faces)
 
-shader.Use()
-shader.SetInt("skybox",0)
-skyboxShader.Use()
-skyboxShader.SetInt("skybox",0)
+shader.use()
+shader.setInt("skybox",0)
+skyboxShader.use()
+skyboxShader.setInt("skybox",0)
 
 var
   evt = sdl2.defaultEvent
@@ -176,64 +176,64 @@ while run:
                 glViewport(0, 0, newWidth, newHeight)   # Set the viewport to cover the new window          
         of MouseWheel:
             var wheelEvent = cast[MouseWheelEventPtr](addr(evt))
-            camera.ProcessMouseScroll(wheelEvent.y.float32)
+            camera.processMouseScroll(wheelEvent.y.float32)
         of MouseMotion:
             var motionEvent = cast[MouseMotionEventPtr](addr(evt))
-            camera.ProcessMouseMovement(motionEvent.xrel.float32,motionEvent.yrel.float32)
+            camera.processMouseMovement(motionEvent.xrel.float32,motionEvent.yrel.float32)
         else:
             discard
              
 
   if keyState[SDL_SCANCODE_W.uint8] != 0:
-    camera.ProcessKeyboard(FORWARD,elapsedTime)
+    camera.processKeyboard(FORWARD,elapsedTime)
   if keyState[SDL_SCANCODE_S.uint8] != 0:
-    camera.ProcessKeyBoard(BACKWARD,elapsedTime)
+    camera.processKeyBoard(BACKWARD,elapsedTime)
   if keyState[SDL_SCANCODE_A.uint8] != 0:
-    camera.ProcessKeyBoard(LEFT,elapsedTime)
+    camera.processKeyBoard(LEFT,elapsedTime)
   if keyState[SDL_SCANCODE_D.uint8] != 0:
-    camera.ProcessKeyBoard(RIGHT,elapsedTime)
+    camera.processKeyBoard(RIGHT,elapsedTime)
   if keyState[SDL_SCANCODE_ESCAPE.uint8] != 0:
     break
 
-  let error = GetGLError()
+  let error = getGLError()
   if error != ErrorType.NO_ERROR:
     echo $error
   # Render
-  ClearColor(0.1,0.1,0.1,1.0)
-  easygl.Clear(BufferMask.COLOR_BUFFER_BIT, BufferMask.DEPTH_BUFFER_BIT)
+  clearColor(0.1,0.1,0.1,1.0)
+  easygl.clear(BufferMask.COLOR_BUFFER_BIT, BufferMask.DEPTH_BUFFER_BIT)
   
-  shader.Use()
+  shader.use()
   var model = mat4(1.0'f32)    
-  var view = camera.GetViewMatrix()
+  var view = camera.getViewMatrix()
   var projection = perspective(radians(camera.Zoom),screenWidth.float32/screenHeight.float32,0.1'f32,100.0'f32)
-  shader.SetMat4("model",model)
-  shader.SetMat4("view",view)
-  shader.SetMat4("projection",projection)
-  shader.SetVec3("cameraPos",camera.Position)
+  shader.setMat4("model",model)
+  shader.setMat4("view",view)
+  shader.setMat4("projection",projection)
+  shader.setVec3("cameraPos",camera.Position)
 
   # cubes
-  BindVertexArray(cubeVAO)
-  ActiveTexture(TextureUnit.TEXTURE0)
-  BindTexture(TextureTarget.TEXTURE_CUBE_MAP,cubemapTexture)
-  DrawArrays(DrawMode.TRIANGLES,0,36)
-  UnbindVertexArray()
+  bindVertexArray(cubeVAO)
+  activeTexture(TextureUnit.TEXTURE0)
+  bindTexture(TextureTarget.TEXTURE_CUBE_MAP,cubemapTexture)
+  drawArrays(DrawMode.TRIANGLES,0,36)
+  unBindVertexArray()
     
   # draw skybox
   
-  DepthFunc(AlphaFunc.LEQUAL)
-  skyboxShader.Use()  
+  depthFunc(AlphaFunc.LEQUAL)
+  skyboxShader.use()  
   view[3][0] = 0
   view[3][1] = 0
   view[3][2] = 0      
-  skyboxShader.SetMat4("view",view)
-  skyboxShader.SetMat4("projection",projection)
+  skyboxShader.setMat4("view",view)
+  skyboxShader.setMat4("projection",projection)
   # skybox cube
-  BindVertexArray(skyboxVAO)
-  ActiveTexture(TextureUnit.TEXTURE0)
-  BindTexture(TextureTarget.TEXTURE_CUBE_MAP,cubemapTexture)
-  DrawArrays(DrawMode.TRIANGLES,0,36)
-  UnBindVertexArray()
-  DepthFunc(AlphaFunc.LESS)
+  bindVertexArray(skyboxVAO)
+  activeTexture(TextureUnit.TEXTURE0)
+  bindTexture(TextureTarget.TEXTURE_CUBE_MAP,cubemapTexture)
+  drawArrays(DrawMode.TRIANGLES,0,36)
+  unBindVertexArray()
+  depthFunc(AlphaFunc.LESS)
   
   
   window.glSwapWindow()

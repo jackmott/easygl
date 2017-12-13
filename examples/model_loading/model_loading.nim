@@ -27,12 +27,12 @@ loadExtensions()
 
 ### Build and compile shader program
 let appDir = getAppDir()
-let ourShader = CreateAndLinkProgram(appDir&"/shaders/model_loading.vert",appDir&"/shaders/model_loading.frag")
-let ourModel = LoadModel(appDir&"/models/nanosuit.obj")
+let ourShader = createAndLinkProgram(appDir&"/shaders/model_loading.vert",appDir&"/shaders/model_loading.frag")
+let ourModel = loadModel(appDir&"/models/nanosuit.obj")
 
 #PolygonMode(PolygonFace.FRONT_AND_BACK,PolygonModeEnum.LINE)
 
-Enable(Capability.DEPTH_TEST)
+enable(Capability.DEPTH_TEST)
 
 # Set up vertex data
 
@@ -62,43 +62,43 @@ while run:
                 glViewport(0, 0, newWidth, newHeight)   # Set the viewport to cover the new window                                
         of MouseWheel:
             var wheelEvent = cast[MouseWheelEventPtr](addr(evt))
-            camera.ProcessMouseScroll(wheelEvent.y.float32)
+            camera.processMouseScroll(wheelEvent.y.float32)
         of MouseMotion:
             var motionEvent = cast[MouseMotionEventPtr](addr(evt))
-            camera.ProcessMouseMovement(motionEvent.xrel.float32,motionEvent.yrel.float32)
+            camera.processMouseMovement(motionEvent.xrel.float32,motionEvent.yrel.float32)
         else:
             discard
              
   
   if keyState[SDL_SCANCODE_W.uint8] != 0:
-    camera.ProcessKeyboard(FORWARD,elapsedTime)
+    camera.processKeyboard(FORWARD,elapsedTime)
   if keyState[SDL_SCANCODE_S.uint8] != 0:
-    camera.ProcessKeyBoard(BACKWARD,elapsedTime)
+    camera.processKeyBoard(BACKWARD,elapsedTime)
   if keyState[SDL_SCANCODE_A.uint8] != 0:
-    camera.ProcessKeyBoard(LEFT,elapsedTime)
+    camera.processKeyBoard(LEFT,elapsedTime)
   if keyState[SDL_SCANCODE_D.uint8] != 0:
-    camera.ProcessKeyBoard(RIGHT,elapsedTime)
+    camera.processKeyBoard(RIGHT,elapsedTime)
   if keyState[SDL_SCANCODE_ESCAPE.uint8] != 0:
     break
   
   # Render
-  ClearColor(0.05,0.05,0.05,1.0)
-  easygl.Clear(BufferMask.COLOR_BUFFER_BIT, BufferMask.DEPTH_BUFFER_BIT)
+  clearColor(0.05,0.05,0.05,1.0)
+  easygl.clear(BufferMask.COLOR_BUFFER_BIT, BufferMask.DEPTH_BUFFER_BIT)
 
  
-  ourShader.Use()  
+  ourShader.use()  
   
 
   var projection = perspective(radians(camera.Zoom),screenWidth.float32/screenHeight.float32,0.1'f32,100.0'f32)
-  var view = camera.GetViewMatrix()
-  ourShader.SetMat4("projection",projection)
-  ourShader.SetMat4("view",view)
+  var view = camera.getViewMatrix()
+  ourShader.setMat4("projection",projection)
+  ourShader.setMat4("view",view)
   
   var model = mat4(1.0'f32)
   model = translate(model,vec3(0.0'f32,-1.75'f32,0.0'f32))
   model = scale(model,vec3(0.2'f32,0.2'f32,0.2'f32))  
-  ourShader.SetMat4("model",model)
-  ourModel.Draw(ourShader)
+  ourShader.setMat4("model",model)
+  ourModel.draw(ourShader)
 
   
   window.glSwapWindow()

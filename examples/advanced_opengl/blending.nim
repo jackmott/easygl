@@ -23,14 +23,14 @@ discard window.glCreateContext()
 
 # Initialize OpenGL
 loadExtensions()
-Enable(Capability.DEPTH_TEST)
-Enable(Capability.BLEND)
-BlendFunc(BlendFactor.SRC_ALPHA,BlendFactor.ONE_MINUS_SRC_ALPHA)
+enable(Capability.DEPTH_TEST)
+enable(Capability.BLEND)
+blendFunc(BlendFactor.SRC_ALPHA,BlendFactor.ONE_MINUS_SRC_ALPHA)
 
 
 ### Build and compile shader program
 let appDir = getAppDir()
-let shader = CreateAndLinkProgram(appDir&"/shaders/blending.vert",appDir&"/shaders/blending.frag")
+let shader = createAndLinkProgram(appDir&"/shaders/blending.vert",appDir&"/shaders/blending.frag")
 
 
 # Set up vertex data
@@ -103,36 +103,36 @@ let transparentVertices =
   ]
     
 # Cube
-let cubeVAO = GenBindVertexArray()
-let cubeVBO = GenBindBufferData(BufferTarget.ARRAY_BUFFER,cubeVertices,BufferDataUsage.STATIC_DRAW)
-EnableVertexAttribArray(0)
-VertexAttribPointer(0,3,VertexAttribType.FLOAT,false,5*float32.sizeof(),0)
-EnableVertexAttribArray(1)
-VertexAttribPointer(1,2,VertexAttribType.FLOAT,false,5*float32.sizeof(),3*float32.sizeof())
-UnBindVertexArray()
+let cubeVAO = genBindVertexArray()
+let cubeVBO = genBindBufferData(BufferTarget.ARRAY_BUFFER,cubeVertices,BufferDataUsage.STATIC_DRAW)
+enableVertexAttribArray(0)
+vertexAttribPointer(0,3,VertexAttribType.FLOAT,false,5*float32.sizeof(),0)
+enableVertexAttribArray(1)
+vertexAttribPointer(1,2,VertexAttribType.FLOAT,false,5*float32.sizeof(),3*float32.sizeof())
+unBindVertexArray()
 
 # Plane
-let planeVAO = GenBindVertexArray()
-let planeVBO = GenBindBufferData(BufferTarget.ARRAY_BUFFER,planeVertices,BufferDataUsage.STATIC_DRAW)
-EnableVertexAttribArray(0)
-VertexAttribPointer(0,3,VertexAttribType.FLOAT,false,5*float32.sizeof(),0)
-EnableVertexAttribArray(1)
-VertexAttribPointer(1,2,VertexAttribType.FLOAT,false,5*float32.sizeof(),3*float32.sizeof())
+let planeVAO = genBindVertexArray()
+let planeVBO = genBindBufferData(BufferTarget.ARRAY_BUFFER,planeVertices,BufferDataUsage.STATIC_DRAW)
+enableVertexAttribArray(0)
+vertexAttribPointer(0,3,VertexAttribType.FLOAT,false,5*float32.sizeof(),0)
+enableVertexAttribArray(1)
+vertexAttribPointer(1,2,VertexAttribType.FLOAT,false,5*float32.sizeof(),3*float32.sizeof())
 
 
 # Transparent VAO
-let transparentVAO = GenBindVertexArray()
-let transparentVBO = GenBindBufferData(BufferTarget.ARRAY_BUFFER,transparentVertices,BufferDataUsage.STATIC_DRAW)
-EnableVertexAttribArray(0)
-VertexAttribPointer(0,3,VertexAttribType.FLOAT,false,5*float32.sizeof(),0)
-EnableVertexAttribArray(1)
-VertexAttribPointer(1,2,VertexAttribType.FLOAT,false,5*float32.sizeof(),3*float32.sizeof())
-UnbindVertexArray()
+let transparentVAO = genBindVertexArray()
+let transparentVBO = genBindBufferData(BufferTarget.ARRAY_BUFFER,transparentVertices,BufferDataUsage.STATIC_DRAW)
+enableVertexAttribArray(0)
+vertexAttribPointer(0,3,VertexAttribType.FLOAT,false,5*float32.sizeof(),0)
+enableVertexAttribArray(1)
+vertexAttribPointer(1,2,VertexAttribType.FLOAT,false,5*float32.sizeof(),3*float32.sizeof())
+unBindVertexArray()
 
 
-let cubeTexture = LoadTextureWithMips(appDir&"/textures/marble.jpg")
-let floorTexture = LoadTextureWithMips(appDir&"/textures/metal.png")
-let transparentTexture = LoadTextureWithMips(appDir&"/textures/window.png")
+let cubeTexture = loadTextureWithMips(appDir&"/textures/marble.jpg")
+let floorTexture = loadTextureWithMips(appDir&"/textures/metal.png")
+let transparentTexture = loadTextureWithMips(appDir&"/textures/window.png")
 
 var windows :seq[Vec3f] = @[
   vec3(-1.5'f32,0.0'f32,-0.48'f32),
@@ -142,8 +142,8 @@ var windows :seq[Vec3f] = @[
   vec3(-0.5'f32,0.0'f32,0.6'f32)
 ]
 
-shader.Use()
-shader.SetInt("texture1",0)
+shader.use()
+shader.setInt("texture1",0)
 
 var
   evt = sdl2.defaultEvent
@@ -157,7 +157,7 @@ prevTime=epochTime()
 
 while run:
   
-  let error = GetGLError()
+  let error = getGLError()
   if (error != ErrorType.NO_ERROR):
     echo "Error:" & $error
 
@@ -177,59 +177,59 @@ while run:
                 glViewport(0, 0, newWidth, newHeight)   # Set the viewport to cover the new window      
         of MouseWheel:
             var wheelEvent = cast[MouseWheelEventPtr](addr(evt))
-            camera.ProcessMouseScroll(wheelEvent.y.float32)
+            camera.processMouseScroll(wheelEvent.y.float32)
         of MouseMotion:
             var motionEvent = cast[MouseMotionEventPtr](addr(evt))
-            camera.ProcessMouseMovement(motionEvent.xrel.float32,motionEvent.yrel.float32)
+            camera.processMouseMovement(motionEvent.xrel.float32,motionEvent.yrel.float32)
         else:
             discard
              
   if keyState[SDL_SCANCODE_W.uint8] != 0:
-    camera.ProcessKeyboard(FORWARD,elapsedTime)
+    camera.processKeyboard(FORWARD,elapsedTime)
   if keyState[SDL_SCANCODE_S.uint8] != 0:
-    camera.ProcessKeyBoard(BACKWARD,elapsedTime)
+    camera.processKeyBoard(BACKWARD,elapsedTime)
   if keyState[SDL_SCANCODE_A.uint8] != 0:
-    camera.ProcessKeyBoard(LEFT,elapsedTime)
+    camera.processKeyBoard(LEFT,elapsedTime)
   if keyState[SDL_SCANCODE_D.uint8] != 0:
-    camera.ProcessKeyBoard(RIGHT,elapsedTime)
+    camera.processKeyBoard(RIGHT,elapsedTime)
   if keyState[SDL_SCANCODE_ESCAPE.uint8] != 0:
     break
   # Render  
   
-  ClearColor(0.1,0.1,0.1,1.0)    
-  easygl.Clear(BufferMask.COLOR_BUFFER_BIT, 
+  clearColor(0.1,0.1,0.1,1.0)    
+  easygl.clear(BufferMask.COLOR_BUFFER_BIT, 
          BufferMask.DEPTH_BUFFER_BIT)
   
 
-  shader.Use()
+  shader.use()
   var model = mat4(1.0'f32)    
-  var view = camera.GetViewMatrix()
+  var view = camera.getViewMatrix()
   var projection = perspective(radians(camera.Zoom),screenWidth.float32/screenHeight.float32,0.1'f32,100.0'f32)
-  shader.SetMat4("view",view)
-  shader.SetMat4("projection",projection)
+  shader.setMat4("view",view)
+  shader.setMat4("projection",projection)
 
 
   # cubes
-  BindVertexArray(cubeVAO)
-  ActiveTexture(TextureUnit.TEXTURE0)
-  BindTexture(TextureTarget.TEXTURE_2D, cubeTexture)
+  bindVertexArray(cubeVAO)
+  activeTexture(TextureUnit.TEXTURE0)
+  bindTexture(TextureTarget.TEXTURE_2D, cubeTexture)
   model = translate(model,vec3(-1.0'f32,0.0'f32,-1.0'f32))
-  shader.SetMat4("model",model)
-  DrawArrays(DrawMode.TRIANGLES,0,36)
+  shader.setMat4("model",model)
+  drawArrays(DrawMode.TRIANGLES,0,36)
   model = mat4(1.0'f32)
   model = translate(model,vec3(2.0'f32,0.0'f32,0.0'f32))
-  shader.SetMat4("model",model)
-  DrawArrays(DrawMode.TRIANGLES,0,36)
+  shader.setMat4("model",model)
+  drawArrays(DrawMode.TRIANGLES,0,36)
  
   # floor  
-  BindVertexArray(planeVAO)  
-  BindTexture(TextureTarget.TEXTURE_2D,floorTexture)  
-  shader.SetMat4("model",model)
-  DrawArrays(DrawMode.TRIANGLES,0,6)
+  bindVertexArray(planeVAO)  
+  bindTexture(TextureTarget.TEXTURE_2D,floorTexture)  
+  shader.setMat4("model",model)
+  drawArrays(DrawMode.TRIANGLES,0,6)
     
   # windows
-  BindVertexArray(transparentVAO)
-  BindTexture(TextureTarget.TEXTURE_2D,transparentTexture)
+  bindVertexArray(transparentVAO)
+  bindTexture(TextureTarget.TEXTURE_2D,transparentTexture)
 
   # we use a less verbose method of sorting vs learnOpenGL
   windows.sort(proc(a,b:Vec3f) : int =            
@@ -243,8 +243,8 @@ while run:
   for w in windows:
     model = mat4(1.0'f32)
     model = translate(model,w)
-    shader.SetMat4("model",model)
-    DrawArrays(DrawMode.TRIANGLES,0,6)
+    shader.setMat4("model",model)
+    drawArrays(DrawMode.TRIANGLES,0,6)
     
   window.glSwapWindow()
 

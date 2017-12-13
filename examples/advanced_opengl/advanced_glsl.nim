@@ -25,13 +25,13 @@ loadExtensions()
 
 ### Build and compile shader program
 let appDir = getAppDir()
-let shaderRed = CreateAndLinkProgram(appDir&"/shaders/advanced_glsl.vert",appDir&"/shaders/red.frag")
-let shaderGreen = CreateAndLinkProgram(appDir&"/shaders/advanced_glsl.vert",appDir&"/shaders/green.frag")
-let shaderBlue = CreateAndLinkProgram(appDir&"/shaders/advanced_glsl.vert",appDir&"/shaders/blue.frag")
-let shaderYellow = CreateAndLinkProgram(appDir&"/shaders/advanced_glsl.vert",appDir&"/shaders/yellow.frag")
+let shaderRed = createAndLinkProgram(appDir&"/shaders/advanced_glsl.vert",appDir&"/shaders/red.frag")
+let shaderGreen = createAndLinkProgram(appDir&"/shaders/advanced_glsl.vert",appDir&"/shaders/green.frag")
+let shaderBlue = createAndLinkProgram(appDir&"/shaders/advanced_glsl.vert",appDir&"/shaders/blue.frag")
+let shaderYellow = createAndLinkProgram(appDir&"/shaders/advanced_glsl.vert",appDir&"/shaders/yellow.frag")
 
 
-Enable(Capability.DEPTH_TEST)
+enable(Capability.DEPTH_TEST)
 
 # Set up vertex data
 let cubeVertices : seq[float32]  = 
@@ -81,35 +81,35 @@ let cubeVertices : seq[float32]  =
 
 
 # cube VAO
-let cubeVAO = GenBindVertexArray()
-let cubeVBO = GenBindBufferData(BufferTarget.ARRAY_BUFFER,cubeVertices,BufferDataUsage.STATIC_DRAW)
-EnableVertexAttribArray(0)
-VertexAttribPointer(0,3,VertexAttribType.FLOAT,false,3*float32.sizeof(),0)
+let cubeVAO = genBindVertexArray()
+let cubeVBO = genBindBufferData(BufferTarget.ARRAY_BUFFER,cubeVertices,BufferDataUsage.STATIC_DRAW)
+enableVertexAttribArray(0)
+vertexAttribPointer(0,3,VertexAttribType.FLOAT,false,3*float32.sizeof(),0)
 
 # configure a uniform buffer object
 # ---------------------------------
 # first. We get the relevant block indices
-let uniformBlockIndexRed = GetUniformBlockIndex(shaderRed,"Matrices")
-let uniformBlockIndexGreen = GetUniformBlockIndex(shaderGreen,"Matrices")
-let uniformBlockIndexBlue = GetUniformBlockIndex(shaderBlue,"Matrices")
-let uniformBlockIndexYellow = GetUniformBlockIndex(shaderYellow,"Matrices")
-UniformBlockBinding(shaderRed,uniformBlockIndexRed,0)
-UniformBlockBinding(shaderGreen,uniformBlockIndexGreen,0)
-UniformBlockBinding(shaderBlue,uniformBlockIndexBlue,0)
-UniformBlockBinding(shaderYellow,uniformBlockIndexYellow,0)
+let uniformBlockIndexRed = getUniformBlockIndex(shaderRed,"Matrices")
+let uniformBlockIndexGreen = getUniformBlockIndex(shaderGreen,"Matrices")
+let uniformBlockIndexBlue = getUniformBlockIndex(shaderBlue,"Matrices")
+let uniformBlockIndexYellow = getUniformBlockIndex(shaderYellow,"Matrices")
+uniformBlockBinding(shaderRed,uniformBlockIndexRed,0)
+uniformBlockBinding(shaderGreen,uniformBlockIndexGreen,0)
+uniformBlockBinding(shaderBlue,uniformBlockIndexBlue,0)
+uniformBlockBinding(shaderYellow,uniformBlockIndexYellow,0)
 
 # now actually create the buffer
-let uboMatrices = GenBindBuffer(BufferTarget.UNIFORM_BUFFER)
-BufferData(BufferTarget.UNIFORM_BUFFER,2*Mat4f.sizeof(),BufferDataUsage.STATIC_DRAW)
-UnbindBuffer(BufferTarget.UNIFORM_BUFFER)
+let uboMatrices = genBindBuffer(BufferTarget.UNIFORM_BUFFER)
+bufferData(BufferTarget.UNIFORM_BUFFER,2*Mat4f.sizeof(),BufferDataUsage.STATIC_DRAW)
+unbindBuffer(BufferTarget.UNIFORM_BUFFER)
 # define the range of the buffer that links to a uniform binding point
-BindBufferRange(BufferRangeTarget.UNIFORM_BUFFER,0,uboMatrices,0,(2*Mat4f.sizeof()).int32)
+bindBufferRange(BufferRangeTarget.UNIFORM_BUFFER,0,uboMatrices,0,(2*Mat4f.sizeof()).int32)
 
 # store the projection matrix (we only do this once now) (note: we're not using zoom anymore by changing the FoV)
 let projection = perspective(45.0'f32,screenWidth.float32/screenHeight.float32,0.1'f32,100.0'f32)
-BindBuffer(BufferTarget.UNIFORM_BUFFER,uboMatrices)
-BufferSubData(BufferTarget.UNIFORM_BUFFER,0,Mat4f.sizeof(),projection.arr)
-UnbindBuffer(BufferTarget.UNIFORM_BUFFER)
+bindBuffer(BufferTarget.UNIFORM_BUFFER,uboMatrices)
+bufferSubData(BufferTarget.UNIFORM_BUFFER,0,Mat4f.sizeof(),projection.arr)
+unbindBuffer(BufferTarget.UNIFORM_BUFFER)
 
 
 var
@@ -138,65 +138,65 @@ while run:
                 glViewport(0, 0, newWidth, newHeight)   # Set the viewport to cover the new window          
         of MouseWheel:
             var wheelEvent = cast[MouseWheelEventPtr](addr(evt))
-            camera.ProcessMouseScroll(wheelEvent.y.float32)
+            camera.processMouseScroll(wheelEvent.y.float32)
         of MouseMotion:
             var motionEvent = cast[MouseMotionEventPtr](addr(evt))
-            camera.ProcessMouseMovement(motionEvent.xrel.float32,motionEvent.yrel.float32)
+            camera.processMouseMovement(motionEvent.xrel.float32,motionEvent.yrel.float32)
         else:
             discard
              
 
   if keyState[SDL_SCANCODE_W.uint8] != 0:
-    camera.ProcessKeyboard(FORWARD,elapsedTime)
+    camera.processKeyboard(FORWARD,elapsedTime)
   if keyState[SDL_SCANCODE_S.uint8] != 0:
-    camera.ProcessKeyBoard(BACKWARD,elapsedTime)
+    camera.processKeyBoard(BACKWARD,elapsedTime)
   if keyState[SDL_SCANCODE_A.uint8] != 0:
-    camera.ProcessKeyBoard(LEFT,elapsedTime)
+    camera.processKeyBoard(LEFT,elapsedTime)
   if keyState[SDL_SCANCODE_D.uint8] != 0:
-    camera.ProcessKeyBoard(RIGHT,elapsedTime)
+    camera.processKeyBoard(RIGHT,elapsedTime)
   if keyState[SDL_SCANCODE_ESCAPE.uint8] != 0:
     break
 
-  let error = GetGLError()
+  let error = getGLError()
   if error != ErrorType.NO_ERROR:
     echo $error
 
   # Render
-  ClearColor(0.1,0.1,0.1,1.0)
-  easygl.Clear(BufferMask.COLOR_BUFFER_BIT, BufferMask.DEPTH_BUFFER_BIT)
+  clearColor(0.1,0.1,0.1,1.0)
+  easygl.clear(BufferMask.COLOR_BUFFER_BIT, BufferMask.DEPTH_BUFFER_BIT)
 
-  let view = camera.GetViewMatrix()
-  BindBuffer(BufferTarget.UNIFORM_BUFFER,uboMatrices)
-  BufferSubData(BufferTarget.UNIFORM_BUFFER,Mat4f.sizeof(),Mat4f.sizeof(),view.arr)
-  UnbindBuffer(BufferTarget.UNIFORM_BUFFER)
+  let view = camera.getViewMatrix()
+  bindBuffer(BufferTarget.UNIFORM_BUFFER,uboMatrices)
+  bufferSubData(BufferTarget.UNIFORM_BUFFER,Mat4f.sizeof(),Mat4f.sizeof(),view.arr)
+  unbindBuffer(BufferTarget.UNIFORM_BUFFER)
   
-  BindVertexArray(cubeVAO)
-  shaderRed.Use()
+  bindVertexArray(cubeVAO)
+  shaderRed.use()
   var model = mat4(1.0'f32)
   model = translate(model,vec3(-0.75'f32,0.75'f32,0.0'f32))
-  shaderRed.SetMat4("model",model)
-  DrawArrays(DrawMode.TRIANGLES,0,36)
+  shaderRed.setMat4("model",model)
+  drawArrays(DrawMode.TRIANGLES,0,36)
 
-  BindVertexArray(cubeVAO)
-  shaderGreen.Use()
+  bindVertexArray(cubeVAO)
+  shaderGreen.use()
   model = mat4(1.0'f32)
   model = translate(model,vec3(0.75'f32,0.75'f32,0.0'f32))
-  shaderGreen.SetMat4("model",model)
-  DrawArrays(DrawMode.TRIANGLES,0,36)
+  shaderGreen.setMat4("model",model)
+  drawArrays(DrawMode.TRIANGLES,0,36)
 
-  BindVertexArray(cubeVAO)
-  shaderYellow.Use()
+  bindVertexArray(cubeVAO)
+  shaderYellow.use()
   model = mat4(1.0'f32)
   model = translate(model,vec3(-0.75'f32,-0.75'f32,0.0'f32))
-  shaderYellow.SetMat4("model",model)
-  DrawArrays(DrawMode.TRIANGLES,0,36)
+  shaderYellow.setMat4("model",model)
+  drawArrays(DrawMode.TRIANGLES,0,36)
 
-  BindVertexArray(cubeVAO)
-  shaderBlue.Use()
+  bindVertexArray(cubeVAO)
+  shaderBlue.use()
   model = mat4(1.0'f32)
   model = translate(model,vec3(0.75'f32,-0.75'f32,0.0'f32))
-  shaderBlue.SetMat4("model",model)
-  DrawArrays(DrawMode.TRIANGLES,0,36)
+  shaderBlue.setMat4("model",model)
+  drawArrays(DrawMode.TRIANGLES,0,36)
     
   window.glSwapWindow()
 

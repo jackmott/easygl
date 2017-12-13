@@ -19,7 +19,7 @@ loadExtensions()
 
 ### Build and compile shader program
 let appDir = getAppDir()
-let shaderProgram = CreateAndLinkProgram(appDir&"/shaders/hello_triangle.vert",appDir&"/shaders/hello_triangle.frag")
+let shaderProgram = createAndLinkProgram(appDir&"/shaders/hello_triangle.vert",appDir&"/shaders/hello_triangle.frag")
 
 # Set up vertex data
 let vertices : seq[float32]  = 
@@ -34,25 +34,25 @@ let indices : seq[uint32] =
   0'u32, 1'u32, 3'u32,   # first triangle
   1'u32, 2'u32, 3'u32 ]  # second triangle
 
-let VAO = GenVertexArray()
-let VBO = GenBuffer() 
-let EBO = GenBuffer()
+let VAO = genVertexArray()
+let VBO = genBuffer() 
+let EBO = genBuffer()
 
 # Bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-BindVertexArray(VAO)
+bindVertexArray(VAO)
 
-BindBuffer(BufferTarget.ARRAY_BUFFER,VBO)
-BufferData(BufferTarget.ARRAY_BUFFER,vertices,BufferDataUsage.STATIC_DRAW)
+bindBuffer(BufferTarget.ARRAY_BUFFER,VBO)
+bufferData(BufferTarget.ARRAY_BUFFER,vertices,BufferDataUsage.STATIC_DRAW)
 
-BindBuffer(BufferTarget.ELEMENT_ARRAY_BUFFER,EBO)
-BufferData(BufferTarget.ELEMENT_ARRAY_BUFFER,indices,BufferDataUsage.STATIC_DRAW)
+bindBuffer(BufferTarget.ELEMENT_ARRAY_BUFFER,EBO)
+bufferData(BufferTarget.ELEMENT_ARRAY_BUFFER,indices,BufferDataUsage.STATIC_DRAW)
 
-VertexAttribPointer(0,3,VertexAttribType.FLOAT,false,3*float32.sizeof(),0)
-EnableVertexAttribArray(0)
+vertexAttribPointer(0,3,VertexAttribType.FLOAT,false,3*float32.sizeof(),0)
+enableVertexAttribArray(0)
 
-# Unbind the VBO and VAO but we need to keep the EBO
-BindBuffer(BufferTarget.ARRAY_BUFFER,0.BufferId)
-BindVertexArray(0.VertexArrayId)
+# unBind the VBO and VAO but we need to keep the EBO
+bindBuffer(BufferTarget.ARRAY_BUFFER,0.BufferId)
+bindVertexArray(0.VertexArrayId)
 
 
 var
@@ -74,11 +74,11 @@ while run:
         glViewport(0, 0, newWidth, newHeight)   # Set the viewport to cover the new window
         
   # Render
-  ClearColor(0.2,0.3,0.3,1.0)
-  Clear(BufferMask.COLOR_BUFFER_BIT)
-  shaderProgram.Use()
-  BindVertexArray(VAO) # Not necessary since we only have one VAO
-  DrawElements(DrawMode.TRIANGLES,6,IndexType.UNSIGNED_INT,0)
+  clearColor(0.2,0.3,0.3,1.0)
+  clear(BufferMask.COLOR_BUFFER_BIT)
+  shaderProgram.use()
+  bindVertexArray(VAO) # Not necessary since we only have one VAO
+  drawElements(DrawMode.TRIANGLES,6,IndexType.UNSIGNED_INT,0)
   window.glSwapWindow()
 
 destroy window

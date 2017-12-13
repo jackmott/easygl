@@ -13,12 +13,12 @@ type Model* = object
     directory*:string
     gammaCorrection*:bool
 
-proc Draw*(model:Model, shaderProgram:ShaderProgramId) =
+proc draw*(model:Model, shaderProgram:ShaderProgramId) =
    
     for mesh in model.meshes:
-        mesh.Draw(shaderProgram)
+        mesh.draw(shaderProgram)
     
-proc LoadMaterialTextures(model: var Model, mat:PMaterial, texType:TTextureType, typeName:TextureType) : seq[Texture] =
+proc loadMaterialTextures(model: var Model, mat:PMaterial, texType:TTextureType, typeName:TextureType) : seq[Texture] =
     var textures = newSeq[Texture]()
     let texCount = getTextureCount(mat,texType).int    
     for i in 0 .. <texCount:        
@@ -35,7 +35,7 @@ proc LoadMaterialTextures(model: var Model, mat:PMaterial, texType:TTextureType,
                 break;
         if not skip:
             var texture:Texture
-            texture.id = LoadTextureWithMips(model.directory & $str)
+            texture.id = loadTextureWithMips(model.directory & $str)
             texture.texType = typeName
             texture.path = $str
             textures.add(texture)
@@ -43,7 +43,7 @@ proc LoadMaterialTextures(model: var Model, mat:PMaterial, texType:TTextureType,
     textures
 
 
-proc ProcessMesh(model:var Model, mesh:PMesh, scene:PScene) : Mesh =    
+proc processMesh(model:var Model, mesh:PMesh, scene:PScene) : Mesh =    
     var vertices = newSeq[Vertex]()
     var indices = newSeq[uint32]()
     var textures = newSeq[Texture]()
@@ -98,10 +98,10 @@ proc ProcessMesh(model:var Model, mesh:PMesh, scene:PScene) : Mesh =
     # diffuse: texture_diffuseN
     # specular: texture_specularN
     # normal: texture_normalN
-    let diffuseMaps = LoadMaterialTextures(model,material,TTextureType.TexDiffuse,TextureType.TextureDiffuse)    
-    let specularMaps = LoadMaterialTextures(model,material,TTextureType.TexSpecular,TextureType.TextureSpecular)
-    let normalMaps = LoadMaterialTextures(model,material,TTextureType.TexNormals,TextureType.TextureNormal)
-    let heightMaps = LoadMaterialTextures(model,material,TTextureType.TexHeight,TextureType.TextureHeight)
+    let diffuseMaps = loadMaterialTextures(model,material,TTextureType.TexDiffuse,TextureType.TextureDiffuse)    
+    let specularMaps = loadMaterialTextures(model,material,TTextureType.TexSpecular,TextureType.TextureSpecular)
+    let normalMaps = loadMaterialTextures(model,material,TTextureType.TexNormals,TextureType.TextureNormal)
+    let heightMaps = loadMaterialTextures(model,material,TTextureType.TexHeight,TextureType.TextureHeight)
     textures = textures & diffuseMaps
     textures = textures & specularMaps
     textures = textures & normalMaps
@@ -111,16 +111,16 @@ proc ProcessMesh(model:var Model, mesh:PMesh, scene:PScene) : Mesh =
 
     
 
-proc ProcessNode(model:var Model,node:PNode, scene:PScene) = 
+proc processNode(model:var Model,node:PNode, scene:PScene) = 
     let meshCount = node.meshCount.int    
     for i in 0 .. <meshCount:        
-        model.meshes.add(ProcessMesh(model,scene.meshes[node.meshes[i]],scene))
+        model.meshes.add(processMesh(model,scene.meshes[node.meshes[i]],scene))
     let childrenCount = node.childrenCount.int
     for i in 0 .. <childrenCount:
-        ProcessNode(model,node.children[i],scene)
+        processNode(model,node.children[i],scene)
 
 
-proc LoadModel*(path:string) : Model = 
+proc loadModel*(path:string) : Model = 
     var model:Model
     model.texturesLoaded = newSeq[Texture]()
     model.meshes = newSeq[Mesh]()
@@ -129,5 +129,5 @@ proc LoadModel*(path:string) : Model =
     #todo error check
     model.directory = path.substr(0,path.rfind("/"))
     echo model.directory
-    ProcessNode(model,scene.rootNode,scene)
+    processNode(model,scene.rootNode,scene)
     model

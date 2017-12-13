@@ -23,12 +23,12 @@ discard window.glCreateContext()
 # Initialize OpenGL
 loadExtensions()
 
-Enable(Capability.DEPTH_TEST)
+enable(Capability.DEPTH_TEST)
 
 
 ### Build and compile shader program
 let appDir = getAppDir()
-let shader = CreateAndLinkProgram(appDir&"/shaders/geometry_shader.vert",appDir&"/shaders/geometry_shader.frag",appDir&"/shaders/geometry_shader.geom")
+let shader = createAndLinkProgram(appDir&"/shaders/geometry_shader.vert",appDir&"/shaders/geometry_shader.frag",appDir&"/shaders/geometry_shader.geom")
 
 let points = @[
   -0.5'f32,  0.5'f32, 1.0'f32, 0.0'f32, 0.0'f32, # top-left
@@ -40,13 +40,13 @@ let points = @[
 
 
 # cube VAO
-let VBO = GenBindBufferData(BufferTarget.ARRAY_BUFFER,points,BufferDataUsage.STATIC_DRAW)
-let VAO = GenBindVertexArray()
-EnableVertexAttribArray(0)
-VertexAttribPointer(0,2,VertexAttribType.FLOAT,false,5*float32.sizeof(),0)
-EnableVertexAttribArray(1)
-VertexAttribPointer(1,3,VertexAttribType.FLOAT,false,2*float32.sizeof(),0)
-UnbindVertexArray()
+let VBO = genBindBufferData(BufferTarget.ARRAY_BUFFER,points,BufferDataUsage.STATIC_DRAW)
+let VAO = genBindVertexArray()
+enableVertexAttribArray(0)
+vertexAttribPointer(0,2,VertexAttribType.FLOAT,false,5*float32.sizeof(),0)
+enableVertexAttribArray(1)
+vertexAttribPointer(1,3,VertexAttribType.FLOAT,false,2*float32.sizeof(),0)
+unBindVertexArray()
 
 var
   evt = sdl2.defaultEvent
@@ -74,36 +74,36 @@ while run:
                 glViewport(0, 0, newWidth, newHeight)   # Set the viewport to cover the new window          
         of MouseWheel:
             var wheelEvent = cast[MouseWheelEventPtr](addr(evt))
-            camera.ProcessMouseScroll(wheelEvent.y.float32)
+            camera.processMouseScroll(wheelEvent.y.float32)
         of MouseMotion:
             var motionEvent = cast[MouseMotionEventPtr](addr(evt))
-            camera.ProcessMouseMovement(motionEvent.xrel.float32,motionEvent.yrel.float32)
+            camera.processMouseMovement(motionEvent.xrel.float32,motionEvent.yrel.float32)
         else:
             discard
              
 
   if keyState[SDL_SCANCODE_W.uint8] != 0:
-    camera.ProcessKeyboard(FORWARD,elapsedTime)
+    camera.processKeyboard(FORWARD,elapsedTime)
   if keyState[SDL_SCANCODE_S.uint8] != 0:
-    camera.ProcessKeyBoard(BACKWARD,elapsedTime)
+    camera.processKeyBoard(BACKWARD,elapsedTime)
   if keyState[SDL_SCANCODE_A.uint8] != 0:
-    camera.ProcessKeyBoard(LEFT,elapsedTime)
+    camera.processKeyBoard(LEFT,elapsedTime)
   if keyState[SDL_SCANCODE_D.uint8] != 0:
-    camera.ProcessKeyBoard(RIGHT,elapsedTime)
+    camera.processKeyBoard(RIGHT,elapsedTime)
   if keyState[SDL_SCANCODE_ESCAPE.uint8] != 0:
     break
 
-  let error = GetGLError()
+  let error = getGLError()
   if error != ErrorType.NO_ERROR:
     echo $error
 
   # Render
-  ClearColor(0.1,0.1,0.1,1.0)
-  easygl.Clear(BufferMask.COLOR_BUFFER_BIT, BufferMask.DEPTH_BUFFER_BIT)
+  clearColor(0.1,0.1,0.1,1.0)
+  easygl.clear(BufferMask.COLOR_BUFFER_BIT, BufferMask.DEPTH_BUFFER_BIT)
 
-  shader.Use()
-  BindVertexArray(VAO)
-  DrawArrays(DrawMode.POINTS,0,4)
+  shader.use()
+  bindVertexArray(VAO)
+  drawArrays(DrawMode.POINTS,0,4)
       
   window.glSwapWindow()
 

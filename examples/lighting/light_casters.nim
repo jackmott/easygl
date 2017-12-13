@@ -25,9 +25,9 @@ loadExtensions()
 
 ### Build and compile shader program
 let appDir = getAppDir()
-let lightingShader = CreateAndLinkProgram(appDir&"/shaders/light_casters.vert",appDir&"/shaders/light_casters.frag")
+let lightingShader = createAndLinkProgram(appDir&"/shaders/light_casters.vert",appDir&"/shaders/light_casters.frag")
 
-Enable(Capability.DEPTH_TEST)
+enable(Capability.DEPTH_TEST)
 
 # Set up vertex data
 let vertices : seq[float32]  =
@@ -90,34 +90,34 @@ let cubePositions : seq[Vec3f] =
     vec3(-1.3'f32,  1.0'f32, -1.5'f32)
   ]
 
-let cubeVAO = GenVertexArray()
-let VBO = GenBuffer()
+let cubeVAO = genVertexArray()
+let VBO = genBuffer()
 
 # Bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).HH
-BindBuffer(BufferTarget.ARRAY_BUFFER,VBO)
-BufferData(BufferTarget.ARRAY_BUFFER,vertices,BufferDataUsage.STATIC_DRAW)
+bindBuffer(BufferTarget.ARRAY_BUFFER,VBO)
+bufferData(BufferTarget.ARRAY_BUFFER,vertices,BufferDataUsage.STATIC_DRAW)
 
-BindVertexArray(cubeVAO)
+bindVertexArray(cubeVAO)
 
-VertexAttribPointer(0,3,VertexAttribType.FLOAT,false,8*float32.sizeof(),0)
-EnableVertexAttribArray(0)
-VertexAttribPointer(1,3,VertexAttribType.FLOAT,false,8*float32.sizeof(),3*float32.sizeof())
-EnableVertexAttribArray(1)
-VertexAttribPointer(2,2,VertexAttribType.FLOAT,false,8*float32.sizeof(),6*float32.sizeof())
-EnableVertexAttribArray(2);
+vertexAttribPointer(0,3,VertexAttribType.FLOAT,false,8*float32.sizeof(),0)
+enableVertexAttribArray(0)
+vertexAttribPointer(1,3,VertexAttribType.FLOAT,false,8*float32.sizeof(),3*float32.sizeof())
+enableVertexAttribArray(1)
+vertexAttribPointer(2,2,VertexAttribType.FLOAT,false,8*float32.sizeof(),6*float32.sizeof())
+enableVertexAttribArray(2);
 
-let lightVAO = GenVertexArray()
-BindVertexArray(lightVAO)
-BindBuffer(BufferTarget.ARRAY_BUFFER,VBO)
-VertexAttribPointer(0,3,VertexAttribType.FLOAT,false,8*float32.sizeof(),0)
-EnableVertexAttribArray(0)
+let lightVAO = genVertexArray()
+bindVertexArray(lightVAO)
+bindBuffer(BufferTarget.ARRAY_BUFFER,VBO)
+vertexAttribPointer(0,3,VertexAttribType.FLOAT,false,8*float32.sizeof(),0)
+enableVertexAttribArray(0)
 
-let diffuseMap = LoadTextureWithMips(appDir&"/textures/container2.png")
-let specularMap = LoadTextureWithMips(appDir&"/textures/container2_specular.png")
+let diffuseMap = loadTextureWithMips(appDir&"/textures/container2.png")
+let specularMap = loadTextureWithMips(appDir&"/textures/container2_specular.png")
 
-lightingShader.Use()
-lightingShader.SetInt("diffuse",0)
-lightingShader.SetInt("specular",1)
+lightingShader.use()
+lightingShader.setInt("diffuse",0)
+lightingShader.setInt("specular",1)
 
 var
   evt = sdl2.defaultEvent
@@ -145,76 +145,76 @@ while run:
                 glViewport(0, 0, newWidth, newHeight)   # Set the viewport to cover the new window       
         of MouseWheel:
             var wheelEvent = cast[MouseWheelEventPtr](addr(evt))
-            camera.ProcessMouseScroll(wheelEvent.y.float32)
+            camera.processMouseScroll(wheelEvent.y.float32)
         of MouseMotion:
             var motionEvent = cast[MouseMotionEventPtr](addr(evt))
-            camera.ProcessMouseMovement(motionEvent.xrel.float32,motionEvent.yrel.float32)
+            camera.processMouseMovement(motionEvent.xrel.float32,motionEvent.yrel.float32)
         else:
             discard
              
 
   if keyState[SDL_SCANCODE_W.uint8] != 0:
-    camera.ProcessKeyboard(FORWARD,elapsedTime)
+    camera.processKeyboard(FORWARD,elapsedTime)
   if keyState[SDL_SCANCODE_S.uint8] != 0:
-    camera.ProcessKeyBoard(BACKWARD,elapsedTime)
+    camera.processKeyBoard(BACKWARD,elapsedTime)
   if keyState[SDL_SCANCODE_A.uint8] != 0:
-    camera.ProcessKeyBoard(LEFT,elapsedTime)
+    camera.processKeyBoard(LEFT,elapsedTime)
   if keyState[SDL_SCANCODE_D.uint8] != 0:
-    camera.ProcessKeyBoard(RIGHT,elapsedTime)
+    camera.processKeyBoard(RIGHT,elapsedTime)
   if keyState[SDL_SCANCODE_ESCAPE.uint8] != 0:
     break
 
   # Render
-  ClearColor(0.1,0.1,0.1,1.0)
-  easygl.Clear(BufferMask.COLOR_BUFFER_BIT, BufferMask.DEPTH_BUFFER_BIT)
+  clearColor(0.1,0.1,0.1,1.0)
+  easygl.clear(BufferMask.COLOR_BUFFER_BIT, BufferMask.DEPTH_BUFFER_BIT)
 
  
-  lightingShader.Use()  
-  lightingShader.SetVec3("light.position", camera.Position)
-  lightingShader.SetVec3("light.direction",camera.Front)  
-  lightingShader.SetFloat("light.cutOff",cos(radians(12.5'f32)))
-  lightingShader.SetFloat("light.outerCutOff",cos(radians(17.5'f32)))
-  lightingShader.SetVec3("viewPos",camera.Position)
+  lightingShader.use()  
+  lightingShader.setVec3("light.position", camera.Position)
+  lightingShader.setVec3("light.direction",camera.Front)  
+  lightingShader.setFloat("light.cutOff",cos(radians(12.5'f32)))
+  lightingShader.setFloat("light.outerCutOff",cos(radians(17.5'f32)))
+  lightingShader.setVec3("viewPos",camera.Position)
 
   # light properties
-  lightingShader.SetVec3("light.ambient",0.1'f32,0.1'f32,0.1'f32)
-  lightingShader.SetVec3("light.diffuse",0.8'f32,0.8'f32,0.8'f32)
-  lightingShader.SetVec3("light.specular",1.0'f32,1.0'f32,1.0'f32)
-  lightingShader.SetFloat("light.constant",1.0'f32)
-  lightingShader.SetFloat("light.linear",0.09'f32)
-  lightingShader.SetFloat("light.quadratic",0.032'f32)
-  lightingShader.SetFloat("material.shininess", 64.0'f32)
+  lightingShader.setVec3("light.ambient",0.1'f32,0.1'f32,0.1'f32)
+  lightingShader.setVec3("light.diffuse",0.8'f32,0.8'f32,0.8'f32)
+  lightingShader.setVec3("light.specular",1.0'f32,1.0'f32,1.0'f32)
+  lightingShader.setFloat("light.constant",1.0'f32)
+  lightingShader.setFloat("light.linear",0.09'f32)
+  lightingShader.setFloat("light.quadratic",0.032'f32)
+  lightingShader.setFloat("material.shininess", 64.0'f32)
   
 
   var projection = perspective(radians(camera.Zoom),screenWidth.float32/screenHeight.float32,0.1'f32,100.0'f32)
-  var view = camera.GetViewMatrix()
+  var view = camera.getViewMatrix()
 
-  lightingShader.SetMat4("projection",projection)
-  lightingShader.SetMat4("view",view)
+  lightingShader.setMat4("projection",projection)
+  lightingShader.setMat4("view",view)
   
   var model = mat4(1.0'f32)
-  lightingShader.SetMat4("model",model)
+  lightingShader.setMat4("model",model)
 
-  ActiveTexture(TextureUnit.TEXTURE0)
-  BindTexture(TextureTarget.TEXTURE_2D,diffuseMap)
+  activeTexture(TextureUnit.TEXTURE0)
+  bindTexture(TextureTarget.TEXTURE_2D,diffuseMap)
 
-  ActiveTexture(TextureUnit.TEXTURE1)
-  BindTexture(TextureTarget.TEXTURE_2D,specularMap)  
+  activeTexture(TextureUnit.TEXTURE1)
+  bindTexture(TextureTarget.TEXTURE_2D,specularMap)  
 
-  BindVertexArray(cubeVAO)
+  bindVertexArray(cubeVAO)
 
   for i,cubePos in cubePositions:
     var model = mat4(1.0'f32)
     model = translate(model,cubePos)
     let angle = 20.0'f32 * i.float32
     model = rotate(model,radians(angle),vec3(1.0'f32,0.3'f32,0.5'f32))
-    lightingShader.SetMat4("model",model)
-    DrawArrays(DrawMode.TRIANGLES,0,36)
+    lightingShader.setMat4("model",model)
+    drawArrays(DrawMode.TRIANGLES,0,36)
   
   
   window.glSwapWindow()
 
-DeleteVertexArray(cubeVAO)
-DeleteVertexArray(lightVAO)
-DeleteBuffer(VBO)
+deleteVertexArray(cubeVAO)
+deleteVertexArray(lightVAO)
+deleteBuffer(VBO)
 destroy window

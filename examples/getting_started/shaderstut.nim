@@ -19,7 +19,7 @@ loadExtensions()
 
 ### Build and compile shader program
 let appDir = getAppDir()
-let ourShader = CreateAndLinkProgram(appDir&"/shaders/shaders.vert",appDir&"/shaders/shaders.frag")
+let ourShader = createAndLinkProgram(appDir&"/shaders/shaders.vert",appDir&"/shaders/shaders.frag")
 
 # Set up vertex data
 let vertices : seq[float32]  = 
@@ -29,21 +29,20 @@ let vertices : seq[float32]  =
      0.0'f32,  0.5'f32, 0.0'f32,  0.0'f32, 0.0'f32, 1.0'f32 ] # top left
 
 
-let VAO = GenVertexArray()
-let VBO = GenBuffer()
+let VAO = genVertexArray()
+let VBO = genBuffer()
 
 # Bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-BindVertexArray(VAO)
+bindVertexArray(VAO)
 
-BindBuffer(BufferTarget.ARRAY_BUFFER,VBO)
-BufferData(BufferTarget.ARRAY_BUFFER,vertices,BufferDataUsage.STATIC_DRAW)
+bindBuffer(BufferTarget.ARRAY_BUFFER,VBO)
+bufferData(BufferTarget.ARRAY_BUFFER,vertices,BufferDataUsage.STATIC_DRAW)
 
-VertexAttribPointer(0,3,VertexAttribType.FLOAT,false,6*float32.sizeof(),0)
-EnableVertexAttribArray(0)
+vertexAttribPointer(0,3,VertexAttribType.FLOAT,false,6*float32.sizeof(),0)
+enableVertexAttribArray(0)
 
-VertexAttribPointer(1,3,VertexAttribType.FLOAT,false,6*float32.sizeof(),3*float32.sizeof())
-EnableVertexAttribArray(1)
-
+vertexAttribPointer(1,3,VertexAttribType.FLOAT,false,6*float32.sizeof(),3*float32.sizeof())
+enableVertexAttribArray(1)
 
 var
   evt = sdl2.defaultEvent
@@ -64,13 +63,13 @@ while run:
         glViewport(0, 0, newWidth, newHeight)   # Set the viewport to cover the new window
         
   # Render
-  ClearColor(0.2,0.3,0.3,1.0)
-  Clear(BufferMask.COLOR_BUFFER_BIT)
-  ourShader.Use()
-  BindVertexArray(VAO) # Not necessary since we only have one VAO
-  DrawArrays(DrawMode.TRIANGLES,0,3)
+  clearColor(0.2,0.3,0.3,1.0)
+  clear(BufferMask.COLOR_BUFFER_BIT)
+  ourShader.use()
+  bindVertexArray(VAO) # Not necessary since we only have one VAO
+  drawArrays(DrawMode.TRIANGLES,0,3)
   window.glSwapWindow()
 
-DeleteVertexArray(VAO)
-DeleteBuffer(VBO)
+deleteVertexArray(VAO)
+deleteBuffer(VBO)
 destroy window

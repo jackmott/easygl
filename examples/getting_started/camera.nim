@@ -24,9 +24,9 @@ loadExtensions()
 
 ### Build and compile shader program
 let appDir = getAppDir()
-let ourShader = CreateAndLinkProgram(appDir&"/shaders/camera.vert",appDir&"/shaders/camera.frag")
+let ourShader = createAndLinkProgram(appDir&"/shaders/camera.vert",appDir&"/shaders/camera.frag")
 
-Enable(Capability.DEPTH_TEST)
+enable(Capability.DEPTH_TEST)
 
 # Set up vertex data
 let vertices : seq[float32]  = 
@@ -87,27 +87,27 @@ let cubePositions : seq[Vec3f] =
         vec3( 1.5'f32,  0.2'f32, -1.5'f32),
         vec3(-1.3'f32,  1.0'f32, -1.5'f32)]
 
-let VAO = GenVertexArray()
-let VBO = GenBuffer()
+let VAO = genVertexArray()
+let VBO = genBuffer()
 
 # Bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-BindVertexArray(VAO)
+bindVertexArray(VAO)
 
-BindBuffer(BufferTarget.ARRAY_BUFFER,VBO)
-BufferData(BufferTarget.ARRAY_BUFFER,vertices,BufferDataUsage.STATIC_DRAW)
+bindBuffer(BufferTarget.ARRAY_BUFFER,VBO)
+bufferData(BufferTarget.ARRAY_BUFFER,vertices,BufferDataUsage.STATIC_DRAW)
 
-VertexAttribPointer(0,3,VertexAttribType.FLOAT,false,5*float32.sizeof(),0)
-EnableVertexAttribArray(0)
+vertexAttribPointer(0,3,VertexAttribType.FLOAT,false,5*float32.sizeof(),0)
+enableVertexAttribArray(0)
 
-VertexAttribPointer(1,2,VertexAttribType.FLOAT,false,5*float32.sizeof(),3*float32.sizeof())
-EnableVertexAttribArray(1)
+vertexAttribPointer(1,2,VertexAttribType.FLOAT,false,5*float32.sizeof(),3*float32.sizeof())
+enableVertexAttribArray(1)
 
-let texture1 = LoadTextureWithMips(appDir&"/textures/container.jpg")
-let texture2 = LoadTextureWithMips(appDir&"/textures/awesomeface.png")
+let texture1 = loadTextureWithMips(appDir&"/textures/container.jpg")
+let texture2 = loadTextureWithMips(appDir&"/textures/awesomeface.png")
 
-ourShader.Use()
-ourShader.SetInt("texture1",0)
-ourShader.SetInt("texture2",1)
+ourShader.use()
+ourShader.setInt("texture1",0)
+ourShader.setInt("texture2",1)
 
 
 var
@@ -136,50 +136,50 @@ while run:
                 glViewport(0, 0, newWidth, newHeight)   # Set the viewport to cover the new window          
         of MouseWheel:
             var wheelEvent = cast[MouseWheelEventPtr](addr(evt))
-            camera.ProcessMouseScroll(wheelEvent.y.float32)
+            camera.processMouseScroll(wheelEvent.y.float32)
         of MouseMotion:
             var motionEvent = cast[MouseMotionEventPtr](addr(evt))
-            camera.ProcessMouseMovement(motionEvent.xrel.float32,motionEvent.yrel.float32)
+            camera.processMouseMovement(motionEvent.xrel.float32,motionEvent.yrel.float32)
         else:
             discard
              
 
   if keyState[SDL_SCANCODE_W.uint8] != 0:
-    camera.ProcessKeyboard(FORWARD,elapsedTime)
+    camera.processKeyboard(FORWARD,elapsedTime)
   if keyState[SDL_SCANCODE_S.uint8] != 0:
-    camera.ProcessKeyBoard(BACKWARD,elapsedTime)
+    camera.processKeyBoard(BACKWARD,elapsedTime)
   if keyState[SDL_SCANCODE_A.uint8] != 0:
-    camera.ProcessKeyBoard(LEFT,elapsedTime)
+    camera.processKeyBoard(LEFT,elapsedTime)
   if keyState[SDL_SCANCODE_D.uint8] != 0:
-    camera.ProcessKeyBoard(RIGHT,elapsedTime)
+    camera.processKeyBoard(RIGHT,elapsedTime)
   if keyState[SDL_SCANCODE_ESCAPE.uint8] != 0:
     break
 
   # Render
-  ClearColor(0.2,0.3,0.3,1.0)
-  easygl.Clear(BufferMask.COLOR_BUFFER_BIT, BufferMask.DEPTH_BUFFER_BIT)
+  clearColor(0.2,0.3,0.3,1.0)
+  easygl.clear(BufferMask.COLOR_BUFFER_BIT, BufferMask.DEPTH_BUFFER_BIT)
 
-  ActiveTexture(TextureUnit.TEXTURE0)
-  BindTexture(TextureTarget.TEXTURE_2D,texture1)
-  ActiveTexture(TextureUnit.TEXTURE1)
-  BindTexture(TextureTarget.TEXTURE_2D, texture2)
+  activeTexture(TextureUnit.TEXTURE0)
+  bindTexture(TextureTarget.TEXTURE_2D,texture1)
+  activeTexture(TextureUnit.TEXTURE1)
+  bindTexture(TextureTarget.TEXTURE_2D, texture2)
   
-  ourShader.Use()
+  ourShader.use()
   var projection = perspective(radians(camera.Zoom),screenWidth.float32/screenHeight.float32,0.1'f32,100.0'f32)
-  var view = camera.GetViewMatrix()
-  ourShader.SetMat4("projection",projection)
-  ourShader.SetMat4("view",view)
-  BindVertexArray(VAO) # Not necessary since we only have one VAO
+  var view = camera.getViewMatrix()
+  ourShader.setMat4("projection",projection)
+  ourShader.setMat4("view",view)
+  bindVertexArray(VAO) # Not necessary since we only have one VAO
 
   for i in 0 .. <10:
     var model = mat4(1.0'f32)
     model = translate(model,cubePositions[i])
     let angle = 20.0'f32*i.float32
     model = rotate(model,vec3(1.0'f32,0.3'f32,0.5'f32),radians(angle))
-    ourShader.SetMat4("model",model)
-    DrawArrays(DrawMode.TRIANGLES,0,36)
+    ourShader.setMat4("model",model)
+    drawArrays(DrawMode.TRIANGLES,0,36)
   window.glSwapWindow()
 
-DeleteVertexArray(VAO)
-DeleteBuffer(VBO)
+deleteVertexArray(VAO)
+deleteBuffer(VBO)
 destroy window

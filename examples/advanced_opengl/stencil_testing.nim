@@ -26,17 +26,17 @@ discard window.glCreateContext()
 
 # Initialize OpenGL
 loadExtensions()
-Enable(Capability.DEPTH_TEST)
-DepthFunc(AlphaFunc.LESS)
-Enable(Capability.STENCIL_TEST)
-StencilOp(StencilOpEnum.KEEP,StencilOpEnum.KEEP,StencilOpEnum.REPLACE)
-StencilFunc(AlphaFunc.NOTEQUAL,1,0xFF)
+enable(Capability.DEPTH_TEST)
+depthFunc(AlphaFunc.LESS)
+enable(Capability.STENCIL_TEST)
+stencilOp(StencilOpEnum.KEEP,StencilOpEnum.KEEP,StencilOpEnum.REPLACE)
+stencilFunc(AlphaFunc.NOTEQUAL,1,0xFF)
 
 
 ### Build and compile shader program
 let appDir = getAppDir()
-let shader = CreateAndLinkProgram(appDir&"/shaders/stencil_testing.vert",appDir&"/shaders/stencil_testing.frag")
-let shaderSingleColor = CreateAndLinkProgram(appDir&"/shaders/stencil_testing.vert",appDir&"/shaders/stencil_single_color.frag")
+let shader = createAndLinkProgram(appDir&"/shaders/stencil_testing.vert",appDir&"/shaders/stencil_testing.frag")
+let shaderSingleColor = createAndLinkProgram(appDir&"/shaders/stencil_testing.vert",appDir&"/shaders/stencil_single_color.frag")
 
 
 # Set up vertex data
@@ -98,28 +98,28 @@ let planeVertices =
     ]
     
 # Cube
-let cubeVAO = GenBindVertexArray()
-let cubeVBO = GenBindBufferData(BufferTarget.ARRAY_BUFFER,cubeVertices,BufferDataUsage.STATIC_DRAW)
-EnableVertexAttribArray(0)
-VertexAttribPointer(0,3,VertexAttribType.FLOAT,false,5*float32.sizeof(),0)
-EnableVertexAttribArray(1)
-VertexAttribPointer(1,2,VertexAttribType.FLOAT,false,5*float32.sizeof(),3*float32.sizeof())
-UnBindVertexArray()
+let cubeVAO = genBindVertexArray()
+let cubeVBO = genBindBufferData(BufferTarget.ARRAY_BUFFER,cubeVertices,BufferDataUsage.STATIC_DRAW)
+enableVertexAttribArray(0)
+vertexAttribPointer(0,3,VertexAttribType.FLOAT,false,5*float32.sizeof(),0)
+enableVertexAttribArray(1)
+vertexAttribPointer(1,2,VertexAttribType.FLOAT,false,5*float32.sizeof(),3*float32.sizeof())
+unBindVertexArray()
 
 # Plane
-let planeVAO = GenBindVertexArray()
-let planeVBO = GenBindBufferData(BufferTarget.ARRAY_BUFFER,planeVertices,BufferDataUsage.STATIC_DRAW)
-EnableVertexAttribArray(0)
-VertexAttribPointer(0,3,VertexAttribType.FLOAT,false,5*float32.sizeof(),0)
-EnableVertexAttribArray(1)
-VertexAttribPointer(1,2,VertexAttribType.FLOAT,false,5*float32.sizeof(),3*float32.sizeof())
-UnBindVertexArray()
+let planeVAO = genBindVertexArray()
+let planeVBO = genBindBufferData(BufferTarget.ARRAY_BUFFER,planeVertices,BufferDataUsage.STATIC_DRAW)
+enableVertexAttribArray(0)
+vertexAttribPointer(0,3,VertexAttribType.FLOAT,false,5*float32.sizeof(),0)
+enableVertexAttribArray(1)
+vertexAttribPointer(1,2,VertexAttribType.FLOAT,false,5*float32.sizeof(),3*float32.sizeof())
+unBindVertexArray()
 
-let cubeTexture = LoadTextureWithMips(appDir&"/textures/marble.jpg")
-let floorTexture = LoadTextureWithMips(appDir&"/textures/metal.png")
+let cubeTexture = loadTextureWithMips(appDir&"/textures/marble.jpg")
+let floorTexture = loadTextureWithMips(appDir&"/textures/metal.png")
 
-shader.Use()
-shader.SetInt("texture1",0)
+shader.use()
+shader.setInt("texture1",0)
 
 var
   evt = sdl2.defaultEvent
@@ -133,7 +133,7 @@ prevTime=epochTime()
 
 while run:
   
-  let error = GetGLError()
+  let error = getGLError()
   if (error != ErrorType.NO_ERROR):
     echo "Error:" & $error
 
@@ -153,99 +153,99 @@ while run:
                 glViewport(0, 0, newWidth, newHeight)   # Set the viewport to cover the new window      
         of MouseWheel:
             var wheelEvent = cast[MouseWheelEventPtr](addr(evt))
-            camera.ProcessMouseScroll(wheelEvent.y.float32)
+            camera.processMouseScroll(wheelEvent.y.float32)
         of MouseMotion:
             var motionEvent = cast[MouseMotionEventPtr](addr(evt))
-            camera.ProcessMouseMovement(motionEvent.xrel.float32,motionEvent.yrel.float32)
+            camera.processMouseMovement(motionEvent.xrel.float32,motionEvent.yrel.float32)
         else:
             discard
              
   if keyState[SDL_SCANCODE_W.uint8] != 0:
-    camera.ProcessKeyboard(FORWARD,elapsedTime)
+    camera.processKeyboard(FORWARD,elapsedTime)
   if keyState[SDL_SCANCODE_S.uint8] != 0:
-    camera.ProcessKeyBoard(BACKWARD,elapsedTime)
+    camera.processKeyBoard(BACKWARD,elapsedTime)
   if keyState[SDL_SCANCODE_A.uint8] != 0:
-    camera.ProcessKeyBoard(LEFT,elapsedTime)
+    camera.processKeyBoard(LEFT,elapsedTime)
   if keyState[SDL_SCANCODE_D.uint8] != 0:
-    camera.ProcessKeyBoard(RIGHT,elapsedTime)
+    camera.processKeyBoard(RIGHT,elapsedTime)
   if keyState[SDL_SCANCODE_ESCAPE.uint8] != 0:
     break
   # Render  
   
-  ClearColor(0.1,0.1,0.1,1.0)
+  clearColor(0.1,0.1,0.1,1.0)
   
-  StencilMask(0xFF)
-  easygl.Clear(BufferMask.COLOR_BUFFER_BIT, 
+  stencilMask(0xFF)
+  easygl.clear(BufferMask.COLOR_BUFFER_BIT, 
          BufferMask.DEPTH_BUFFER_BIT,
          BufferMask.STENCIL_BUFFER_BIT)
   
 
-  shaderSingleColor.Use()
+  shaderSingleColor.use()
   var model = mat4(1.0'f32)    
-  var view = camera.GetViewMatrix()
+  var view = camera.getViewMatrix()
   var projection = perspective(radians(camera.Zoom),screenWidth.float32/screenHeight.float32,0.1'f32,100.0'f32)
-  shaderSingleColor.SetMat4("view",view)
-  shaderSingleColor.SetMat4("projection",projection)
+  shaderSingleColor.setMat4("view",view)
+  shaderSingleColor.setMat4("projection",projection)
  
-  shader.Use()  
-  shader.SetMat4("view",view)
-  shader.SetMat4("projection",projection)
+  shader.use()  
+  shader.setMat4("view",view)
+  shader.setMat4("projection",projection)
 
   # dont write to stencil when drawing floor    
-  StencilMask(0x00)
+  stencilMask(0x00)
   # floor  
-  BindVertexArray(planeVAO)  
-  BindTexture(TextureTarget.TEXTURE_2D,floorTexture)  
-  shader.SetMat4("model",model)
-  DrawArrays(DrawMode.TRIANGLES,0,6)
-  UnBindVertexArray()
+  bindVertexArray(planeVAO)  
+  bindTexture(TextureTarget.TEXTURE_2D,floorTexture)  
+  shader.setMat4("model",model)
+  drawArrays(DrawMode.TRIANGLES,0,6)
+  unBindVertexArray()
 
   # 1st. render pass, draw objects as normal, writing to the stencil buffer
   # --------------------------------------------------------------------
-  StencilFunc(AlphaFunc.ALWAYS,1,0xFF)
-  StencilMask(0xFF)
+  stencilFunc(AlphaFunc.ALWAYS,1,0xFF)
+  stencilMask(0xFF)
   # cubes
-  BindVertexArray(cubeVAO)
-  ActiveTexture(TextureUnit.TEXTURE0)
-  BindTexture(TextureTarget.TEXTURE_2D, cubeTexture)
+  bindVertexArray(cubeVAO)
+  activeTexture(TextureUnit.TEXTURE0)
+  bindTexture(TextureTarget.TEXTURE_2D, cubeTexture)
   model = translate(model,vec3(-1.0'f32,0.0'f32,-1.0'f32))
-  shader.SetMat4("model",model)
-  DrawArrays(DrawMode.TRIANGLES,0,36)
+  shader.setMat4("model",model)
+  drawArrays(DrawMode.TRIANGLES,0,36)
   model = mat4(1.0'f32)
   model = translate(model,vec3(2.0'f32,0.0'f32,0.0'f32))
-  shader.SetMat4("model",model)
-  DrawArrays(DrawMode.TRIANGLES,0,36)
+  shader.setMat4("model",model)
+  drawArrays(DrawMode.TRIANGLES,0,36)
 
   # 2nd. render pass: now draw slightly scaled versions of the objects, this time disabling stencil writing.
   # Because the stencil buffer is now filled with several 1s. The parts of the buffer that are 1 are not drawn, thus only drawing 
   # the objects' size differences, making it look like borders.
   # -----------------------------------------------------------------------------------------------------------------------------
-  StencilFunc(AlphaFunc.NOTEQUAL,1,0xFF)
-  StencilMask(0x00)
-  Disable(Capability.DEPTH_TEST)
-  shaderSingleColor.Use()
+  stencilFunc(AlphaFunc.NOTEQUAL,1,0xFF)
+  stencilMask(0x00)
+  disable(Capability.DEPTH_TEST)
+  shaderSingleColor.use()
   let scale = 1.1'f32
   # cubes
-  BindVertexArray(cubeVAO)  
-  BindTexture(TextureTarget.TEXTURE_2D, cubeTexture)
+  bindVertexArray(cubeVAO)  
+  bindTexture(TextureTarget.TEXTURE_2D, cubeTexture)
   model = mat4(1.0'f32)
   model = translate(model,vec3(-1.0'f32,0.0'f32,-1.0'f32))
   model = scale(model,vec3(scale,scale,scale))
-  shaderSingleColor.SetMat4("model",model)
-  DrawArrays(DrawMode.TRIANGLES,0,36)
+  shaderSingleColor.setMat4("model",model)
+  drawArrays(DrawMode.TRIANGLES,0,36)
   model = mat4(1.0'f32)
   model = translate(model,vec3(2.0'f32,0.0'f32,0.0'f32))
   model = scale(model,vec3(scale,scale,scale))
-  shaderSingleColor.SetMat4("model",model)
-  DrawArrays(DrawMode.TRIANGLES,0,36)  
-  UnBindVertexArray()
-  StencilMask(0xFF)
-  Enable(Capability.DEPTH_TEST)
+  shaderSingleColor.setMat4("model",model)
+  drawArrays(DrawMode.TRIANGLES,0,36)  
+  unBindVertexArray()
+  stencilMask(0xFF)
+  enable(Capability.DEPTH_TEST)
   
   window.glSwapWindow()
 
-DeleteVertexArray(cubeVAO)
-DeleteVertexArray(planeVAO)
-DeleteBuffer(cubeVBO)
-DeleteBuffer(planeVBO)
+deleteVertexArray(cubeVAO)
+deleteVertexArray(planeVAO)
+deleteBuffer(cubeVBO)
+deleteBuffer(planeVBO)
 destroy window

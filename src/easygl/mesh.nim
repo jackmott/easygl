@@ -33,42 +33,42 @@ type Mesh* = object
     EBO:BufferId
 
 
-proc SetupMesh(mesh:var Mesh) =
-    mesh.VAO = GenVertexArray()
-    mesh.VBO = GenBuffer()
-    mesh.EBO = GenBuffer()
-    BindVertexArray(mesh.VAO)
-    BindBuffer(BufferTarget.ARRAY_BUFFER,mesh.VBO)
+proc setupMesh(mesh:var Mesh) =
+    mesh.VAO = genVertexArray()
+    mesh.VBO = genBuffer()
+    mesh.EBO = genBuffer()
+    bindVertexArray(mesh.VAO)
+    bindBuffer(BufferTarget.ARRAY_BUFFER,mesh.VBO)
     
-    BufferData(BufferTarget.ARRAY_BUFFER,mesh.vertices,BufferDataUsage.STATIC_DRAW)
+    bufferData(BufferTarget.ARRAY_BUFFER,mesh.vertices,BufferDataUsage.STATIC_DRAW)
 
-    BindBuffer(BufferTarget.ELEMENT_ARRAY_BUFFER,mesh.EBO)
-    BufferData(BufferTarget.ELEMENT_ARRAY_BUFFER,mesh.indices,BufferDataUsage.STATIC_DRAW)
+    bindBuffer(BufferTarget.ELEMENT_ARRAY_BUFFER,mesh.EBO)
+    bufferData(BufferTarget.ELEMENT_ARRAY_BUFFER,mesh.indices,BufferDataUsage.STATIC_DRAW)
 
-    EnableVertexAttribArray(0)
-    VertexAttribPointer(0,3,VertexAttribType.FLOAT,false,Vertex.sizeof().int32,0)
-    EnableVertexAttribArray(1)
-    VertexAttribPointer(1,3,VertexAttribType.FLOAT,false,Vertex.sizeof().int32,offsetof(Vertex,Normal).int32)
-    EnableVertexAttribArray(2)
-    VertexAttribPointer(2,3,VertexAttribType.FLOAT,false,Vertex.sizeof().int32,offsetof(Vertex,TexCoords).int32)
-    EnableVertexAttribArray(3)
-    VertexAttribPointer(3,3,VertexAttribType.FLOAT,false,Vertex.sizeof().int32,offsetof(Vertex,Tangent).int32)
-    EnableVertexAttribArray(4)
-    VertexAttribPointer(4,3,VertexAttribType.FLOAT,false,Vertex.sizeof().int32,offsetof(Vertex,Bitangent).int32)
+    enableVertexAttribArray(0)
+    vertexAttribPointer(0,3,VertexAttribType.FLOAT,false,Vertex.sizeof().int32,0)
+    enableVertexAttribArray(1)
+    vertexAttribPointer(1,3,VertexAttribType.FLOAT,false,Vertex.sizeof().int32,offsetof(Vertex,Normal).int32)
+    enableVertexAttribArray(2)
+    vertexAttribPointer(2,3,VertexAttribType.FLOAT,false,Vertex.sizeof().int32,offsetof(Vertex,TexCoords).int32)
+    enableVertexAttribArray(3)
+    vertexAttribPointer(3,3,VertexAttribType.FLOAT,false,Vertex.sizeof().int32,offsetof(Vertex,Tangent).int32)
+    enableVertexAttribArray(4)
+    vertexAttribPointer(4,3,VertexAttribType.FLOAT,false,Vertex.sizeof().int32,offsetof(Vertex,Bitangent).int32)
 
-    UnBindVertexArray()
+    unBindVertexArray()
 
 
 proc newMesh*(vertices:seq[Vertex], indices:seq[uint32], textures:seq[Texture]) : Mesh =
     result.vertices = vertices
     result.indices = indices
     result.textures = textures
-    result.SetupMesh()
+    result.setupMesh()
 
-proc Draw*(mesh:Mesh,shaderProgram:ShaderProgramId) =
+proc draw*(mesh:Mesh,shaderProgram:ShaderProgramId) =
     var diffuseNr,specularNr,normalNr,heightNr = 0'u32
     for i,tex in mesh.textures:       
-        ActiveTexture((TextureUnit.TEXTURE0.ord + i).TextureUnit)
+        activeTexture((TextureUnit.TEXTURE0.ord + i).TextureUnit)
         let texIndex =
             case tex.texType:
                 of TextureType.TextureDiffuse:
@@ -84,10 +84,10 @@ proc Draw*(mesh:Mesh,shaderProgram:ShaderProgramId) =
                     heightNr.inc()
                     heightNr
         let uniform = $tex.texType & $texIndex        
-        shaderProgram.SetInt(uniform,i.int32)
-        BindTexture(TextureTarget.TEXTURE_2D, mesh.textures[i].id)
+        shaderProgram.setInt(uniform,i.int32)
+        bindTexture(TextureTarget.TEXTURE_2D, mesh.textures[i].id)
 
-    BindVertexArray(mesh.VAO)
-    DrawElements(DrawMode.TRIANGLES,mesh.indices.len,IndexType.UNSIGNED_INT,0)
-    UnBindVertexArray()
-    ActiveTexture(TextureUnit.TEXTURE0)
+    bindVertexArray(mesh.VAO)
+    drawElements(DrawMode.TRIANGLES,mesh.indices.len,IndexType.UNSIGNED_INT,0)
+    unBindVertexArray()
+    activeTexture(TextureUnit.TEXTURE0)

@@ -16,7 +16,7 @@ type Camera* = ref object
     Position*,Front*,Up*,Right*,WorldUp*:Vec3f
     Yaw*,Pitch*,MovementSpeed*,MouseSensitivity*,Zoom*:float32
 
-proc UpdateCameraVectors(camera: Camera) = 
+proc updateCameraVectors(camera: Camera) = 
     camera.Front.x = cos(radians(camera.Yaw)) * cos(radians(camera.Pitch))
     camera.Front.y = sin(radians(camera.Pitch))
     camera.Front.z = sin(radians(camera.Yaw)) * cos(radians(camera.Pitch))
@@ -33,13 +33,13 @@ proc newCamera*(position:Vec3f = vec3(0.0'f32),up:Vec3f = vec3(0.0'f32,1.0'f32,0
         MouseSensitivity :SENSITIVITY,
         Zoom : ZOOM,
         Front: vec3(0.0'f32,0.0'f32,-1.0'f32))
-    camera.UpdateCameraVectors()
+    camera.updateCameraVectors()
     camera
 
-proc GetViewMatrix*(camera:Camera) : Mat4f =
+proc getViewMatrix*(camera:Camera) : Mat4f =
     lookAt(camera.Position, camera.Position + camera.Front, camera.Up)
 
-proc ProcessKeyboard*(camera:Camera,direction:CameraMovement, deltaTime:float32) =
+proc processKeyboard*(camera:Camera,direction:CameraMovement, deltaTime:float32) =
     let velocity = camera.MovementSpeed*deltaTime
     case direction:
         of FORWARD:
@@ -51,7 +51,7 @@ proc ProcessKeyboard*(camera:Camera,direction:CameraMovement, deltaTime:float32)
         of RIGHT:    
             camera.Position = camera.Position + camera.Right * velocity
 
-proc ProcessMouseMovement*(camera:Camera, xoffset: float32, yoffset:float32, constrainPitch: bool = true) =
+proc processMouseMovement*(camera:Camera, xoffset: float32, yoffset:float32, constrainPitch: bool = true) =
     let adjustedXOffset = xoffset * camera.MouseSensitivity
     let adjustedYOffset = yoffset * camera.MouseSensitivity
 
@@ -64,9 +64,9 @@ proc ProcessMouseMovement*(camera:Camera, xoffset: float32, yoffset:float32, con
         elif camera.Pitch < -89.0'f32:
             camera.Pitch = -89.0'f32
     
-    UpdateCameraVectors(camera)
+    updateCameraVectors(camera)
 
-proc ProcessMouseScroll*(camera:Camera, yoffset:float32) =
+proc processMouseScroll*(camera:Camera, yoffset:float32) =
     if camera.Zoom >= 1.0'f32 and camera.Zoom <= 45.0'f32:
         camera.Zoom = camera.Zoom - yoffset
     if camera.Zoom <= 1.0f:
