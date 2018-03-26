@@ -9,9 +9,9 @@ srcDir        = "src"
 
 # Dependencies
 
-requires "nim >= 0.17.0"
+requires "nim >= 0.18.0"
 requires "sdl2"
 requires "opengl"
 requires "stb_image"
-requires "glm 1.0.2"
+requires "glm"
 
