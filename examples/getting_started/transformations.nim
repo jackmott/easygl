@@ -46,16 +46,16 @@ let EBO = genBuffer()
 # Bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
 bindVertexArray(VAO)
 
-bindBuffer(BufferTarget.ARRAY_BUFFER,VBO)
-bufferData(BufferTarget.ARRAY_BUFFER,vertices,BufferDataUsage.STATIC_DRAW)
+bindBuffer(GL_ARRAY_BUFFER,VBO)
+bufferData(GL_ARRAY_BUFFER,vertices,GL_STATIC_DRAW)
 
-bindBuffer(BufferTarget.ELEMENT_ARRAY_BUFFER,EBO)
-bufferData(BufferTarget.ELEMENT_ARRAY_BUFFER,indices,BufferDataUsage.STATIC_DRAW)
+bindBuffer(GL_ELEMENT_ARRAY_BUFFER,EBO)
+bufferData(GL_ELEMENT_ARRAY_BUFFER,indices,GL_STATIC_DRAW)
 
-vertexAttribPointer(0,3,VertexAttribType.FLOAT,false,5*float32.sizeof(),0)
+vertexAttribPointer(0,3,cGL_FLOAT,false,5*float32.sizeof(),0)
 enableVertexAttribArray(0)
 
-vertexAttribPointer(1,3,VertexAttribType.FLOAT,false,5*float32.sizeof(),3*float32.sizeof())
+vertexAttribPointer(1,3,cGL_FLOAT,false,5*float32.sizeof(),3*float32.sizeof())
 enableVertexAttribArray(1)
 
 
@@ -87,12 +87,12 @@ while run:
         
   # Render
   clearColor(0.2,0.3,0.3,1.0)
-  clear(BufferMask.COLOR_BUFFER_BIT)
+  clear(GL_COLOR_BUFFER_BIT)
 
-  activeTexture(TextureUnit.TEXTURE0)
-  bindTexture(TextureTarget.TEXTURE_2D,texture1)
-  activeTexture(TextureUnit.TEXTURE1)
-  bindTexture(TextureTarget.TEXTURE_2D, texture2)
+  activeTexture(GL_TEXTURE0)
+  bindTexture(GL_TEXTURE_2D,texture1)
+  activeTexture(GL_TEXTURE1)
+  bindTexture(GL_TEXTURE_2D, texture2)
   
   var transform = mat4(1.0'f32)
   transform = translate(transform,vec3(0.5'f32,-0.5'f32,0.0'f32))
@@ -102,7 +102,7 @@ while run:
   ourShader.setMat4("transform",transform)
 
   bindVertexArray(VAO) # Not necessary since we only have one VAO
-  drawElements(DrawMode.TRIANGLES,6,IndexType.UNSIGNED_INT,0)
+  drawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,0)
   window.glSwapWindow()
 
 deleteVertexArray(VAO)

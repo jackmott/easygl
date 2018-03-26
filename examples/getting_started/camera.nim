@@ -26,7 +26,7 @@ loadExtensions()
 let appDir = getAppDir()
 let ourShader = createAndLinkProgram(appDir&"/shaders/camera.vert",appDir&"/shaders/camera.frag")
 
-enable(Capability.DEPTH_TEST)
+enable(GL_DEPTH_TEST)
 
 # Set up vertex data
 let vertices : seq[float32]  = 
@@ -93,13 +93,13 @@ let VBO = genBuffer()
 # Bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
 bindVertexArray(VAO)
 
-bindBuffer(BufferTarget.ARRAY_BUFFER,VBO)
-bufferData(BufferTarget.ARRAY_BUFFER,vertices,BufferDataUsage.STATIC_DRAW)
+bindBuffer(GL_ARRAY_BUFFER,VBO)
+bufferData(GL_ARRAY_BUFFER,vertices,GL_STATIC_DRAW)
 
-vertexAttribPointer(0,3,VertexAttribType.FLOAT,false,5*float32.sizeof(),0)
+vertexAttribPointer(0,3,cGL_FLOAT,false,5*float32.sizeof(),0)
 enableVertexAttribArray(0)
 
-vertexAttribPointer(1,2,VertexAttribType.FLOAT,false,5*float32.sizeof(),3*float32.sizeof())
+vertexAttribPointer(1,2,cGL_FLOAT,false,5*float32.sizeof(),3*float32.sizeof())
 enableVertexAttribArray(1)
 
 let texture1 = loadTextureWithMips(appDir&"/textures/container.jpg")
@@ -157,12 +157,12 @@ while run:
 
   # Render
   clearColor(0.2,0.3,0.3,1.0)
-  easygl.clear(BufferMask.COLOR_BUFFER_BIT, BufferMask.DEPTH_BUFFER_BIT)
+  easygl.clear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
 
-  activeTexture(TextureUnit.TEXTURE0)
-  bindTexture(TextureTarget.TEXTURE_2D,texture1)
-  activeTexture(TextureUnit.TEXTURE1)
-  bindTexture(TextureTarget.TEXTURE_2D, texture2)
+  activeTexture(GL_TEXTURE0)
+  bindTexture(GL_TEXTURE_2D,texture1)
+  activeTexture(GL_TEXTURE1)
+  bindTexture(GL_TEXTURE_2D, texture2)
   
   ourShader.use()
   var projection = perspective(radians(camera.Zoom),screenWidth.float32/screenHeight.float32,0.1'f32,100.0'f32)
@@ -171,13 +171,13 @@ while run:
   ourShader.setMat4("view",view)
   bindVertexArray(VAO) # Not necessary since we only have one VAO
 
-  for i in 0 .. <10:
+  for i in 0 .. pred(10):
     var model = mat4(1.0'f32)
     model = translate(model,cubePositions[i])
     let angle = 20.0'f32*i.float32
     model = rotate(model,vec3(1.0'f32,0.3'f32,0.5'f32),radians(angle))
     ourShader.setMat4("model",model)
-    drawArrays(DrawMode.TRIANGLES,0,36)
+    drawArrays(GL_TRIANGLES,0,36)
   window.glSwapWindow()
 
 deleteVertexArray(VAO)

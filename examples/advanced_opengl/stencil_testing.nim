@@ -26,11 +26,11 @@ discard window.glCreateContext()
 
 # Initialize OpenGL
 loadExtensions()
-enable(Capability.DEPTH_TEST)
-depthFunc(AlphaFunc.LESS)
-enable(Capability.STENCIL_TEST)
-stencilOp(StencilOpEnum.KEEP,StencilOpEnum.KEEP,StencilOpEnum.REPLACE)
-stencilFunc(AlphaFunc.NOTEQUAL,1,0xFF)
+enable(GL_DEPTH_TEST)
+depthFunc(GL_LESS)
+enable(GL_STENCIL_TEST)
+stencilOp(GL_KEEP,GL_KEEP,GL_REPLACE)
+stencilFunc(GL_NOTEQUAL,1,0xFF)
 
 
 ### Build and compile shader program
@@ -99,20 +99,20 @@ let planeVertices =
     
 # Cube
 let cubeVAO = genBindVertexArray()
-let cubeVBO = genBindBufferData(BufferTarget.ARRAY_BUFFER,cubeVertices,BufferDataUsage.STATIC_DRAW)
+let cubeVBO = genBindBufferData(GL_ARRAY_BUFFER,cubeVertices,GL_STATIC_DRAW)
 enableVertexAttribArray(0)
-vertexAttribPointer(0,3,VertexAttribType.FLOAT,false,5*float32.sizeof(),0)
+vertexAttribPointer(0,3,cGL_FLOAT,false,5*float32.sizeof(),0)
 enableVertexAttribArray(1)
-vertexAttribPointer(1,2,VertexAttribType.FLOAT,false,5*float32.sizeof(),3*float32.sizeof())
+vertexAttribPointer(1,2,cGL_FLOAT,false,5*float32.sizeof(),3*float32.sizeof())
 unBindVertexArray()
 
 # Plane
 let planeVAO = genBindVertexArray()
-let planeVBO = genBindBufferData(BufferTarget.ARRAY_BUFFER,planeVertices,BufferDataUsage.STATIC_DRAW)
+let planeVBO = genBindBufferData(GL_ARRAY_BUFFER,planeVertices,GL_STATIC_DRAW)
 enableVertexAttribArray(0)
-vertexAttribPointer(0,3,VertexAttribType.FLOAT,false,5*float32.sizeof(),0)
+vertexAttribPointer(0,3,cGL_FLOAT,false,5*float32.sizeof(),0)
 enableVertexAttribArray(1)
-vertexAttribPointer(1,2,VertexAttribType.FLOAT,false,5*float32.sizeof(),3*float32.sizeof())
+vertexAttribPointer(1,2,cGL_FLOAT,false,5*float32.sizeof(),3*float32.sizeof())
 unBindVertexArray()
 
 let cubeTexture = loadTextureWithMips(appDir&"/textures/marble.jpg")
@@ -134,8 +134,8 @@ prevTime=epochTime()
 while run:
   
   let error = getGLError()
-  if (error != ErrorType.NO_ERROR):
-    echo "Error:" & $error
+  if (error != GL_NO_ERROR):
+    echo "Error:" & $error.int32
 
   let keyState = getKeyboardState()
   currentTime = epochTime()
@@ -175,9 +175,9 @@ while run:
   clearColor(0.1,0.1,0.1,1.0)
   
   stencilMask(0xFF)
-  easygl.clear(BufferMask.COLOR_BUFFER_BIT, 
-         BufferMask.DEPTH_BUFFER_BIT,
-         BufferMask.STENCIL_BUFFER_BIT)
+  easygl.clear(GL_COLOR_BUFFER_BIT or
+         GL_DEPTH_BUFFER_BIT or
+         GL_STENCIL_BUFFER_BIT)
   
 
   shaderSingleColor.use()
@@ -195,52 +195,52 @@ while run:
   stencilMask(0x00)
   # floor  
   bindVertexArray(planeVAO)  
-  bindTexture(TextureTarget.TEXTURE_2D,floorTexture)  
+  bindTexture(GL_TEXTURE_2D,floorTexture)  
   shader.setMat4("model",model)
-  drawArrays(DrawMode.TRIANGLES,0,6)
+  drawArrays(GL_TRIANGLES,0,6)
   unBindVertexArray()
 
   # 1st. render pass, draw objects as normal, writing to the stencil buffer
   # --------------------------------------------------------------------
-  stencilFunc(AlphaFunc.ALWAYS,1,0xFF)
+  stencilFunc(GL_ALWAYS,1,0xFF)
   stencilMask(0xFF)
   # cubes
   bindVertexArray(cubeVAO)
-  activeTexture(TextureUnit.TEXTURE0)
-  bindTexture(TextureTarget.TEXTURE_2D, cubeTexture)
+  activeTexture(GL_TEXTURE0)
+  bindTexture(GL_TEXTURE_2D, cubeTexture)
   model = translate(model,vec3(-1.0'f32,0.0'f32,-1.0'f32))
   shader.setMat4("model",model)
-  drawArrays(DrawMode.TRIANGLES,0,36)
+  drawArrays(GL_TRIANGLES,0,36)
   model = mat4(1.0'f32)
   model = translate(model,vec3(2.0'f32,0.0'f32,0.0'f32))
   shader.setMat4("model",model)
-  drawArrays(DrawMode.TRIANGLES,0,36)
+  drawArrays(GL_TRIANGLES,0,36)
 
   # 2nd. render pass: now draw slightly scaled versions of the objects, this time disabling stencil writing.
   # Because the stencil buffer is now filled with several 1s. The parts of the buffer that are 1 are not drawn, thus only drawing 
   # the objects' size differences, making it look like borders.
   # -----------------------------------------------------------------------------------------------------------------------------
-  stencilFunc(AlphaFunc.NOTEQUAL,1,0xFF)
+  stencilFunc(GL_NOTEQUAL,1,0xFF)
   stencilMask(0x00)
-  disable(Capability.DEPTH_TEST)
+  disable(GL_DEPTH_TEST)
   shaderSingleColor.use()
   let scale = 1.1'f32
   # cubes
   bindVertexArray(cubeVAO)  
-  bindTexture(TextureTarget.TEXTURE_2D, cubeTexture)
+  bindTexture(GL_TEXTURE_2D, cubeTexture)
   model = mat4(1.0'f32)
   model = translate(model,vec3(-1.0'f32,0.0'f32,-1.0'f32))
   model = scale(model,vec3(scale,scale,scale))
   shaderSingleColor.setMat4("model",model)
-  drawArrays(DrawMode.TRIANGLES,0,36)
+  drawArrays(GL_TRIANGLES,0,36)
   model = mat4(1.0'f32)
   model = translate(model,vec3(2.0'f32,0.0'f32,0.0'f32))
   model = scale(model,vec3(scale,scale,scale))
   shaderSingleColor.setMat4("model",model)
-  drawArrays(DrawMode.TRIANGLES,0,36)  
+  drawArrays(GL_TRIANGLES,0,36)  
   unBindVertexArray()
   stencilMask(0xFF)
-  enable(Capability.DEPTH_TEST)
+  enable(GL_DEPTH_TEST)
   
   window.glSwapWindow()
 

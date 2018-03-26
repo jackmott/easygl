@@ -29,7 +29,7 @@ let lightingShader = createAndLinkProgram(appDir&"/shaders/materials.vert",appDi
 let lampShader = createAndLinkProgram(appDir&"/shaders/lamp.vert",appDir&"/shaders/lamp.frag")
 
 
-enable(Capability.DEPTH_TEST)
+enable(GL_DEPTH_TEST)
 
 # Set up vertex data
 let vertices : seq[float32]  =
@@ -82,20 +82,20 @@ let cubeVAO = genVertexArray()
 let VBO = genBuffer()
 
 # Bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).HH
-bindBuffer(BufferTarget.ARRAY_BUFFER,VBO)
-bufferData(BufferTarget.ARRAY_BUFFER,vertices,BufferDataUsage.STATIC_DRAW)
+bindBuffer(GL_ARRAY_BUFFER,VBO)
+bufferData(GL_ARRAY_BUFFER,vertices,GL_STATIC_DRAW)
 
 bindVertexArray(cubeVAO)
 
-vertexAttribPointer(0,3,VertexAttribType.FLOAT,false,6*float32.sizeof(),0)
+vertexAttribPointer(0,3,cGL_FLOAT,false,6*float32.sizeof(),0)
 enableVertexAttribArray(0)
-vertexAttribPointer(1,3,VertexAttribType.FLOAT,false,6*float32.sizeof(),3*float32.sizeof())
+vertexAttribPointer(1,3,cGL_FLOAT,false,6*float32.sizeof(),3*float32.sizeof())
 enableVertexAttribArray(1)
 
 let lightVAO = genVertexArray()
 bindVertexArray(lightVAO)
-bindBuffer(BufferTarget.ARRAY_BUFFER,VBO)
-vertexAttribPointer(0,3,VertexAttribType.FLOAT,false,6*float32.sizeof(),0)
+bindBuffer(GL_ARRAY_BUFFER,VBO)
+vertexAttribPointer(0,3,cGL_FLOAT,false,6*float32.sizeof(),0)
 enableVertexAttribArray(0)
 
 var lightPos = vec3(0.5'f32,0.5'f32,1.0'f32)
@@ -145,7 +145,7 @@ while run:
 
   # Render
   clearColor(0.1,0.1,0.1,1.0)
-  easygl.clear(BufferMask.COLOR_BUFFER_BIT, BufferMask.DEPTH_BUFFER_BIT)
+  easygl.clear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
 
  
   lightingShader.use()
@@ -173,7 +173,7 @@ while run:
   lightingShader.setMat4("model",model)
 
   bindVertexArray(cubeVAO)
-  drawArrays(DrawMode.TRIANGLES,0,36)
+  drawArrays(GL_TRIANGLES,0,36)
   
   lampShader.use()
   lampShader.setMat4("projection",projection)
@@ -183,7 +183,7 @@ while run:
   model = scale(model,vec3(0.2'f32))
   lampShader.setMat4("model",model)
   bindVertexArray(lightVao)
-  drawArrays(DrawMode.TRIANGLES,0,36)
+  drawArrays(GL_TRIANGLES,0,36)
 
   window.glSwapWindow()
 

@@ -31,15 +31,6 @@ template AttachShader(program:ShaderProgramId,shader:ShaderId) =
 AttachShader(shader,program) # compile error because shader and program are transposed
 ```
 
-# GLenums are made actual enums
-
-In opengl the GLenums are just a huge set of #define constants, to know what options you have to pass you have to refer
-to external documentation, and if you accidentally pass an invalid one, it will still compile. With EasyGL the valid options
-are put into an enum, making for easy api exploration via intellisense, and compile time errors:
-
-```nim
-DrawArrays(DrawMode.LINE_STRIPS,0,6)   # Compile error! should be LINE_STRIP 
-```
 
 # Range types prevent invalid input
 
@@ -47,7 +38,7 @@ Some OpenGL functions only accept a certain range of values as valid, but the ty
 
 ```nim
 type VertexAttribSize = range[1..4] 
-template VertexAttribPointer*(index:uint32, size:VertexAttribSize, attribType:VertexAttribType, normalized:bool, stride:int, offset:int)  =
+template VertexAttribPointer*(index:uint32, size:VertexAttribSize, attribType:GL_, normalized:bool, stride:int, offset:int)  =
     glVertexAttribPointer(index.GLuint, size.GLint, attribType.GLenum, normalized.GLboolean,stride.GLsizei, cast[pointer](offset))
 ```
 
@@ -63,7 +54,7 @@ glBufferData(GL_ARRAY_BUFFER,data.len*T.sizeof().GLsizeiptr,data[0].unsafeAddr,G
 Here one must pass an unsafe pointer to a `seq` type, and it's size, even though seq already knows it's size. EasyGl abstracts this away, and can accept seq or array types:
 
 ```nim
-BufferData(BufferTarget.ARRAY_BUFFER,data,BufferDataUsage.STATIC_DRAW)
+BufferData(GL_ARRAY_BUFFER,data,GL_STATIC_DRAW)
 ```
 
 # Handy utility functions with Nim Generics
@@ -91,9 +82,9 @@ becomes:
 ```nim
 let (planeVAO,planeVBO) = 
   VertexAttribSetup(
-    BufferTarget.ARRAY_BUFFER,
+    GL_ARRAY_BUFFER,
     planeVertices,
-    BufferDataUsage.STATIC_DRAW,
+    GL_STATIC_DRAW,
     false,
     (0,3),(1,3),(2,2))
 ```

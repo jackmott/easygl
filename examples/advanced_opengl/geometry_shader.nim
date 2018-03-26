@@ -23,7 +23,7 @@ discard window.glCreateContext()
 # Initialize OpenGL
 loadExtensions()
 
-enable(Capability.DEPTH_TEST)
+enable(GL_DEPTH_TEST)
 
 
 ### Build and compile shader program
@@ -40,12 +40,12 @@ let points = @[
 
 
 # cube VAO
-let VBO = genBindBufferData(BufferTarget.ARRAY_BUFFER,points,BufferDataUsage.STATIC_DRAW)
+let VBO = genBindBufferData(GL_ARRAY_BUFFER,points,GL_STATIC_DRAW)
 let VAO = genBindVertexArray()
 enableVertexAttribArray(0)
-vertexAttribPointer(0,2,VertexAttribType.FLOAT,false,5*float32.sizeof(),0)
+vertexAttribPointer(0,2,cGL_FLOAT,false,5*float32.sizeof(),0)
 enableVertexAttribArray(1)
-vertexAttribPointer(1,3,VertexAttribType.FLOAT,false,2*float32.sizeof(),0)
+vertexAttribPointer(1,3,cGL_FLOAT,false,2*float32.sizeof(),0)
 unBindVertexArray()
 
 var
@@ -94,16 +94,16 @@ while run:
     break
 
   let error = getGLError()
-  if error != ErrorType.NO_ERROR:
-    echo $error
+  if error != GL_NO_ERROR:
+    echo $error.int32
 
   # Render
   clearColor(0.1,0.1,0.1,1.0)
-  easygl.clear(BufferMask.COLOR_BUFFER_BIT, BufferMask.DEPTH_BUFFER_BIT)
+  easygl.clear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
 
   shader.use()
   bindVertexArray(VAO)
-  drawArrays(DrawMode.POINTS,0,4)
+  drawArrays(GL_POINTS,0,4)
       
   window.glSwapWindow()
 

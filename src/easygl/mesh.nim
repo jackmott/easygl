@@ -38,23 +38,23 @@ proc setupMesh(mesh:var Mesh) =
     mesh.VBO = genBuffer()
     mesh.EBO = genBuffer()
     bindVertexArray(mesh.VAO)
-    bindBuffer(BufferTarget.ARRAY_BUFFER,mesh.VBO)
+    bindBuffer(GL_ARRAY_BUFFER,mesh.VBO)
     
-    bufferData(BufferTarget.ARRAY_BUFFER,mesh.vertices,BufferDataUsage.STATIC_DRAW)
+    bufferData(GL_ARRAY_BUFFER,mesh.vertices,GL_STATIC_DRAW)
 
-    bindBuffer(BufferTarget.ELEMENT_ARRAY_BUFFER,mesh.EBO)
-    bufferData(BufferTarget.ELEMENT_ARRAY_BUFFER,mesh.indices,BufferDataUsage.STATIC_DRAW)
+    bindBuffer(GL_ELEMENT_ARRAY_BUFFER,mesh.EBO)
+    bufferData(GL_ELEMENT_ARRAY_BUFFER,mesh.indices,GL_STATIC_DRAW)
 
     enableVertexAttribArray(0)
-    vertexAttribPointer(0,3,VertexAttribType.FLOAT,false,Vertex.sizeof().int32,0)
+    vertexAttribPointer(0,3,cGL_FLOAT,false,Vertex.sizeof().int32,0)
     enableVertexAttribArray(1)
-    vertexAttribPointer(1,3,VertexAttribType.FLOAT,false,Vertex.sizeof().int32,offsetof(Vertex,Normal).int32)
+    vertexAttribPointer(1,3,cGL_FLOAT,false,Vertex.sizeof().int32,offsetof(Vertex,Normal).int32)
     enableVertexAttribArray(2)
-    vertexAttribPointer(2,3,VertexAttribType.FLOAT,false,Vertex.sizeof().int32,offsetof(Vertex,TexCoords).int32)
+    vertexAttribPointer(2,3,cGL_FLOAT,false,Vertex.sizeof().int32,offsetof(Vertex,TexCoords).int32)
     enableVertexAttribArray(3)
-    vertexAttribPointer(3,3,VertexAttribType.FLOAT,false,Vertex.sizeof().int32,offsetof(Vertex,Tangent).int32)
+    vertexAttribPointer(3,3,cGL_FLOAT,false,Vertex.sizeof().int32,offsetof(Vertex,Tangent).int32)
     enableVertexAttribArray(4)
-    vertexAttribPointer(4,3,VertexAttribType.FLOAT,false,Vertex.sizeof().int32,offsetof(Vertex,Bitangent).int32)
+    vertexAttribPointer(4,3,cGL_FLOAT,false,Vertex.sizeof().int32,offsetof(Vertex,Bitangent).int32)
 
     unBindVertexArray()
 
@@ -68,7 +68,7 @@ proc newMesh*(vertices:seq[Vertex], indices:seq[uint32], textures:seq[Texture]) 
 proc draw*(mesh:Mesh,shaderProgram:ShaderProgramId) =
     var diffuseNr,specularNr,normalNr,heightNr = 0'u32
     for i,tex in mesh.textures:       
-        activeTexture((TextureUnit.TEXTURE0.ord + i).TextureUnit)
+        activeTexture((GL_TEXTURE0.ord + i).GLenum)
         let texIndex =
             case tex.texType:
                 of TextureType.TextureDiffuse:
@@ -85,9 +85,9 @@ proc draw*(mesh:Mesh,shaderProgram:ShaderProgramId) =
                     heightNr
         let uniform = $tex.texType & $texIndex        
         shaderProgram.setInt(uniform,i.int32)
-        bindTexture(TextureTarget.TEXTURE_2D, mesh.textures[i].id)
+        bindTexture(GL_TEXTURE_2D, mesh.textures[i].id)
 
     bindVertexArray(mesh.VAO)
-    drawElements(DrawMode.TRIANGLES,mesh.indices.len,IndexType.UNSIGNED_INT,0)
+    drawElements(GL_TRIANGLES,mesh.indices.len,GL_UNSIGNED_INT,0)
     unBindVertexArray()
-    activeTexture(TextureUnit.TEXTURE0)
+    activeTexture(GL_TEXTURE0)

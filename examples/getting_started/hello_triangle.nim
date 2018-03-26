@@ -41,17 +41,17 @@ let EBO = genBuffer()
 # Bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
 bindVertexArray(VAO)
 
-bindBuffer(BufferTarget.ARRAY_BUFFER,VBO)
-bufferData(BufferTarget.ARRAY_BUFFER,vertices,BufferDataUsage.STATIC_DRAW)
+bindBuffer(GL_ARRAY_BUFFER,VBO)
+bufferData(GL_ARRAY_BUFFER,vertices,GL_STATIC_DRAW)
 
-bindBuffer(BufferTarget.ELEMENT_ARRAY_BUFFER,EBO)
-bufferData(BufferTarget.ELEMENT_ARRAY_BUFFER,indices,BufferDataUsage.STATIC_DRAW)
+bindBuffer(GL_ELEMENT_ARRAY_BUFFER,EBO)
+bufferData(GL_ELEMENT_ARRAY_BUFFER,indices,GL_STATIC_DRAW)
 
-vertexAttribPointer(0,3,VertexAttribType.FLOAT,false,3*float32.sizeof(),0)
+vertexAttribPointer(0,3,cGL_FLOAT,false,3*float32.sizeof(),0)
 enableVertexAttribArray(0)
 
 # unBind the VBO and VAO but we need to keep the EBO
-bindBuffer(BufferTarget.ARRAY_BUFFER,0.BufferId)
+bindBuffer(GL_ARRAY_BUFFER,0.BufferId)
 bindVertexArray(0.VertexArrayId)
 
 
@@ -75,10 +75,10 @@ while run:
         
   # Render
   clearColor(0.2,0.3,0.3,1.0)
-  clear(BufferMask.COLOR_BUFFER_BIT)
+  clear(GL_COLOR_BUFFER_BIT)
   shaderProgram.use()
   bindVertexArray(VAO) # Not necessary since we only have one VAO
-  drawElements(DrawMode.TRIANGLES,6,IndexType.UNSIGNED_INT,0)
+  drawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,0)
   window.glSwapWindow()
 
 destroy window

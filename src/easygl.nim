@@ -1,45 +1,56 @@
 import opengl
-include easygl.easygl_types
 
+
+type 
+    BufferId* = distinct GLuint
+    VertexArrayId* = distinct GLuint    
+    TextureId* = distinct GLuint
+    ShaderId* = distinct GLuint
+    ShaderProgramId* = distinct GLuint
+    FrameBufferId* = distinct GLuint
+    RenderBufferID* = distinct GLuint
+    UniformLocation* = distinct GLint    
+        
 # When passing objects to opengl you may need this to get a relative pointer
 template offsetof*(typ, field): untyped = (var dummy: typ; cast[int](addr(dummy.field)) - cast[int](addr(dummy)))
 
 # Deviate from opengl name here because GetError conflicts with SDL2
-template getGLError*() : ErrorType =
-    glGetError().ErrorType
+template getGLError*() : GLenum =
+    glGetError()
 
 template viewport*(x,y,width,height:int32) =
     glViewport(x.GLint,y.GLint,width.GLsizei,height.GLsizei)
 
-template enable*(cap:Capability) =
-    glEnable(cap.GLenum)
+template enable*(cap:GLenum) =
+    glEnable(cap)
 
-template disable*(cap:Capability) =
-    glDisable(cap.GLenum)
+template disable*(cap:GLenum) =
+    glDisable(cap)
 
-template polygonMode*(face:PolygonFace, mode:PolygonModeEnum) =
-    glPolygonMode(face.GLenum, mode.GLenum)
+template polygonMode*(face, mode:GLenum) =
+    glPolygonMode(face, mode)
 
 template depthMask*(flag: bool) =
     glDepthMask(flag.GLboolean)
 
-template depthFunc*(fun: AlphaFunc) = 
-    glDepthFunc(fun.GLenum)
+template depthFunc*(fun: GLenum) = 
+    glDepthFunc(fun)
 
 template stencilMask*(mask:uint32)  =     
     glStencilMask(mask.GLuint)
 
-template stencilFunc*(fun:AlphaFunc, reference: int32, mask:uint32) =     
-    glStencilFunc(fun.GLenum, reference.GLint, mask.GLuint)
+template stencilFunc*(fun:GLenum, reference: int32, mask:uint32) =     
+    glStencilFunc(fun, reference.GLint, mask.GLuint)
 
-template stencilFuncSeparate*(face:PolygonFace,fun:AlphaFunc, reference: int32, mask:uint32) =
-    glStencilFuncSeparate(face.GLenum, fun.GLenum, reference.GLint, mask.GLuint)
+template stencilFuncSeparate*(face:GLenum,fun:GLenum, reference: int32, mask:uint32) =
+    glStencilFuncSeparate(face, fun, reference.GLint, mask.GLuint)
 
-template stencilOp*(sfail: StencilOpEnum, dpfail: StencilOpEnum, dppass: StencilOpEnum) =
-    glStencilOp(sfail.GLenum, dpfail.GLenum, dppass.GLenum)
+template stencilOp*(sfail,dpfail,dppass: GLenum) =
+    glStencilOp(sfail, dpfail, dppass)
 
-template stencilOpSeparate*(face:PolygonFace, sfail: StencilOpEnum, dpfail: StencilOpEnum, dppass: StencilOpEnum) =
-    glStencilOpSeparate(face.GLenum,sfail.GLenum, dpfail.GLenum, dppass.GLenum)
+template stencilOpSeparate*(face, sfail, dpfail, dppass:GLenum) =
+    glStencilOpSeparate(face,sfail, dpfail, dppass)
+
 
 template genFramebuffer*() : FramebufferId =
     var frameBuffer:GLuint
@@ -51,36 +62,40 @@ template genFramebuffers*(count:int32) : seq[FramebufferId] =
     glGenFramebuffers(count.GLsizei,cast[ptr GLuint](buffers[0].unsafeAddr))
     frames
 
-template bindFramebuffer*(target:FramebufferTarget, frameBuffer:FramebufferId) =
-    glBindFramebuffer(target.GLenum,frameBuffer.GLuint)
+template bindFramebuffer*(target:GLenum, frameBuffer:FramebufferId) =
+    glBindFramebuffer(target,frameBuffer.GLuint)
 
-template genBindFramebuffer*(target:FramebufferTarget) : FramebufferId =
+template genBindFramebuffer*(target:GLenum) : FramebufferId =
     var framebuffer:GLuint
     glGenFramebuffers(1,addr framebuffer)
-    glBindFramebuffer(target.GLenum,framebuffer)
+    glBindFramebuffer(target,framebuffer)
     frameBuffer.FramebufferId
 
-template unBindFramebuffer*(target:FramebufferTarget) = 
-    glBindFramebuffer(target.GLenum,0)
+template unBindFramebuffer*(target:GLenum) = 
+    glBindFramebuffer(target,0)
 
-template checkFramebufferStatus*(target:FramebufferTarget) : FramebufferStatus =
-    glCheckFramebufferStatus(target.GLenum).FramebufferStatus
+template checkFramebufferStatus*(target:GLenum) : GLenum =
+    glCheckFramebufferStatus(target)
 
 # todo: this has a lot of rules about what the arguments can be, see:
 # https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glFramebufferTexture.xhtml
 # can we get compile time gaurantees on these?  asserts in debug mode maybe?
-template framebufferTexture2D*(target:FramebufferTarget,
-                                attachment:FramebufferAttachment,
-                                textarget: FramebufferTextureTarget,
+template framebufferTexture2D*(target,
+                                attachment,
+                                textarget: GLenum,
                                 texture: TextureId,
                                 level:int) =
-    glFramebufferTexture2D(target.GLenum,attachment.GLenum,textarget.GLenum,texture.GLuint,level.int32)
+    glFramebufferTexture2D(target,attachment,textarget,texture.GLuint,level.int32)
 
-template blitFramebuffer*(srcX0,srcY0,srcX1,srcY1,dstX0,dstY0,dstX1,dsyY1:int,masks:varargs[BufferMask],filter:BlitFilter) =
+template blitFramebuffer*(srcX0,srcY0,srcX1,srcY1,dstX0,dstY0,dstX1,dsyY1:int,masks:varargs[GLenum],filter:GLenum) =
     var mask : uint32 
     for m in masks:
         mask = mask or m.uint32
-    glBlitFramebuffer(srcX0.GLint,srcY0.GLint,srcX1.GLint,srcY1.GLint,dstX0.GLint,dstY0.GLint,dstX1.GLint,dsyY1.GLint,mask.GLbitfield,filter.GLenum)
+    glBlitFramebuffer(srcX0.GLint,srcY0.GLint,srcX1.GLint,srcY1.GLint,dstX0.GLint,dstY0.GLint,dstX1.GLint,dsyY1.GLint,mask.GLbitfield,filter)
+
+
+template drawBuffers*(bufs: openarray[GLenum]) =
+    glDrawBuffers(bufs.len.GLsizei,bufs[0].unsafeAddr)
 
 template deleteFramebuffers*(framebuffers:openarray[FramebufferId]) =
     glDeleteBuffers(framebuffers.len.GLsizei,cast[ptr GLUint](framebuffers[0].unsafeAddr))
@@ -112,17 +127,17 @@ template genBindRenderBuffer*() : RenderbufferId =
     renderbuffer.RenderbufferId
 
 # renderbuffertarget must be GL_RENDERBUFFER so we don't ask for it
-template framebufferRenderbuffer*(target:FramebufferTarget, 
-                                 attachment: FramebufferAttachment,
+template framebufferRenderbuffer*(target, 
+                                 attachment:GLenum,
                                  renderbuffer:RenderbufferId) =
-    glFramebufferRenderBuffer(target.GLenum,attachment.GLenum,GL_RENDERBUFFER,renderbuffer.GLuint)
+    glFramebufferRenderBuffer(target,attachment,GL_RENDERBUFFER,renderbuffer.GLuint)
 
 
 type RenderbufferSize* =  range[1..GL_MAX_RENDERBUFFER_SIZE.int]
-template renderbufferStorage*(internalformat:RenderbufferFormat, width:RenderbufferSize,height:RenderbufferSize) =
-    glRenderBufferStorage(GL_RENDERBUFFER,internalformat.GLenum,width.GLsizei,height.GLsizei)
+template renderbufferStorage*(internalformat:GLenum, width:RenderbufferSize,height:RenderbufferSize) =
+    glRenderBufferStorage(GL_RENDERBUFFER,internalformat,width.GLsizei,height.GLsizei)
 
-template renderbufferStorageMultisample*(samples:int,internalformat:RenderbufferFormat, width:RenderbufferSize,height:RenderbufferSize) =
+template renderbufferStorageMultisample*(samples:int,internalformat:GLenum, width:RenderbufferSize,height:RenderbufferSize) =
     glRenderBufferStorageMultisample(GL_RENDERBUFFER,samples.GLsizei,internalformat.GLenum,width.GLsizei,height.GLsizei)
                                  
 template genBuffer*() : BufferId  =
@@ -135,41 +150,41 @@ template genBuffers*(count:int32) : seq[BufferId] =
     glGenBuffers(count.GLsizei,cast[ptr GLuint](buffers[0].unsafeAddr))
     buffers
 
-template bindBuffer*(target:BufferTarget, buffer:BufferId)  =
-    glBindBuffer(target.GLenum,buffer.GLuint)
+template bindBuffer*(target:GLenum, buffer:BufferId)  =
+    glBindBuffer(target,buffer.GLuint)
 
-template unBindBuffer*(target:BufferTarget) = 
+template unBindBuffer*(target:GLenum) = 
     glBindBuffer(target.GLenum,0)
 
-template genBindBuffer*(target:BufferTarget) : BufferId = 
+template genBindBuffer*(target:GLenum) : BufferId = 
     var buffer : GLuint
     glGenBuffers(1,addr buffer)
-    glBindBuffer(target.GLenum,buffer)
+    glBindBuffer(target,buffer)
     buffer.BufferId
 
-template bindBufferRange*(target:BufferRangeTarget,index:uint32,buffer:BufferId, offset:int32, size:int) =
-    glBindBufferRange(target.GLenum,index.GLuint,buffer.GLuint,offset.GLintptr,size.GLsizeiptr)
+template bindBufferRange*(target:GLenum,index:uint32,buffer:BufferId, offset:int32, size:int) =
+    glBindBufferRange(target,index.GLuint,buffer.GLuint,offset.GLintptr,size.GLsizeiptr)
     
-template bufferData*[T](target:BufferTarget, data:openarray[T], usage:BufferDataUsage)  =
-    glBufferData(target.GLenum,data.len*T.sizeof().GLsizeiptr,data[0].unsafeAddr,usage.GLenum)
+template bufferData*[T](target:GLenum, data:openarray[T], usage:GLenum)  =
+    glBufferData(target,data.len*T.sizeof().GLsizeiptr,data[0].unsafeAddr,usage)
 
-template bufferData*[T](target:BufferTarget,size:int, data:ptr T, usage:BufferDataUsage)  =
-    glBufferData(target.GLenum,size.GLsizeiptr,cast[pointer](data),usage.GLenum)
+template bufferData*[T](target:GLenum,size:int, data:ptr T, usage:GLenum)  =
+    glBufferData(target,size.GLsizeiptr,cast[pointer](data),usage)
 
-template bufferData*(target:BufferTarget,size:int,usage:BufferDataUsage) =
-    glBufferData(target.GLenum,size.GLsizeiptr,nil,usage.GLenum)
+template bufferData*(target:GLenum,size:int,usage:GLenum) =
+    glBufferData(target,size.GLsizeiptr,nil,usage)
 
 # bind and set buffer data in one go
-template bindBufferData*[T](target:BufferTarget, buffer:BufferId, data:openarray[T], usage:BufferDataUsage)  = 
-    glBindBuffer(target.GLenum,buffer.GLuint)
-    glBufferData(target.GLenum,data.len*T.sizeof().GLsizeiptr,data[0].unsafeAddr,usage.GLenum)
+template bindBufferData*[T](target:GLenum, buffer:BufferId, data:openarray[T], usage)  = 
+    glBindBuffer(target,buffer.GLuint)
+    glBufferData(target,data.len*T.sizeof().GLsizeiptr,data[0].unsafeAddr,usage)
 
 # generate, bind, and set buffer data in one go
-template genBindBufferData*[T](target:BufferTarget, data:openarray[T], usage:BufferDataUsage) :BufferId   =     
+template genBindBufferData*[T](target:GLenum, data:openarray[T], usage:GLenum) :BufferId   =     
     var buffer : GLuint
     glGenBuffers(1,addr buffer)
-    glBindBuffer(target.GLenum,buffer)
-    glBufferData(target.GLenum,data.len*T.sizeof().GLsizeiptr,data[0].unsafeAddr,usage.GLenum)
+    glBindBuffer(target,buffer)
+    glBufferData(target,data.len*T.sizeof().GLsizeiptr,data[0].unsafeAddr,usage)
     buffer.BufferId
         
 template deleteBuffer*(buffer:BufferId) =    
@@ -179,21 +194,21 @@ template deleteBuffer*(buffer:BufferId) =
 template deleteBuffers*(buffers:openArray[BufferId]) =
     glDeleteBuffers(buffers.len.GLsizei,cast[ptr GLUint](buffers[0].unsafeAddr))
 
-template bufferSubData*[T](target:BufferTarget,offset:int,size:int,data:openarray[T]) =
-    glBufferSubData(target.GLenum,offset.GLintptr, size.GLsizeiptr, data[0].unsafeAddr)
+template bufferSubData*[T](target:GLenum,offset:int,size:int,data:openarray[T]) =
+    glBufferSubData(target,offset.GLintptr, size.GLsizeiptr, data[0].unsafeAddr)
 
-template copyBufferSubData*(readTarget:BufferTarget, 
-                           writeTarget:BufferTarget,
+template copyBufferSubData*(readTarget:GLenum, 
+                           writeTarget:GLenum,
                            readOffset:int32,
                            writeOffset:int32,
                            size:int32) =
-    glCopyBufferSubData(readTarget.GLenum,writeTarget.GLenum,readOffset.GLintptr,writeOffset.GLintptr,size.GLsizeiptr)
+    glCopyBufferSubData(readTarget,writeTarget,readOffset.GLintptr,writeOffset.GLintptr,size.GLsizeiptr)
     
-template mapBuffer*[T](target:BufferTarget, access:Access) : ptr UncheckedArray[T] =
-    cast[ptr UncheckedArray[T]](glMapBuffer(target.GLenum, access.GLenum))
+template mapBuffer*[T](target:GLenum, access:GLenum) : ptr UncheckedArray[T] =
+    cast[ptr UncheckedArray[T]](glMapBuffer(target, access))
 
-template unmapBuffer*(target:BufferTarget) =
-    glUnmapBuffer(target.GLenum)
+template unmapBuffer*(target:GLenum) =
+    glUnmapBuffer(target)
 
 template genVertexArray*() : VertexArrayId  =
     var VAO : GLuint
@@ -235,43 +250,46 @@ template genTextures*(count:int32) : seq[TextureId] =
     glGenTextures(count.GLsizei,cast[ptr GLuint](textures[0].unsafeAddr))
     textures
 
-template genBindTexture*(target:TextureTarget) : TextureId = 
+template genBindTexture*(target:GLenum) : TextureId = 
     var tex : GLuint
     glGenTextures(1.GLsizei,addr tex)
-    glBindTexture(target.GLenum, tex)
+    glBindTexture(target, tex)
     tex.TextureId
 
-template bindTexture*(target:TextureTarget, texture:TextureId) =
-    glBindTexture(target.GLenum, texture.GLuint)
+template bindTexture*(target:GLenum, texture:TextureId) =
+    glBindTexture(target, texture.GLuint)
 
-template unBindTexture*(target:TextureTarget) =
-    glBindTexture(target.GLenum, 0.GLuint)
+template unBindTexture*(target:GLenum) =
+    glBindTexture(target, 0.GLuint)
 
-template activeTexture*(texture:TextureUnit) =
-    glActiveTexture(texture.GLenum)
+template activeTexture*(texture:GLenum) =
+    glActiveTexture(texture)
 
-template texParameteri*(target:TextureTarget, pname:TextureParameter, param:GLint) =
-    glTexParameteri(target.GLenum,pname.GLenum,param)
+template texParameteri*(target:GLenum, pname:GLenum, param:GLint) =
+    glTexParameteri(target,pname,param)
 
-template texImage2D*[T](target:TexImageTarget, level:int32, internalFormat:TextureInternalFormat, width:int32, height:int32, format:PixelDataFormat, pixelType:PixelDataType, data: openArray[T] )  =    
-    glTexImage2D(target.GLenum,level.GLint,internalFormat.GLint,width.GLsizei,height.GLsizei,0,format.GLenum,pixelType.GLenum,data[0].unsafeAddr)
+template texParameterf*(target:GLenum, pname:GLenum, param:GLfloat) =
+    glTexParameterf(target,pname,param)
+
+template texImage2D*[T](target:GLenum, level:int32, internalFormat:GLEnum, width:int32, height:int32, format:GLenum, pixelType:GLenum, data: openArray[T] )  =    
+    glTexImage2D(target,level.GLint,internalFormat.GLint,width.GLsizei,height.GLsizei,0,format,pixelType,data[0].unsafeAddr)
 
 # for cases where data is null, just don't pass it in
-template texImage2D*(target:TexImageTarget, level:int32, internalFormat:TextureInternalFormat, width:int32, height:int32, format:PixelDataFormat, pixelType:PixelDataType) =
-    glTexImage2D(target.GLenum,level.GLint,internalFormat.GLint,width.GLsizei,height.GLsizei,0,format.GLenum,pixelType.GLenum,nil)    
+template texImage2D*(target:GLenum, level:int32, internalFormat:GLEnum, width:int32, height:int32, format:GLenum, pixelType:GLenum) =
+    glTexImage2D(target,level.GLint,internalFormat.GLint,width.GLsizei,height.GLsizei,0,format,pixelType,nil)    
 
-template texImage2DMultisample*(target:TexImageMultiSampleTarget,samples:int,internalformat:TextureInternalFormat,width:int,height:int,fixedsamplelocations:bool) = 
-    glTexImage2DMultisample(target.GLenum,samples.GLsizei,internalformat.GLint,width.GLsizei,height.GLsizei,fixedsamplelocations.GLboolean)
+template texImage2DMultisample*(target:GLenum,samples:int,internalformat:GLenum,width:int,height:int,fixedsamplelocations:bool) = 
+    glTexImage2DMultisample(target,samples.GLsizei,internalformat.GLint,width.GLsizei,height.GLsizei,fixedsamplelocations.GLboolean)
 
-template generateMipmap*(target:MipmapTarget) =
-    glGenerateMipmap(target.GLenum)
+template generateMipmap*(target:GLenum) =
+    glGenerateMipmap(target)
 
 # Doesn't seem to exist on win10
 #template GenerateTextureMipmap*(texture:TextureId) =
 #    glGenerateTextureMipmap(texture.GLuint)
 
-template createShader*(shaderType:ShaderType) : ShaderId  =
-    glCreateShader(shaderType.GLenum).ShaderId
+template createShader*(shaderType:GLenum) : ShaderId  =
+    glCreateShader(shaderType).ShaderId
 
 template shaderSource*(shader:ShaderId, src: string) =
     let cstr =  allocCStringArray([src])
@@ -348,37 +366,37 @@ template uniform4f*(location:UniformLocation,x:float32, y:float32, z:float32, w:
     glUniform4f(location.GLint,x.GLfloat,y.GLfloat,z.GLfloat, w.GLfloat)
                 
 type VertexAttribSize = range[1..4]
-template vertexAttribPointer*(index:uint32, size:VertexAttribSize, attribType:VertexAttribType, normalized:bool, stride:int, offset:int)  =
-    glVertexAttribPointer(index.GLuint, size.GLint, attribType.GLenum, normalized.GLboolean,stride.GLsizei, cast[pointer](offset))
+template vertexAttribPointer*(index:uint32, size:VertexAttribSize, attribType:GLenum, normalized:bool, stride:int, offset:int)  =
+    glVertexAttribPointer(index.GLuint, size.GLint, attribType, normalized.GLboolean,stride.GLsizei, cast[pointer](offset))
                     
 template enableVertexAttribArray*(index:uint32)  =
     glEnableVertexAttribArray(index.GLuint)
 
 # works only for non overlaping offsets
 template vertexAttribSetup*[T : int8|uint8|int16|uint16|int32|uint32|float32|float](
-    target:BufferTarget,
+    target:GLenum,
     data:openarray[T],
-    usage:BufferDataUsage,
+    usage:GLenum,
     normalized:bool,
     ranges:varargs[tuple[index:int,size:int]]) : tuple[vao:VertexArrayId,vbo:BufferId] =
     
-    var vertexType : VertexAttribType
+    var vertexType : GLenum
     when T is int8:
-        vertexType = VertexAttribType.BYTE
+        vertexType = GL_BYTE
     when T is uint8:
-        vertexType = VertexAttribType.UNSIGNED_BYTE
+        vertexType = GL_UNSIGNED_BYTE
     when T is int16:
-        vertexType = VertexAttribType.SHORT
+        vertexType = GL_SHORT
     when T is uint16:
-        vertexType = VertexAttribType.UNSIGNED_SHORT
+        vertexType = GL_UNSIGNED_SHORT
     when T is int32:
-        vertexType = VertexAttribType.INT
+        vertexType = GL_INT
     when T is uint32:
-        vertexType = VertexAttribType.UNSIGNED_INT
+        vertexType = GL_UNSIGNED_INT
     when T is float32:        
-        vertexType = VertexAttribType.FLOAT
+        vertexType = GL_FLOAT
     when T is float:
-        vertexType = VertexAttribType.DOUBLE
+        vertexType = GL_DOUBLE
 
     let vao = genBindVertexArray()
     let vbo = genBindBufferData(target,data,usage)
@@ -398,54 +416,57 @@ template vertexAttribSetup*[T : int8|uint8|int16|uint16|int32|uint32|float32|flo
 template vertexAttribDivisor*(index:uint32,divisor:uint32) =
     glVertexAttribDivisor(index.GLuint,divisor.GLuint)
 
-template drawArrays*(mode:DrawMode, first:int32, count:int32)   =
-    glDrawArrays(mode.GLenum, first.GLint, count.GLsizei)
+template drawArrays*(mode:GLenum, first:int32, count:int32)   =
+    glDrawArrays(mode, first.GLint, count.GLsizei)
 
-template drawArraysInstanced*(mode:DrawMode, first:int32, count:int32,primcount:int32) =
-    glDrawArraysInstanced(mode.GLenum, first.GLint, count.GLsizei,primcount.GLsizei)
+template drawArraysInstanced*(mode:GLenum, first:int32, count:int32,primcount:int32) =
+    glDrawArraysInstanced(mode, first.GLint, count.GLsizei,primcount.GLsizei)
 
-template drawElements*[T](mode:DrawMode, count:int, indexType:IndexType, indices:openarray[T])  =
-    glDrawElements(mode.GLenum, count.GLsizei, indexType.GLenum, indices[0].unsafeAddr)
+template drawElements*[T](mode:GLenum, count:int, indexType:GLenum, indices:openarray[T])  =
+    glDrawElements(mode, count.GLsizei, indexType, indices[0].unsafeAddr)
 
-template drawElementsInstanced*[T](mode:DrawMode, count:int, indexType:IndexType, indices:openarray[T],primcount:int)  =
-    glDrawElementsInstanced(mode.GLenum, count.GLsizei, indexType.GLenum, indices[0].unsafeAddr,primcount.GLsizei)
+template drawElementsInstanced*[T](mode:GLenum, count:int, indexType:GLenum, indices:openarray[T],primcount:int)  =
+    glDrawElementsInstanced(mode, count.GLsizei, indexType, indices[0].unsafeAddr,primcount.GLsizei)
     
-template drawElementsInstanced*(mode:DrawMode, count:int, indexType:IndexType,primcount:int)  =
-    glDrawElementsInstanced(mode.GLenum, count.GLsizei, indexType.GLenum, nil,primcount.GLsizei)
+template drawElementsInstanced*(mode:GLenum, count:int, indexType:GLenum,primcount:int)  =
+    glDrawElementsInstanced(mode, count.GLsizei, indexType, nil,primcount.GLsizei)
 
-template drawElements*(mode:DrawMode, count:int, indexType:IndexType, offset:int) =
-    glDrawElements(mode.GLenum, count.GLsizei, indexType.GLenum, cast[pointer](offset))
+template drawElements*(mode:GLenum, count:int, indexType:GLenum, offset:int) =
+    glDrawElements(mode, count.GLsizei, indexType, cast[pointer](offset))
     
-template clear*(buffersToClear:varargs[BufferMask])  =
-    var mask : uint32 
-    for m in buffersToClear:
-        mask = mask or m.uint32
-    glClear(mask.GLbitfield)
+template clear*(mask:GLbitfield)  =    
+    glClear(mask)
 
 template clearColor*(r:float32, g:float32, b:float32, a:float32) =
     glClearColor(r.GLfloat, g.GLfloat, b.GLfloat, a.GLfloat)
     
-template blendFunc*(sfactor: BlendFactor, dfactor: BlendFactor) =
-    glBlendFunc(sfactor.GLenum, dfactor.GLenum)
+template blendFunc*(sfactor, dfactor: GLenum) =
+    glBlendFunc(sfactor, dfactor)
 
-template blendFunci*(buf:BufferId, sfactor: BlendFactor, dfactor: BlendFactor) =
-    glBlendFunci(buf.GLuint,sfactor.GLenum, dfactor.GLenum)
+template blendFunci*(buf:BufferId, sfactor, dfactor: GLenum) =
+    glBlendFunci(buf.GLuint,sfactor, dfactor)
     
-template blendFuncSeparate*(srcRGB: BlendFactor, dstRGB: BlendFactor,srcAlpha: BlendFactor,dstAlpha: BlendFactor) =
-    glBlendFunc(srcRGB.GLenum,dstRGB.GLenum,srcAlpha.GLenum,dstAlpha.GLenum)
+template blendFuncSeparate*(srcRGB, dstRGB,srcAlpha,dstAlpha:GLenum) =
+    glBlendFunc(srcRGB,dstRGB,srcAlpha,dstAlpha)
 
-template blendFuncSeparatei*(buf: BufferId,srcRGB: BlendFactor, dstRGB: BlendFactor,srcAlpha: BlendFactor,dstAlpha: BlendFactor) =
-    glBlendFunc(buf.GLuint,srcRGB.GLenum,dstRGB.GLenum,srcAlpha.GLenum,dstAlpha.GLenum)
+template blendFuncSeparatei*(buf: BufferId,srcRGB, dstRGB,srcAlpha,dstAlpha:GLenum) =
+    glBlendFunc(buf.GLuint,srcRGB,dstRGB,srcAlpha,dstAlpha)
 
-template blendEquation*(mode:BlendEquationEnum) =
-    glBlendEquation(mode.GLenum)
+template blendEquation*(mode:GLenum) =
+    glBlendEquation(mode)
 
-template blendEquationi*(buf:BufferId,mode:BlendEquationEnum) =
-    glBlendEquation(buf.GLuint,mode.GLenum)
+template blendEquationi*(buf:BufferId,mode:GLenum) =
+    glBlendEquation(buf.GLuint,mode)
 
-template cullFace*(face:PolygonFace) = 
-    glCullFace(face.GLenum)
+template cullFace*(face:GLenum) = 
+    glCullFace(face)
 
-template frontFace*(mode:FaceMode) =
-    glFrontFace(mode.GLenum)
+template frontFace*(mode:GLenum) =
+    glFrontFace(mode)
+
+template pushAttrib*(attribs:varargs[GLenum]) =
+    var mask : uint32 
+    for m in attribs:
+        mask = mask or m.uint32
+    glPushAttrib(mask)
 

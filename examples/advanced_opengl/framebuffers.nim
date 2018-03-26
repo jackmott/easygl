@@ -23,7 +23,7 @@ discard window.glCreateContext()
 
 # Initialize OpenGL
 loadExtensions()
-enable(Capability.DEPTH_TEST)
+enable(GL_DEPTH_TEST)
 ### Build and compile shader program
 let appDir = getAppDir()
 let shader = createAndLinkProgram(appDir&"/shaders/framebuffers.vert",appDir&"/shaders/framebuffers.frag")
@@ -101,29 +101,29 @@ let quadVertices =
     
 # Cube
 let cubeVAO = genBindVertexArray()
-let cubeVBO = genBindBufferData(BufferTarget.ARRAY_BUFFER,cubeVertices,BufferDataUsage.STATIC_DRAW)
+let cubeVBO = genBindBufferData(GL_ARRAY_BUFFER,cubeVertices,GL_STATIC_DRAW)
 enableVertexAttribArray(0)
-vertexAttribPointer(0,3,VertexAttribType.FLOAT,false,5*float32.sizeof(),0)
+vertexAttribPointer(0,3,cGL_FLOAT,false,5*float32.sizeof(),0)
 enableVertexAttribArray(1)
-vertexAttribPointer(1,2,VertexAttribType.FLOAT,false,5*float32.sizeof(),3*float32.sizeof())
+vertexAttribPointer(1,2,cGL_FLOAT,false,5*float32.sizeof(),3*float32.sizeof())
 unBindVertexArray()
 
 # Plane
 let planeVAO = genBindVertexArray()
-let planeVBO = genBindBufferData(BufferTarget.ARRAY_BUFFER,planeVertices,BufferDataUsage.STATIC_DRAW)
+let planeVBO = genBindBufferData(GL_ARRAY_BUFFER,planeVertices,GL_STATIC_DRAW)
 enableVertexAttribArray(0)
-vertexAttribPointer(0,3,VertexAttribType.FLOAT,false,5*float32.sizeof(),0)
+vertexAttribPointer(0,3,cGL_FLOAT,false,5*float32.sizeof(),0)
 enableVertexAttribArray(1)
-vertexAttribPointer(1,2,VertexAttribType.FLOAT,false,5*float32.sizeof(),3*float32.sizeof())
+vertexAttribPointer(1,2,cGL_FLOAT,false,5*float32.sizeof(),3*float32.sizeof())
 
 
 # screen quad VAO
 let quadVAO = genBindVertexArray()
-let quadVBO = genBindBufferData(BufferTarget.ARRAY_BUFFER,quadVertices,BufferDataUsage.STATIC_DRAW)
+let quadVBO = genBindBufferData(GL_ARRAY_BUFFER,quadVertices,GL_STATIC_DRAW)
 enableVertexAttribArray(0)
-vertexAttribPointer(0,2,VertexAttribType.FLOAT,false,4*float32.sizeof(),0)
+vertexAttribPointer(0,2,cGL_FLOAT,false,4*float32.sizeof(),0)
 enableVertexAttribArray(1)
-vertexAttribPointer(1,2,VertexAttribType.FLOAT,false,4*float32.sizeof(),2*float32.sizeof())
+vertexAttribPointer(1,2,cGL_FLOAT,false,4*float32.sizeof(),2*float32.sizeof())
 
 let cubeTexture = loadTextureWithMips(appDir&"/textures/container.jpg")
 let floorTexture = loadTextureWithMips(appDir&"/textures/metal.png")
@@ -135,21 +135,21 @@ screenShader.use()
 screenShader.setInt("screenTexture",0)
 
 # framebuffer config
-let framebuffer = genBindFramebuffer(FramebufferTarget.FRAMEBUFFER)
-let textureColorbuffer = genBindTexture(TextureTarget.TEXTURE_2D)
-texImage2D(TexImageTarget.TEXTURE_2D,0'i32,TextureInternalFormat.RGB,screenWidth.int32,screenHeight.int32,PixelDataFormat.RGB,PixelDataType.UNSIGNED_BYTE)
-texParameteri(TextureTarget.TEXTURE_2D, TextureParameter.TEXTURE_MIN_FILTER,GL_LINEAR)
-texParameteri(TextureTarget.TEXTURE_2D, TextureParameter.TEXTURE_MAG_FILTER,GL_LINEAR)
-framebufferTexture2D(FramebufferTarget.FRAMEBUFFER,FramebufferAttachment.COLOR_ATTACHMENT0,FramebufferTextureTarget.TEXTURE_2D,textureColorbuffer,0)
+let framebuffer = genBindFramebuffer(GL_FRAMEBUFFER)
+let textureColorbuffer = genBindTexture(GL_TEXTURE_2D)
+texImage2D(GL_TEXTURE_2D,0'i32,GL_RGB,screenWidth.int32,screenHeight.int32,GL_RGB,GL_UNSIGNED_BYTE)
+texParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_LINEAR)
+texParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,GL_LINEAR)
+framebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D,textureColorbuffer,0)
 
 # create a renderbuffer object for depth and stencil attachment (we won't be sampling these)
 let rbo = genBindRenderBuffer()
-renderBufferStorage(RenderBufferFormat.DEPTH24_STENCIL8,screenWidth,screenHeight)
-framebufferRenderbuffer(FramebufferTarget.FRAMEBUFFER,FramebufferAttachment.DEPTH_STENCIL_ATTACHMENT,rbo)
+renderBufferStorage(GL_DEPTH24_STENCIL8,screenWidth,screenHeight)
+framebufferRenderbuffer(GL_FRAMEBUFFER,GL_DEPTH_STENCIL_ATTACHMENT,rbo)
 # now that we actually created the framebuffer and added all attachments we want to check if it is actually complete now
-if checkFramebufferStatus(FramebufferTarget.FRAMEBUFFER) != FrameBufferStatus.FRAMEBUFFER_COMPLETE:
+if checkFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE:
   echo "error: framebuffer is not complete"
-unBindFramebuffer(FramebufferTarget.FRAMEBUFFER)
+unBindFramebuffer(GL_FRAMEBUFFER)
 
 var
   evt = sdl2.defaultEvent
@@ -164,8 +164,8 @@ prevTime=epochTime()
 while run:
   
   let error = getGLError()
-  if (error != ErrorType.NO_ERROR):
-    echo "Error:" & $error
+  if (error != GL_NO_ERROR):
+    echo "Error:" & $error.int32
 
   let keyState = getKeyboardState()
   currentTime = epochTime()
@@ -204,13 +204,13 @@ while run:
   # Render  
   # ------
   # bind to framebuffer and draw scene as we normally would to color texture 
-  bindFramebuffer(FramebufferTarget.FRAMEBUFFER,framebuffer)
-  enable(Capability.DEPTH_TEST)      
+  bindFramebuffer(GL_FRAMEBUFFER,framebuffer)
+  enable(GL_DEPTH_TEST)      
  
   # make sure we clear the framebuffer's content
   clearColor(0.1,0.1,0.1,1.0)    
-  easygl.clear(BufferMask.COLOR_BUFFER_BIT, 
-               BufferMask.DEPTH_BUFFER_BIT)
+  easygl.clear(GL_COLOR_BUFFER_BIT or
+               GL_DEPTH_BUFFER_BIT)
   
 
   shader.use()
@@ -223,33 +223,33 @@ while run:
 
   # cubes
   bindVertexArray(cubeVAO)
-  activeTexture(TextureUnit.TEXTURE0)
-  bindTexture(TextureTarget.TEXTURE_2D, cubeTexture)
+  activeTexture(GL_TEXTURE0)
+  bindTexture(GL_TEXTURE_2D, cubeTexture)
   model = translate(model,vec3(-1.0'f32,0.0'f32,-1.0'f32))
   shader.setMat4("model",model)
-  drawArrays(DrawMode.TRIANGLES,0,36)
+  drawArrays(GL_TRIANGLES,0,36)
   model = mat4(1.0'f32)
   model = translate(model,vec3(2.0'f32,0.0'f32,0.0'f32))
   shader.setMat4("model",model)
-  drawArrays(DrawMode.TRIANGLES,0,36)
+  drawArrays(GL_TRIANGLES,0,36)
  
   # floor  
   bindVertexArray(planeVAO)  
-  bindTexture(TextureTarget.TEXTURE_2D,floorTexture)  
+  bindTexture(GL_TEXTURE_2D,floorTexture)  
   shader.setMat4("model",model)
-  drawArrays(DrawMode.TRIANGLES,0,6)
+  drawArrays(GL_TRIANGLES,0,6)
     
   # now bind back to default framebuffer and draw a quad plane with the attached framebuffer color texture
-  unBindFramebuffer(FramebufferTarget.FRAMEBUFFER)
-  disable(Capability.DEPTH_TEST) # disable depth test so screen-space quad isn't discarded due to depth test.
+  unBindFramebuffer(GL_FRAMEBUFFER)
+  disable(GL_DEPTH_TEST) # disable depth test so screen-space quad isn't discarded due to depth test.
   # clear all relevant buffers
   clearColor(1.0,1.0,1.0,1.0) # set clear color to white (not really necessery actually, since we won't be able to see behind the quad anyways)  
-  easygl.clear(BufferMask.COLOR_BUFFER_BIT) 
+  easygl.clear(GL_COLOR_BUFFER_BIT) 
 
   screenShader.use()
   bindVertexArray(quadVAO)
-  bindTexture(TextureTarget.TEXTURE_2D,textureColorBuffer)
-  drawArrays(DrawMode.TRIANGLES,0,6)
+  bindTexture(GL_TEXTURE_2D,textureColorBuffer)
+  drawArrays(GL_TRIANGLES,0,6)
 
   window.glSwapWindow()
 

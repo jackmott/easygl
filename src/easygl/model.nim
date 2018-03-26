@@ -4,7 +4,7 @@ import
     opengl,
     assimp,
     glm,
-    mesh,
+    mesh, 
     strutils
 
 type Model* = object
@@ -21,7 +21,7 @@ proc draw*(model:Model, shaderProgram:ShaderProgramId) =
 proc loadMaterialTextures(model: var Model, mat:PMaterial, texType:TTextureType, typeName:TextureType) : seq[Texture] =
     var textures = newSeq[Texture]()
     let texCount = getTextureCount(mat,texType).int    
-    for i in 0 .. <texCount:        
+    for i in 0 .. pred(texCount):        
         var str : AIString
         let ret = getTexture(mat,texType,i.cint,addr str)       
         if ret == ReturnFailure:
@@ -49,7 +49,7 @@ proc processMesh(model:var Model, mesh:PMesh, scene:PScene) : Mesh =
     var textures = newSeq[Texture]()
 
     let vertexCount = mesh.vertexCount.int
-    for i in 0 .. <vertexCount:
+    for i in 0 .. pred(vertexCount):
         var vertex:Vertex
         var vector:Vec3f
         vector.x = mesh.vertices[i].x
@@ -85,9 +85,9 @@ proc processMesh(model:var Model, mesh:PMesh, scene:PScene) : Mesh =
 
         vertices.add(vertex)
     
-    for i in 0 .. <mesh.faceCount.int:
+    for i in 0 .. pred(mesh.faceCount).int:
         let face = mesh.faces[i]
-        for j in 0 .. <face.indexCount.int:
+        for j in 0 .. pred(face.indexCount).int:
             indices.add(face.indices[j].uint32)
 
     let material = scene.materials[mesh.materialIndex]          
@@ -113,10 +113,10 @@ proc processMesh(model:var Model, mesh:PMesh, scene:PScene) : Mesh =
 
 proc processNode(model:var Model,node:PNode, scene:PScene) = 
     let meshCount = node.meshCount.int    
-    for i in 0 .. <meshCount:        
+    for i in 0 .. pred(meshCount):
         model.meshes.add(processMesh(model,scene.meshes[node.meshes[i]],scene))
     let childrenCount = node.childrenCount.int
-    for i in 0 .. <childrenCount:
+    for i in 0 .. pred(childrenCount):
         processNode(model,node.children[i],scene)
 
 

@@ -28,7 +28,7 @@ let appDir = getAppDir()
 let shader = createAndLinkProgram(appDir&"/shaders/cubemaps.vert",appDir&"/shaders/cubemaps.frag")
 let skyboxShader = createAndLinkProgram(appDir&"/shaders/skybox.vert",appDir&"/shaders/skybox.frag")
 
-enable(Capability.DEPTH_TEST)
+enable(GL_DEPTH_TEST)
 
 # Set up vertex data
 let cubeVertices : seq[float32]  = 
@@ -123,17 +123,17 @@ let skyboxVertices =
 
 # cube VAO
 let cubeVAO = genBindVertexArray()
-let cubeVBO = genBindBufferData(BufferTarget.ARRAY_BUFFER,cubeVertices,BufferDataUsage.STATIC_DRAW)
+let cubeVBO = genBindBufferData(GL_ARRAY_BUFFER,cubeVertices,GL_STATIC_DRAW)
 enableVertexAttribArray(0)
-vertexAttribPointer(0,3,VertexAttribType.FLOAT,false,6*float32.sizeof(),0)
+vertexAttribPointer(0,3,cGL_FLOAT,false,6*float32.sizeof(),0)
 enableVertexAttribArray(1)
-vertexAttribPointer(1,3,VertexAttribType.FLOAT,false,6*float32.sizeof(),3*float32.sizeof())
+vertexAttribPointer(1,3,cGL_FLOAT,false,6*float32.sizeof(),3*float32.sizeof())
 
 # skybox VAO
 let skyboxVAO = genBindVertexArray()
-let skyboxVBO = genBindBufferData(BufferTarget.ARRAY_BUFFER,skyboxVertices,BufferDataUsage.STATIC_DRAW)
+let skyboxVBO = genBindBufferData(GL_ARRAY_BUFFER,skyboxVertices,GL_STATIC_DRAW)
 enableVertexAttribArray(0)
-vertexAttribPointer(0,3,VertexAttribType.FLOAT,false,3*float32.sizeof(),0)
+vertexAttribPointer(0,3,cGL_FLOAT,false,3*float32.sizeof(),0)
 
 let faces = [
   appDir&"/textures/right.jpg",
@@ -196,11 +196,11 @@ while run:
     break
 
   let error = getGLError()
-  if error != ErrorType.NO_ERROR:
-    echo $error
+  if error != GL_NO_ERROR:
+    echo $error.int32
   # Render
   clearColor(0.1,0.1,0.1,1.0)
-  easygl.clear(BufferMask.COLOR_BUFFER_BIT, BufferMask.DEPTH_BUFFER_BIT)
+  easygl.clear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
   
   shader.use()
   var model = mat4(1.0'f32)    
@@ -213,14 +213,14 @@ while run:
 
   # cubes
   bindVertexArray(cubeVAO)
-  activeTexture(TextureUnit.TEXTURE0)
-  bindTexture(TextureTarget.TEXTURE_CUBE_MAP,cubemapTexture)
-  drawArrays(DrawMode.TRIANGLES,0,36)
+  activeTexture(GL_TEXTURE0)
+  bindTexture(GL_TEXTURE_CUBE_MAP,cubemapTexture)
+  drawArrays(GL_TRIANGLES,0,36)
   unBindVertexArray()
     
   # draw skybox
   
-  depthFunc(AlphaFunc.LEQUAL)
+  depthFunc(GL_LEQUAL)
   skyboxShader.use()  
   view[3][0] = 0
   view[3][1] = 0
@@ -229,11 +229,11 @@ while run:
   skyboxShader.setMat4("projection",projection)
   # skybox cube
   bindVertexArray(skyboxVAO)
-  activeTexture(TextureUnit.TEXTURE0)
-  bindTexture(TextureTarget.TEXTURE_CUBE_MAP,cubemapTexture)
-  drawArrays(DrawMode.TRIANGLES,0,36)
+  activeTexture(GL_TEXTURE0)
+  bindTexture(GL_TEXTURE_CUBE_MAP,cubemapTexture)
+  drawArrays(GL_TRIANGLES,0,36)
   unBindVertexArray()
-  depthFunc(AlphaFunc.LESS)
+  depthFunc(GL_LESS)
   
   
   window.glSwapWindow()

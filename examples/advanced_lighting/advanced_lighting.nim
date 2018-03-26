@@ -26,9 +26,9 @@ discard window.glCreateContext()
 loadExtensions()
 
 
-enable(Capability.DEPTH_TEST)
-enable(Capability.BLEND)
-blendFunc(BlendFactor.SRC_ALPHA,BlendFactor.ONE_MINUS_SRC_ALPHA)
+enable(GL_DEPTH_TEST)
+enable(GL_BLEND)
+blendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA)
 
 
 ### Build and compile shader program
@@ -50,13 +50,13 @@ let planeVertices : seq[float32]  =
      10.0'f32, -0.5'f32, -10.0'f32,  0.0'f32, 1.0'f32, 0.0'f32,  10.0'f32, 10.0'f32]
 
 let planeVAO = genBindVertexArray()
-let planeVBO = genBindBufferData(BufferTarget.ARRAY_BUFFER,planeVertices,BufferDataUsage.STATIC_DRAW)
+let planeVBO = genBindBufferData(GL_ARRAY_BUFFER,planeVertices,GL_STATIC_DRAW)
 enableVertexAttribArray(0)
-vertexAttribPointer(0,3,VertexAttribType.FLOAT,false,8*float32.sizeof(),0)
+vertexAttribPointer(0,3,cGL_FLOAT,false,8*float32.sizeof(),0)
 enableVertexAttribArray(1)
-vertexAttribPointer(1,3,VertexAttribType.FLOAT,false,8*float32.sizeof(),3*float32.sizeof())
+vertexAttribPointer(1,3,cGL_FLOAT,false,8*float32.sizeof(),3*float32.sizeof())
 enableVertexAttribArray(2)
-vertexAttribPointer(2,2,VertexAttribType.FLOAT,false,8*float32.sizeof(),6*float32.sizeof())
+vertexAttribPointer(2,2,cGL_FLOAT,false,8*float32.sizeof(),6*float32.sizeof())
 unBindVertexArray()
 
 let floorTexture = loadTextureWithMips(appDir&"/textures/wood.png")
@@ -124,12 +124,12 @@ while run:
   
 
   let error = getGLError()
-  if error != ErrorType.NO_ERROR:
-    echo $error
+  if error != GL_NO_ERROR:
+    echo $error.int32
 
   # Render
   clearColor(0.1,0.1,0.1,1.0)
-  easygl.clear(BufferMask.COLOR_BUFFER_BIT, BufferMask.DEPTH_BUFFER_BIT)
+  easygl.clear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
 
   
 
@@ -146,9 +146,9 @@ while run:
 
   # floor
   bindVertexArray(planeVAO)
-  activeTexture(TextureUnit.TEXTURE0)
-  bindTexture(TextureTarget.TEXTURE_2D,floorTexture)
-  drawArrays(DrawMode.Triangles,0,6)
+  activeTexture(GL_TEXTURE0)
+  bindTexture(GL_TEXTURE_2D,floorTexture)
+  drawArrays(GL_TRIANGLES,0,6)
 
    
   

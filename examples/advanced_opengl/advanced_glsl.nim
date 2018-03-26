@@ -31,7 +31,7 @@ let shaderBlue = createAndLinkProgram(appDir&"/shaders/advanced_glsl.vert",appDi
 let shaderYellow = createAndLinkProgram(appDir&"/shaders/advanced_glsl.vert",appDir&"/shaders/yellow.frag")
 
 
-enable(Capability.DEPTH_TEST)
+enable(GL_DEPTH_TEST)
 
 # Set up vertex data
 let cubeVertices : seq[float32]  = 
@@ -82,9 +82,9 @@ let cubeVertices : seq[float32]  =
 
 # cube VAO
 let cubeVAO = genBindVertexArray()
-let cubeVBO = genBindBufferData(BufferTarget.ARRAY_BUFFER,cubeVertices,BufferDataUsage.STATIC_DRAW)
+let cubeVBO = genBindBufferData(GL_ARRAY_BUFFER,cubeVertices,GL_STATIC_DRAW)
 enableVertexAttribArray(0)
-vertexAttribPointer(0,3,VertexAttribType.FLOAT,false,3*float32.sizeof(),0)
+vertexAttribPointer(0,3,cGL_FLOAT,false,3*float32.sizeof(),0)
 
 # configure a uniform buffer object
 # ---------------------------------
@@ -99,17 +99,17 @@ uniformBlockBinding(shaderBlue,uniformBlockIndexBlue,0)
 uniformBlockBinding(shaderYellow,uniformBlockIndexYellow,0)
 
 # now actually create the buffer
-let uboMatrices = genBindBuffer(BufferTarget.UNIFORM_BUFFER)
-bufferData(BufferTarget.UNIFORM_BUFFER,2*Mat4f.sizeof(),BufferDataUsage.STATIC_DRAW)
-unbindBuffer(BufferTarget.UNIFORM_BUFFER)
+let uboMatrices = genBindBuffer(GL_UNIFORM_BUFFER)
+bufferData(GL_UNIFORM_BUFFER,2*Mat4f.sizeof(),GL_STATIC_DRAW)
+unbindBuffer(GL_UNIFORM_BUFFER)
 # define the range of the buffer that links to a uniform binding point
-bindBufferRange(BufferRangeTarget.UNIFORM_BUFFER,0,uboMatrices,0,(2*Mat4f.sizeof()).int32)
+bindBufferRange(GL_UNIFORM_BUFFER,0,uboMatrices,0,(2*Mat4f.sizeof()).int32)
 
 # store the projection matrix (we only do this once now) (note: we're not using zoom anymore by changing the FoV)
 let projection = perspective(45.0'f32,screenWidth.float32/screenHeight.float32,0.1'f32,100.0'f32)
-bindBuffer(BufferTarget.UNIFORM_BUFFER,uboMatrices)
-bufferSubData(BufferTarget.UNIFORM_BUFFER,0,Mat4f.sizeof(),projection.arr)
-unbindBuffer(BufferTarget.UNIFORM_BUFFER)
+bindBuffer(GL_UNIFORM_BUFFER,uboMatrices)
+bufferSubData(GL_UNIFORM_BUFFER,0,Mat4f.sizeof(),projection.arr)
+unbindBuffer(GL_UNIFORM_BUFFER)
 
 
 var
@@ -158,45 +158,45 @@ while run:
     break
 
   let error = getGLError()
-  if error != ErrorType.NO_ERROR:
-    echo $error
+  if error != GL_NO_ERROR:
+    echo $error.int32
 
   # Render
   clearColor(0.1,0.1,0.1,1.0)
-  easygl.clear(BufferMask.COLOR_BUFFER_BIT, BufferMask.DEPTH_BUFFER_BIT)
+  easygl.clear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
 
   let view = camera.getViewMatrix()
-  bindBuffer(BufferTarget.UNIFORM_BUFFER,uboMatrices)
-  bufferSubData(BufferTarget.UNIFORM_BUFFER,Mat4f.sizeof(),Mat4f.sizeof(),view.arr)
-  unbindBuffer(BufferTarget.UNIFORM_BUFFER)
+  bindBuffer(GL_UNIFORM_BUFFER,uboMatrices)
+  bufferSubData(GL_UNIFORM_BUFFER,Mat4f.sizeof(),Mat4f.sizeof(),view.arr)
+  unbindBuffer(GL_UNIFORM_BUFFER)
   
   bindVertexArray(cubeVAO)
   shaderRed.use()
   var model = mat4(1.0'f32)
   model = translate(model,vec3(-0.75'f32,0.75'f32,0.0'f32))
   shaderRed.setMat4("model",model)
-  drawArrays(DrawMode.TRIANGLES,0,36)
+  drawArrays(GL_TRIANGLES,0,36)
 
   bindVertexArray(cubeVAO)
   shaderGreen.use()
   model = mat4(1.0'f32)
   model = translate(model,vec3(0.75'f32,0.75'f32,0.0'f32))
   shaderGreen.setMat4("model",model)
-  drawArrays(DrawMode.TRIANGLES,0,36)
+  drawArrays(GL_TRIANGLES,0,36)
 
   bindVertexArray(cubeVAO)
   shaderYellow.use()
   model = mat4(1.0'f32)
   model = translate(model,vec3(-0.75'f32,-0.75'f32,0.0'f32))
   shaderYellow.setMat4("model",model)
-  drawArrays(DrawMode.TRIANGLES,0,36)
+  drawArrays(GL_TRIANGLES,0,36)
 
   bindVertexArray(cubeVAO)
   shaderBlue.use()
   model = mat4(1.0'f32)
   model = translate(model,vec3(0.75'f32,-0.75'f32,0.0'f32))
   shaderBlue.setMat4("model",model)
-  drawArrays(DrawMode.TRIANGLES,0,36)
+  drawArrays(GL_TRIANGLES,0,36)
     
   window.glSwapWindow()
 

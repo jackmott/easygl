@@ -30,7 +30,7 @@ let appDir = getAppDir()
 let lightingShader = createAndLinkProgram(appDir&"/shaders/multiple_lights.vert",appDir&"/shaders/multiple_lights.frag")
 let lampShader = createAndLinkProgram(appDir&"/shaders/lamp.vert",appDir&"/shaders/lamp.frag")
 
-enable(Capability.DEPTH_TEST)
+enable(GL_DEPTH_TEST)
 
 # Set up vertex data
 let vertices =
@@ -105,22 +105,22 @@ let cubeVAO = genVertexArray()
 let VBO = genBuffer()
 
 # Bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).HH
-bindBuffer(BufferTarget.ARRAY_BUFFER,VBO)
-bufferData(BufferTarget.ARRAY_BUFFER,vertices,BufferDataUsage.STATIC_DRAW)
+bindBuffer(GL_ARRAY_BUFFER,VBO)
+bufferData(GL_ARRAY_BUFFER,vertices,GL_STATIC_DRAW)
 
 bindVertexArray(cubeVAO)
 
-vertexAttribPointer(0,3,VertexAttribType.FLOAT,false,8*float32.sizeof(),0)
+vertexAttribPointer(0,3,cGL_FLOAT,false,8*float32.sizeof(),0)
 enableVertexAttribArray(0)
-vertexAttribPointer(1,3,VertexAttribType.FLOAT,false,8*float32.sizeof(),3*float32.sizeof())
+vertexAttribPointer(1,3,cGL_FLOAT,false,8*float32.sizeof(),3*float32.sizeof())
 enableVertexAttribArray(1)
-vertexAttribPointer(2,2,VertexAttribType.FLOAT,false,8*float32.sizeof(),6*float32.sizeof())
+vertexAttribPointer(2,2,cGL_FLOAT,false,8*float32.sizeof(),6*float32.sizeof())
 enableVertexAttribArray(2);
 
 let lightVAO = genVertexArray()
 bindVertexArray(lightVAO)
-bindBuffer(BufferTarget.ARRAY_BUFFER,VBO)
-vertexAttribPointer(0,3,VertexAttribType.FLOAT,false,8*float32.sizeof(),0)
+bindBuffer(GL_ARRAY_BUFFER,VBO)
+vertexAttribPointer(0,3,cGL_FLOAT,false,8*float32.sizeof(),0)
 enableVertexAttribArray(0)
 
 let diffuseMap = loadTextureWithMips(appDir&"/textures/container2.png")
@@ -178,7 +178,7 @@ while run:
 
   # Render
   clearColor(0.1,0.1,0.1,1.0)
-  easygl.clear(BufferMask.COLOR_BUFFER_BIT, BufferMask.DEPTH_BUFFER_BIT)
+  easygl.clear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
 
  
   lightingShader.use()  
@@ -228,17 +228,17 @@ while run:
   var projection = perspective(radians(camera.Zoom),screenWidth.float32/screenHeight.float32,0.1'f32,100.0'f32)
   var view = camera.getViewMatrix()
 
-  lightingShader.setMat4("projection",false,projection)
-  lightingShader.setMat4("view",false,view)
+  lightingShader.setMat4("projection",projection)
+  lightingShader.setMat4("view",view)
   
   var model = mat4(1.0'f32)
-  lightingShader.setMat4("model",false,model)
+  lightingShader.setMat4("model",model)
 
-  activeTexture(TextureUnit.TEXTURE0)
-  bindTexture(TextureTarget.TEXTURE_2D,diffuseMap)
+  activeTexture(GL_TEXTURE0)
+  bindTexture(GL_TEXTURE_2D,diffuseMap)
 
-  activeTexture(TextureUnit.TEXTURE1)
-  bindTexture(TextureTarget.TEXTURE_2D,specularMap)  
+  activeTexture(GL_TEXTURE1)
+  bindTexture(GL_TEXTURE_2D,specularMap)  
 
   bindVertexArray(cubeVAO)
 
@@ -247,20 +247,20 @@ while run:
     model = translate(model,cubePos)
     let angle = 20.0'f32 * i.float32
     model = rotate(model,radians(angle),vec3(1.0'f32,0.3'f32,0.5'f32))
-    lightingShader.setMat4("model",false,model)
-    drawArrays(DrawMode.TRIANGLES,0,36)
+    lightingShader.setMat4("model",model)
+    drawArrays(GL_TRIANGLES,0,36)
   
   lampShader.use()
-  lampShader.setMat4("projection",false,projection)
-  lampShader.setMat4("view",false,view)  
+  lampShader.setMat4("projection",projection)
+  lampShader.setMat4("view",view)  
 
   bindVertexArray(lightVAO)
   for i,lightPos in pointLightPositions.mpairs:
     var model = mat4(1.0'f32)
     model = translate(model,lightPos)
     model = scale(model,vec3(0.2'f32))
-    lampShader.setMat4("model",false,model)
-    drawArrays(DrawMode.TRIANGLES,0,36)
+    lampShader.setMat4("model",model)
+    drawArrays(GL_TRIANGLES,0,36)
   
   window.glSwapWindow()
 

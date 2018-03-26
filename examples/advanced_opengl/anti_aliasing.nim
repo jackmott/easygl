@@ -27,8 +27,8 @@ loadExtensions()
 let appDir = getAppDir()
 let shader = createAndLinkProgram(appDir&"/shaders/anti_aliasing.vert",appDir&"/shaders/anti_aliasing.frag")
 
-enable(Capability.MULTISAMPLE)
-enable(Capability.DEPTH_TEST)
+enable(GL_MULTISAMPLE)
+enable(GL_DEPTH_TEST)
 
 # Set up vertex data
 let cubeVertices : seq[float32]  = 
@@ -80,9 +80,9 @@ let cubeVertices : seq[float32]  =
 
 # cube VAO
 let cubeVAO = genBindVertexArray()
-let cubeVBO = genBindBufferData(BufferTarget.ARRAY_BUFFER,cubeVertices,BufferDataUsage.STATIC_DRAW)
+let cubeVBO = genBindBufferData(GL_ARRAY_BUFFER,cubeVertices,GL_STATIC_DRAW)
 enableVertexAttribArray(0)
-vertexAttribPointer(0,3,VertexAttribType.FLOAT,false,3*float32.sizeof(),0)
+vertexAttribPointer(0,3,cGL_FLOAT,false,3*float32.sizeof(),0)
 unBindVertexArray()
 
 
@@ -132,12 +132,12 @@ while run:
     break
 
   let error = getGLError()
-  if error != ErrorType.NO_ERROR:
-    echo $error
+  if error != GL_NO_ERROR:
+    echo $error.int32
 
   # Render
   clearColor(0.1,0.1,0.1,1.0)
-  easygl.clear(BufferMask.COLOR_BUFFER_BIT, BufferMask.DEPTH_BUFFER_BIT)
+  easygl.clear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
 
   
 
@@ -150,7 +150,7 @@ while run:
   shader.setMat4("model",model)
  
   bindVertexArray(cubeVAO)
-  drawArrays(DrawMode.TRIANGLES,0,36)
+  drawArrays(GL_TRIANGLES,0,36)
   unBindVertexArray()
  
   window.glSwapWindow()

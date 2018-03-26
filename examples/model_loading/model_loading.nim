@@ -32,7 +32,7 @@ let ourModel = loadModel(appDir&"/models/nanosuit.obj")
 
 #PolygonMode(PolygonFace.FRONT_AND_BACK,PolygonModeEnum.LINE)
 
-enable(Capability.DEPTH_TEST)
+enable(GL_DEPTH_TEST)
 
 # Set up vertex data
 
@@ -83,7 +83,7 @@ while run:
   
   # Render
   clearColor(0.05,0.05,0.05,1.0)
-  easygl.clear(BufferMask.COLOR_BUFFER_BIT, BufferMask.DEPTH_BUFFER_BIT)
+  easygl.clear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
 
  
   ourShader.use()  

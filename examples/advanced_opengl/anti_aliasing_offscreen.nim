@@ -29,7 +29,7 @@ let shader = createAndLinkProgram(appDir&"/shaders/anti_aliasing.vert",appDir&"/
 let screenShader = createAndLinkProgram(appDir&"/shaders/aa_post.vert",appDir&"/shaders/aa_post.frag")
 
 
-enable(Capability.DEPTH_TEST)
+enable(GL_DEPTH_TEST)
 
 # Set up vertex data
 let cubeVertices : seq[float32]  = 
@@ -92,47 +92,47 @@ let quadVertices = @[
 
 # cube VAO
 let cubeVAO = genBindVertexArray()
-let cubeVBO = genBindBufferData(BufferTarget.ARRAY_BUFFER,cubeVertices,BufferDataUsage.STATIC_DRAW)
+let cubeVBO = genBindBufferData(GL_ARRAY_BUFFER,cubeVertices,GL_STATIC_DRAW)
 enableVertexAttribArray(0)
-vertexAttribPointer(0,3,VertexAttribType.FLOAT,false,3*float32.sizeof(),0)
+vertexAttribPointer(0,3,cGL_FLOAT,false,3*float32.sizeof(),0)
 
 # screen vao
 let quadVAO = genBindVertexArray()
-let quadVBO = genBindBufferData(BufferTarget.ARRAY_BUFFER, quadVertices,BufferDataUsage.STATIC_DRAW)
+let quadVBO = genBindBufferData(GL_ARRAY_BUFFER, quadVertices,GL_STATIC_DRAW)
 enableVertexAttribArray(0)
-vertexAttribPointer(0,2,VertexAttribType.FLOAT,false,4*float32.sizeof(),0)
+vertexAttribPointer(0,2,cGL_FLOAT,false,4*float32.sizeof(),0)
 enableVertexAttribArray(1)
-vertexAttribPointer(1,2,VertexAttribType.FLOAT,false,4*float32.sizeof(),2*float32.sizeof())
+vertexAttribPointer(1,2,cGL_FLOAT,false,4*float32.sizeof(),2*float32.sizeof())
 
 # configure MSAA framebuffer
-let framebuffer = genBindFramebuffer(FramebufferTarget.FRAMEBUFFER)
+let framebuffer = genBindFramebuffer(GL_FRAMEBUFFER)
 # create a multismaples color attachment texture
-let textureColorBufferMultisampled = genBindTexture(TextureTarget.TEXTURE_2D_MULTISAMPLE)
-texImage2DMultisample(TexImageMultisampleTarget.TEXTURE_2D_MULTISAMPLE,4,TextureInternalFormat.RGB,screenWidth,screenHeight,true)
-unBindTexture(TextureTarget.TEXTURE_2D_MULTISAMPLE)
-framebufferTexture2D(FramebufferTarget.FRAMEBUFFER,FramebufferAttachment.COLOR_ATTACHMENT0,FramebufferTextureTarget.TEXTURE_2D_MULTISAMPLE,textureColorBufferMultisampled,0)
+let textureColorBufferMultisampled = genBindTexture(GL_TEXTURE_2D_MULTISAMPLE)
+texImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE,4,GL_RGB,screenWidth,screenHeight,true)
+unBindTexture(GL_TEXTURE_2D_MULTISAMPLE)
+framebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D_MULTISAMPLE,textureColorBufferMultisampled,0)
 # create a (also multisampled) renderbuffer object for depth and stencil attachments
 let rbo = genBindRenderbuffer()
-renderBufferStorageMultisample(4,RenderBufferFormat.DEPTH24_STENCIL8,screenWidth,screenHeight)
+renderBufferStorageMultisample(4,GL_DEPTH24_STENCIL8,screenWidth,screenHeight)
 unBindRenderBuffer()
-framebufferRenderBuffer(FramebufferTarget.FRAMEBUFFER,FramebufferAttachment.DEPTH_STENCIL_ATTACHMENT,rbo)
+framebufferRenderBuffer(GL_FRAMEBUFFER,GL_DEPTH_STENCIL_ATTACHMENT,rbo)
 
-if checkFramebufferStatus(FramebufferTarget.FRAMEBUFFER) != FramebufferStatus.FRAMEBUFFER_COMPLETE:
+if checkFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE:
   echo "Framebuffer not complete"
 
 # configure second post-processing framebuffer 
-let intermediateFBO = genBindFramebuffer(FramebufferTarget.FRAMEBUFFER)
+let intermediateFBO = genBindFramebuffer(FrameGL_FRAMEBUFFER)
 # create a color attachment texture
-let screenTexture = genBindTexture(TextureTarget.TEXTURE_2D)
+let screenTexture = genBindTexture(GL_TEXTURE_2D)
 texImage2D(TexImageTarget.TEXTURE_2D,0,TextureInternalFormat.RGB,screenWidth,screenHeight,PixelDataFormat.RGB,PixelDataType.UNSIGNED_BYTE)
-texParameteri(TextureTarget.TEXTURE_2D,TextureParameter.TEXTURE_MIN_FILTER,GL_LINEAR)
-texParameteri(TextureTarget.TEXTURE_2D,TextureParameter.TEXTURE_MAG_FILTER,GL_LINEAR)
-framebufferTexture2D(FramebufferTarget.FRAMEBUFFER,FrameBufferAttachment.COLOR_ATTACHMENT0,FramebufferTextureTarget.TEXTURE_2D,screenTexture,0)
+texParameteri(GL_TEXTURE_2D,TextureParameter.TEXTURE_MIN_FILTER,GL_LINEAR)
+texParameteri(GL_TEXTURE_2D,TextureParameter.TEXTURE_MAG_FILTER,GL_LINEAR)
+framebufferTexture2D(FrameGL_FRAMEBUFFER,FrameBufferAttachment.COLOR_ATTACHMENT0,FramebufferGL_TEXTURE_2D,screenTexture,0)
   
-if checkFramebufferStatus(FramebufferTarget.FRAMEBUFFER) != FramebufferStatus.FRAMEBUFFER_COMPLETE:
+if checkFramebufferStatus(FrameGL_FRAMEBUFFER) != FramebufferStatus.FRAMEBUFFER_COMPLETE:
   echo "Framebuffer not complete"
 
-unBindFramebuffer(FramebufferTarget.FRAMEBUFFER)
+unBindFramebuffer(FrameGL_FRAMEBUFFER)
  
 # shader config
 shader.use()
@@ -184,18 +184,18 @@ while run:
     break
 
   let error = getGLError()
-  if error != ErrorType.NO_ERROR:
+  if error != GL_NO_ERROR:
     echo $error
 
   # Render
   clearColor(0.1,0.1,0.1,1.0)
-  easygl.clear(BufferMask.COLOR_BUFFER_BIT, BufferMask.DEPTH_BUFFER_BIT)
+  easygl.clear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
 
   # 1. draw scene as normal in multisampled buffers
-  bindFramebuffer(FramebufferTarget.FRAMEBUFFER,framebuffer)
+  bindFramebuffer(FrameGL_FRAMEBUFFER,framebuffer)
   clearColor(0.1,0.1,0.1,1.0)
-  easygl.clear(BufferMask.COLOR_BUFFER_BIT, BufferMask.DEPTH_BUFFER_BIT)
-  enable(Capability.DEPTH_TEST)
+  easygl.clear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
+  enable(GL_DEPTH_TEST)
 
   shader.use()
   var projection = perspective(radians(camera.Zoom), screenWidth.float32 / screenHeight.float32,0.1'f32,1000.0'f32)
@@ -206,25 +206,25 @@ while run:
   shader.setMat4("model",model)
  
   bindVertexArray(cubeVAO)
-  drawArrays(DrawMode.TRIANGLES,0,36)
+  drawArrays(GL_TRIANGLES,0,36)
 
   # 2. now blit multisampled buffer(s) to normal colorbuffer of intermediate FBO. Image is stored in screenTexture
-  bindFramebuffer(FramebufferTarget.READ_FRAMEBUFFER,framebuffer)
-  bindFramebuffer(FramebufferTarget.DRAW_FRAMEBUFFER,intermediateFBO)
-  blitFramebuffer(0,0,screenWidth,screenHeight,0,0,screenWidth,screenHeight,BufferMask.COLOR_BUFFER_BIT,BlitFilter.NEAREST)
+  bindFramebuffer(FrameGL_READ_FRAMEBUFFER,framebuffer)
+  bindFramebuffer(FrameGL_DRAW_FRAMEBUFFER,intermediateFBO)
+  blitFramebuffer(0,0,screenWidth,screenHeight,0,0,screenWidth,screenHeight,GL_COLOR_BUFFER_BIT,BlitFilter.NEAREST)
 
   # 3.now render quad with scene's visuals as its texture image
-  unBindFramebuffer(FramebufferTarget.FRAMEBUFFER)
+  unBindFramebuffer(FrameGL_FRAMEBUFFER)
   clearColor(1.0,1.0,1.0,1.0)
-  easygl.clear(BufferMask.COLOR_BUFFER_BIT)
-  disable(Capability.DEPTH_TEST)
+  easygl.clear(GL_COLOR_BUFFER_BIT)
+  disable(GL_DEPTH_TEST)
 
   # draw Screen quads
   screenShader.use()
   bindVertexArray(quadVAO)
-  activeTexture(TextureUnit.TEXTURE0)
-  bindTexture(TextureTarget.TEXTURE_2D,screenTexture)
-  drawArrays(DrawMode.TRIANGLES,0,6)
+  activeTexture(GL_TEXTURE0)
+  bindTexture(GL_TEXTURE_2D,screenTexture)
+  drawArrays(GL_TRIANGLES,0,6)
   
 
   window.glSwapWindow()

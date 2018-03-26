@@ -35,13 +35,13 @@ let VBO = genBuffer()
 # Bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
 bindVertexArray(VAO)
 
-bindBuffer(BufferTarget.ARRAY_BUFFER,VBO)
-bufferData(BufferTarget.ARRAY_BUFFER,vertices,BufferDataUsage.STATIC_DRAW)
+bindBuffer(GL_ARRAY_BUFFER,VBO)
+bufferData(GL_ARRAY_BUFFER,vertices,GL_STATIC_DRAW)
 
-vertexAttribPointer(0,3,VertexAttribType.FLOAT,false,6*float32.sizeof(),0)
+vertexAttribPointer(0,3,cGL_FLOAT,false,6*float32.sizeof(),0)
 enableVertexAttribArray(0)
 
-vertexAttribPointer(1,3,VertexAttribType.FLOAT,false,6*float32.sizeof(),3*float32.sizeof())
+vertexAttribPointer(1,3,cGL_FLOAT,false,6*float32.sizeof(),3*float32.sizeof())
 enableVertexAttribArray(1)
 
 var
@@ -64,10 +64,10 @@ while run:
         
   # Render
   clearColor(0.2,0.3,0.3,1.0)
-  clear(BufferMask.COLOR_BUFFER_BIT)
+  clear(GL_COLOR_BUFFER_BIT)
   ourShader.use()
   bindVertexArray(VAO) # Not necessary since we only have one VAO
-  drawArrays(DrawMode.TRIANGLES,0,3)
+  drawArrays(GL_TRIANGLES,0,3)
   window.glSwapWindow()
 
 deleteVertexArray(VAO)

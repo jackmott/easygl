@@ -25,9 +25,9 @@ discard window.glCreateContext()
 loadExtensions()
 
 
-enable(Capability.DEPTH_TEST)
-enable(Capability.BLEND)
-blendFunc(BlendFactor.SRC_ALPHA,BlendFactor.ONE_MINUS_SRC_ALPHA)
+enable(GL_DEPTH_TEST)
+enable(GL_BLEND)
+blendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA)
 
 
 ### Build and compile shader program
@@ -49,9 +49,9 @@ let planeVertices : seq[float32]  =
      10.0'f32, -0.5'f32, -10.0'f32,  0.0'f32, 1.0'f32, 0.0'f32,  10.0'f32, 10.0'f32]
 
 let (planeVAO,planeVBO) = vertexAttribSetup(
-                            BufferTarget.ARRAY_BUFFER,
+                            GL_ARRAY_BUFFER,
                             planeVertices,
-                            BufferDataUsage.STATIC_DRAW,
+                            GL_STATIC_DRAW,
                             false,
                             (0,3),(1,3),(2,2))
 
@@ -135,12 +135,12 @@ while run:
   
 
   let error = getGLError()
-  if error != ErrorType.NO_ERROR:
-    echo $error
+  if error != GL_NO_ERROR:
+    echo $error.int32
 
   # Render
   clearColor(0.1,0.1,0.1,1.0)
-  easygl.clear(BufferMask.COLOR_BUFFER_BIT, BufferMask.DEPTH_BUFFER_BIT)
+  easygl.clear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
 
   
 
@@ -158,9 +158,9 @@ while run:
 
   # floor
   bindVertexArray(planeVAO)
-  activeTexture(TextureUnit.TEXTURE0)
-  bindTexture(TextureTarget.TEXTURE_2D,if gamma: floorTextureGammaCorrected else: floorTexture)
-  drawArrays(DrawMode.Triangles,0,6)
+  activeTexture(GL_TEXTURE0)
+  bindTexture(GL_TEXTURE_2D,if gamma: floorTextureGammaCorrected else: floorTexture)
+  drawArrays(GL_TRIANGLES,0,6)
 
    
   
