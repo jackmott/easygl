@@ -464,9 +464,6 @@ template cullFace*(face:GLenum) =
 template frontFace*(mode:GLenum) =
     glFrontFace(mode)
 
-template pushAttrib*(attribs:varargs[GLenum]) =
-    var mask : uint32 
-    for m in attribs:
-        mask = mask or m.uint32
+template pushAttrib*(mask:GLbitfield) =    
     glPushAttrib(mask)
 

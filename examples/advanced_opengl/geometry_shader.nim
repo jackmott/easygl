@@ -9,7 +9,8 @@ import
   glm,
  ../utils/camera_util,
  times,
- os
+ os,
+ options
 
 discard sdl2.init(INIT_EVERYTHING)
 
@@ -28,7 +29,7 @@ enable(GL_DEPTH_TEST)
 
 ### Build and compile shader program
 let appDir = getAppDir()
-let shader = createAndLinkProgram(appDir&"/shaders/geometry_shader.vert",appDir&"/shaders/geometry_shader.frag",appDir&"/shaders/geometry_shader.geom")
+let shader = createAndLinkProgram(appDir&"/shaders/geometry_shader.vert",appDir&"/shaders/geometry_shader.frag",some(appDir&"/shaders/geometry_shader.geom"))
 
 let points = @[
   -0.5'f32,  0.5'f32, 1.0'f32, 0.0'f32, 0.0'f32, # top-left

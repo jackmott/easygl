@@ -9,7 +9,7 @@ import glm
 import ../utils/camera_util
 import times
 import os
-import easygl.utils
+import easygl/utils
 
 discard sdl2.init(INIT_EVERYTHING)
 
